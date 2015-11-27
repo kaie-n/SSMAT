@@ -17,6 +17,7 @@
             this.text = game.add.text(0, 0, "", style);
             this.text.anchor.set(0, 0.5);
             this.text.visible = false;
+            this.smoothed = false;
         }
         update() {
             if (this.started) {
