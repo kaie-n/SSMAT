@@ -223,6 +223,21 @@ var SSMAT;
             console.log(this.tons[1].angleA, this.tons[0].angleA);
             //this.calcAll();
             console.log(this.painter.x, this.painter.y, "painter x & y");
+            this.calcNewPos();
+        };
+        MainMenu.prototype.calcNewPos = function () {
+            var adj = ((this.tons[1].x - 1) - this.wheel.width) - ((this.tons[0].x + 1) + this.wheel.width);
+            var thirdAngle = Math.PI - this.tons[0].angleA - this.tons[1].angleA;
+            var point1 = new Phaser.Point((this.tons[1].x - 1) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            var point0 = new Phaser.Point((this.tons[0].x + 1) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            var hypa = (adj * Math.sin(this.tons[1].angleA)) / thirdAngle;
+            var hypb = (adj * Math.sin(this.tons[0].angleA)) / thirdAngle;
+            console.log(adj, "adjacent");
+            console.log(hypa, "hyp alpha");
+            console.log(hypb, "hyp beta");
+            console.log(thirdAngle, "third angle");
+            console.log(point0.x, point0.y, "point0");
+            console.log(point1.x, point1.y, "point1");
         };
         MainMenu.prototype.update = function () {
             this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
@@ -364,8 +379,6 @@ var SSMAT;
             this.tons[0].angleA = Math.round(equationA3 * 100) / 100;
             var equationB1 = (this.tons[0].calcForce() / this.tons[1].calcForce()) * Math.cos(this.tons[0].angleA);
             this.tons[1].angleA = Math.round(Math.acos(equationB1) * 100) / 100;
-            console.log(this.tons[0].angleA, "angleA");
-            console.log(this.tons[1].angleA, "angleB");
             //this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x - 1) - this.wheel.width, this.painter.y)
             //this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x + 1) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, this.painter.x, this.painter.y)
             //this.tons[1].angleA = Math.round(this.tons[1].angleA * 100) / 100
@@ -434,18 +447,18 @@ var SSMAT;
         MainMenu.prototype.calcAll = function () {
             var point1 = new Phaser.Point((this.tons[1].x - 1) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
             var point2 = new Phaser.Point((this.tons[0].x + 1) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
-            var m1 = (point1.y - this.painter.y) / (this.painter.x - point1.x);
-            var m2 = (this.painter.y - point2.y) / (this.painter.x - point2.x);
-            this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x - 1) - this.wheel.width, this.painter.y);
-            this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x + 1) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, this.painter.x, this.painter.y);
-            this.tons[1].angleA = Math.round(this.tons[1].angleA * 100) / 100;
-            this.tons[0].angleA = Math.round(this.tons[0].angleA * 100) / 100;
-            this.sumFx = this.tons[1].calcFx() - this.tons[0].calcFx(); // formula to find Sum of X components
-            this.sumFy = (this.tons[1].calcFy() + this.tons[0].calcFy()) - this.painter.force; // formula to find Sum of Y components
-            this.sumR = (this.sumFx * 2) + (this.sumFy * 2);
-            this.sumR = Math.sqrt(this.sumR);
-            this.sumR = Math.round(this.sumR * 10) / 10;
-            this.accelerationX = (this.tons[1].force - this.painter.force) / (this.painter.mass);
+            //var m1 = (point1.y - this.painter.y) / (this.painter.x - point1.x);
+            //var m2 = (this.painter.y - point2.y) / (this.painter.x - point2.x);
+            //this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x - 1) - this.wheel.width, this.painter.y)
+            //this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x + 1) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, this.painter.x, this.painter.y)
+            //this.tons[1].angleA = Math.round(this.tons[1].angleA * 100) / 100
+            //this.tons[0].angleA = Math.round(this.tons[0].angleA * 100) / 100
+            //this.sumFx = this.tons[1].calcFx() - this.tons[0].calcFx(); // formula to find Sum of X components
+            //this.sumFy = (this.tons[1].calcFy() + this.tons[0].calcFy()) - this.painter.force  // formula to find Sum of Y components
+            //this.sumR = (this.sumFx * 2) + (this.sumFy * 2);
+            //this.sumR = Math.sqrt(this.sumR);
+            //this.sumR = Math.round(this.sumR * 10) / 10;
+            //this.accelerationX = (this.tons[1].force - this.painter.force) / (this.painter.mass);
         };
         return MainMenu;
     })(Phaser.State);
