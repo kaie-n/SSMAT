@@ -14,6 +14,9 @@
         textAngle: Phaser.Text;
         started: boolean;
         main: SSMAT.MainMenu
+        dlength: number;
+        dlengtha: number;
+        dlengthb: number;
         constructor(game: Phaser.Game, x: number, y: number, mass: number, gravity: number) {
             super(game, x, y, "ton");
             game.add.existing(this);
@@ -57,7 +60,7 @@
                 if (this.name == "left") {
                     this.textAngle.text =  "α: " + String(Math.round(Phaser.Math.radToDeg(this.angleA) * 10) / 10) + "\xB0";
                     this.textAngle.x = this.main.painter.x - this.main.painter.width / 2 - this.textAngle.width;
-                    this.text.x = (this.x - this.text.width);
+                    this.text.x = (this.x - this.text.width) - 10;
                 }
                 if (this.name == "right") {
                     this.textAngle.text = "β: " + String(Math.round(Phaser.Math.radToDeg(this.angleA) * 10) / 10) + "\xB0";
