@@ -8,6 +8,7 @@
         ton: Array<SSMAT.Tons>;
         _dx: Phaser.Point;
         angleA: number;
+        angleinDeg: number;
         fx: number;
         fy: number;
         text: Phaser.Text;
@@ -25,6 +26,9 @@
             this.mass = mass;
             this.gravity = gravity;
             this.calcForce();
+            this.angleinDeg = Math.round(Phaser.Math.radToDeg(this.angleA) * 100) / 100;
+            this.angleinDeg = Math.round(Phaser.Math.radToDeg(this.angleA) * 100) / 100;
+
             this.ton = [];
             this.smoothed = false;
             var style = { font: "14px Courier", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: this.width, align: "left" };
@@ -38,32 +42,35 @@
             this.textAngle.anchor.set(0, 0.5);
             this.textAngle.visible = false;
         }
+        clearTon() {
+            if (this.ton.length > 0) {
+                for (var i = 0; i < this.ton.length; i++) {
+                    this.ton[i].destroy();
+                }
+            }
+            this.ton = [];
+        }
         update() {
             if (this.name == "left" || this.name == "right") {
-
-                
                 if (this.started) {
-
                     this.mass = Math.round(this.mass * 10) / 10
                     this.textAngle.visible = true;
                     this.text.visible = true;
                 }
                 if (this.calcForce() >= 1000) {
                     this.force = this.calcForce() / 1000;
-
                     this.text.text = "M: " + this.mass + "KG \nF: " + Math.round(this.force * 100) / 100 + "kN";
-                   
                 }
                 if (this.calcForce() < 1000) {
                     this.text.text = "M: " + this.mass + "KG \nF: " + Math.round(this.force * 100) / 100 + "N"
                 }
                 if (this.name == "left") {
-                    this.textAngle.text =  "α: " + String(Math.round(Phaser.Math.radToDeg(this.angleA) * 10) / 10) + "\xB0";
+                    this.textAngle.text =  "α: " + String(Math.round(Phaser.Math.radToDeg(this.angleA) * 100) / 100) + "\xB0";
                     this.textAngle.x = this.main.painter.x - this.main.painter.width / 2 - this.textAngle.width;
                     this.text.x = (this.x - this.text.width) - 10;
                 }
                 if (this.name == "right") {
-                    this.textAngle.text = "β: " + String(Math.round(Phaser.Math.radToDeg(this.angleA) * 10) / 10) + "\xB0";
+                    this.textAngle.text = "β: " + String(Math.round(Phaser.Math.radToDeg(this.angleA) * 100) / 100) + "\xB0";
                     this.textAngle.x = this.main.painter.x + this.main.painter.width / 2 ;
                     this.text.x = (this.x + this.width / 2);
                 }
@@ -80,9 +87,8 @@
             return this.force;
         }
         calcFx() {
-
             this.fx = this.calcForce() * Math.cos(this.angleA);
-            //this.fx = Math.round(this.fx);
+            this.fx = Math.round(this.fx);
             return this.fx;
         }
         calcFy() {

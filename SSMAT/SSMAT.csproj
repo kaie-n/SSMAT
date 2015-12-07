@@ -26,8 +26,11 @@
     <Content Include="assets\background.jpg" />
     <Content Include="assets\button.png" />
     <Content Include="assets\click.png" />
+    <Content Include="assets\help.png" />
     <Content Include="assets\painter.png" />
     <Content Include="assets\image.png" />
+    <Content Include="assets\background-menu.jpg" />
+    <Content Include="assets\reset.png" />
     <Content Include="index.html" />
     <Content Include="assets\logo.png" />
     <Content Include="assets\loader.png" />
@@ -41,6 +44,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="Boot.ts" />
+    <TypeScriptCompile Include="Grid.ts" />
     <TypeScriptCompile Include="MainMenu.ts" />
     <TypeScriptCompile Include="Game.ts" />
     <TypeScriptCompile Include="p2.d.ts" />

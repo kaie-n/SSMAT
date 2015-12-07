@@ -18,6 +18,7 @@
             this.text.anchor.set(0, 0.5);
             this.text.visible = false;
             this.smoothed = false;
+            this.animations.add("paint");
         }
         update() {
             if (this.started) {

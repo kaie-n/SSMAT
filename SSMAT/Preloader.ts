@@ -20,8 +20,11 @@
             this.load.image('click', 'assets/click.png');
             this.load.image('tile', 'assets/tile.jpg');
             this.load.image('pic', 'assets/image.png');
+            this.load.image('black', 'assets/background-menu.jpg');
             this.game.load.spritesheet('painter', 'assets/painter.png', 50, 77, 9);
-            this.game.load.spritesheet('button', 'assets/button.png', 62, 44, 2);
+            this.game.load.spritesheet('help', 'assets/help.png', 24, 19, 2);
+            this.game.load.spritesheet('button', 'assets/button.png', 24, 19, 2);
+            this.game.load.spritesheet('reset', 'assets/reset.png', 24, 19, 2);
         }
 
         create() {
