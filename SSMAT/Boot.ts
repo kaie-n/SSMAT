@@ -4,7 +4,7 @@
 
         preload() {
 
-            this.load.spritesheet('preloadBar', 'assets/loader.png',30,30);
+            this.load.spritesheet('preloadBar', 'assets/loader.png', 64, 64);
 
         }
 

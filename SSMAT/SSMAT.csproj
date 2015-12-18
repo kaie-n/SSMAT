@@ -23,20 +23,41 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="assets\background-menu.png" />
     <Content Include="assets\background.jpg" />
+    <Content Include="assets\background.png" />
+    <Content Include="assets\building.png" />
     <Content Include="assets\button.png" />
     <Content Include="assets\click.png" />
+    <Content Include="assets\cloud\0_0.png" />
+    <Content Include="assets\cloud\1_0.png" />
+    <Content Include="assets\cloud\2_0.png" />
+    <Content Include="assets\cloud\3_0.png" />
+    <Content Include="assets\cloud\4_0.png" />
+    <Content Include="assets\cloud\5_0.png" />
+    <Content Include="assets\control-tower.png" />
+    <Content Include="assets\esplanade.png" />
     <Content Include="assets\help.png" />
+    <Content Include="assets\loader.GIF" />
+    <Content Include="assets\merlion.png" />
     <Content Include="assets\painter.png" />
     <Content Include="assets\image.png" />
     <Content Include="assets\background-menu.jpg" />
+    <Content Include="assets\pictures\1.jpg" />
+    <Content Include="assets\pictures\2.jpg" />
+    <Content Include="assets\pictures\3.jpg" />
+    <Content Include="assets\pictures\4.jpg" />
+    <Content Include="assets\pictures\5.jpg" />
     <Content Include="assets\reset.png" />
+    <Content Include="assets\stone-tile.jpg" />
+    <Content Include="assets\x.png" />
     <Content Include="index.html" />
     <Content Include="assets\logo.png" />
     <Content Include="assets\loader.png" />
     <Content Include="phaser.js" />
     <Content Include="phaser.min.js" />
     <Content Include="assets\tile.jpg" />
+    <Content Include="all-ie-only.css" />
     <Content Include="web.config" />
     <Content Include="assets\wheel.png" />
     <Content Include="assets\weight.png" />
@@ -44,15 +65,22 @@
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="Boot.ts" />
+    <TypeScriptCompile Include="ButtonLabel.ts" />
+    <TypeScriptCompile Include="GameOver.ts" />
     <TypeScriptCompile Include="Grid.ts" />
+    <TypeScriptCompile Include="jquery.d.ts" />
+    <TypeScriptCompile Include="login.ts" />
     <TypeScriptCompile Include="MainMenu.ts" />
     <TypeScriptCompile Include="Game.ts" />
+    <TypeScriptCompile Include="node.d.ts" />
     <TypeScriptCompile Include="p2.d.ts" />
     <TypeScriptCompile Include="Painter.ts" />
+    <TypeScriptCompile Include="parse.d.ts" />
     <TypeScriptCompile Include="phaser.d.ts" />
     <TypeScriptCompile Include="pixi.d.ts" />
     <TypeScriptCompile Include="Preloader.ts" />
     <TypeScriptCompile Include="Tons.ts" />
+    <TypeScriptCompile Include="underscore.d.ts" />
   </ItemGroup>
   <ItemGroup>
     <None Include="web.Debug.config">
@@ -62,6 +90,7 @@
       <DependentUpon>web.config</DependentUpon>
     </None>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">12.0</VisualStudioVersion>
   </PropertyGroup>

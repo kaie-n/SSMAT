@@ -5,14 +5,153 @@
     <meta charset="utf-8" />
     <title>SSMAT</title>
     <link rel="stylesheet" href="app.css" type="text/css" />
-    
+    <!--[if IE]>
+        <link rel="stylesheet" type="text/css" href="all-ie-only.css" />
+    <![endif]-->
+
+    <script src="//www.parsecdn.com/js/parse-1.6.7.min.js"></script>
+
+    <script type="text/javascript">
+        Parse.initialize("vNsq94umLKoRTTPtWUGSHePOUheub9VfBhQti5eO", "pAGpxqubk0LGBbJVvmXKHAA4hsLmca8ZG4f06Pu0");
+
+        function checkEnter(event) {
+            var key = event.keyCode;
+            if (key == 13) {
+                submitAdmin();
+            }
+        }
+        function checkingstring() {
+           
+            var regex = new RegExp("^[0-9]{7}[A-Z]{1}$", "i");
+            var searchText = document.getElementById('admin_no').value;
+
+            searchText = searchText.toUpperCase();
+            if(searchText.length <= 0){
+                return false
+            }
+            if ((searchText.length > 0) && !regex.test(searchText)) {
+                return false;
+            }
+            if ((searchText.length > 0) && regex.test(searchText)) {
+                return true;
+            }
+        }
+        function submitAdmin(){
+            var bool = checkingstring();
+            if (bool){
+                document.getElementById('inputfield').style.display = 'none'; admin_no = document.getElementById('admin_no').value;
+            }
+            if (!bool){
+                alert ("Invalid Admin Number!");
+            }
+        }
+        function resetValue() { if (document.getElementById('admin_no').value == 'Admin Number') { document.getElementById('admin_no').value = '' }; }
+       
+
+    </script>
     <script src="phaser.js"></script>
     <script src="game.js"></script>
 </head>
 <body>
     <center>
-    
-        <div id="content"></div>
+        <!--<div style="background: url(assets/merlion.png) right no-repeat; width:100%; height:179px; position:fixed; bottom:30px; "></div>-->
+        <!--<div style="background: url(assets/control-tower.png) right no-repeat; width:100%; height:100%; position:fixed; right: 100px; bottom:0; "></div>-->
+        <div style="background:url(assets/esplanade.png) center bottom no-repeat,  url(assets/building.png) left bottom repeat-x, url(assets/cloud/0_0.png) right center no-repeat,url(assets/cloud/2_0.png) left center no-repeat; width:100%; height:100%; position:fixed; bottom:30px; "></div>
+        <!--<div style="background: url(assets/stone-tile.jpg) left repeat; width:100%; height:30px; position:fixed; bottom:0px; "></div>-->
+        <div id="content">
+        </div>
+        <div class="inputfield" name="inputfield" id="inputfield">
+            <span style="font: 36px Terminal Regular; ">Congratulations, you win!</span><br />
+            <span style="font: 30px Terminal Regular; " id="scoretime">Your time: </span><br /><br />
+            
+            Please enter your Admin Number:
+            <input id="admin_no" value="Admin Number" onkeypress="checkEnter(event)" onclick="resetValue()" style="text-transform: uppercase;">
+            <input type="button" value="Submit" onclick="submitAdmin()">
+        </div>
+        <div id="scores">
+            <div id="scroller">
+                <table style="width:50%; height:100%;position:relative;z-index:2;margin:0 auto; background: rgba(0, 0, 0, 0);" border="1" bordercolor="#682401" cellspacing="0" cellpadding="2">
+                    <thead>
+                        <tr>
+                            <th align="center" valign="middle" colspan="4">
+                                LEADERBOARD
+                                <img align="right" id="close" src="assets/x.png" onclick='restartFromLeaderboard = true' />
+                            </th>
+                        </tr>
+                    </thead>
+                    <thead>
+                        <tr>
+                            <th align="center">
+                                RANK
+                            </th>
+                            <th valign="middle" align="left">
+                                &nbsp;&nbsp;ADMIN NUMBER
+                            </th>
+                            <th valign="middle" align="middle">
+                                &nbsp;&nbsp;NEW&nbsp;&nbsp;
+                            </th>
+                            <th valign="middle"  align="middle">
+                                &nbsp;&nbsp;BEST&nbsp;&nbsp;
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard_body"></tbody>
+                </table>
+            </div>
+        </div>
     </center>
+    <script type="text/javascript">
+
+        // detect IE
+        var IEversion = detectIE();
+
+        if (IEversion !== false) {
+            document.getElementById('scroller').style.height = '100%';
+        } else {
+            document.getElementById('scroller').style.height = '100%';
+            // document.getElementById('scroller').innerHTML = 'NOT IE';
+        }
+
+        // add details to debug result
+        // document.getElementById('details').innerHTML = window.navigator.userAgent;
+
+        /**
+         * detect IE
+         * returns version of IE or false, if browser is not Internet Explorer
+         */
+        function detectIE() {
+            var ua = window.navigator.userAgent;
+
+            // test values
+            // IE 10
+            //ua = 'Mozilla/5.0 (compatible; MSIE 10.0; Windows NT 6.2; Trident/6.0)';
+            // IE 11
+            //ua = 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko';
+            // IE 12 / Spartan
+            //ua = 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.71 Safari/537.36 Edge/12.0';
+
+            var msie = ua.indexOf('MSIE ');
+            if (msie > 0) {
+                // IE 10 or older => return version number
+                return parseInt(ua.substring(msie + 5, ua.indexOf('.', msie)), 10);
+            }
+
+            var trident = ua.indexOf('Trident/');
+            if (trident > 0) {
+                // IE 11 => return version number
+                var rv = ua.indexOf('rv:');
+                return parseInt(ua.substring(rv + 3, ua.indexOf('.', rv)), 10);
+            }
+
+            var edge = ua.indexOf('Edge/');
+            if (edge > 0) {
+                // IE 12 => return version number
+                return parseInt(ua.substring(edge + 5, ua.indexOf('.', edge)), 10);
+            }
+
+            // other browser
+            return false;
+        }
+    </script>
 </body>
 </html>
