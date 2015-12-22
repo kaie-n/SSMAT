@@ -73,7 +73,7 @@
                     this.main.checkFinished();
                 }, this);
                 tween.onStart.addOnce(function () {
-                    this.main.painter.animations.play("paint", 8, true);
+                    this.main.painter.animations.play("paint", 4, true);
                 }, this);
             }
 

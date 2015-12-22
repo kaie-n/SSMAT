@@ -1,8 +1,18 @@
 window.onload = function () {
-    var game = new SSMAT.Game();
+    global_game = new SSMAT.Game();
     admin_no = document.getElementById("admin_no").value;
     restartFromLeaderboard = false;
 };
+//function adjust() {
+//    var divgame = document.getElementById("content");
+//    divgame.style.width = window.innerWidth + "px";
+//    divgame.style.height = window.innerHeight + "px";
+//    if (global_game != undefined) {
+//    }
+//}
+//window.addEventListener('resize', function () {
+//    adjust();
+//}); 
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -19,8 +29,8 @@ var SSMAT;
             this.load.spritesheet('preloadBar', 'assets/loader.png', 64, 64);
         };
         Boot.prototype.create = function () {
-            Phaser.Canvas.setImageRenderingCrisp(this.game.canvas); //for Canvas, modern approach
-            Phaser.Canvas.setSmoothingEnabled(this.game.context, false); //also for Canvas, legacy approach
+            //Phaser.Canvas.setImageRenderingCrisp(this.game.canvas);  //for Canvas, modern approach
+            //Phaser.Canvas.setSmoothingEnabled(this.game.context, false);  //also for Canvas, legacy approach
             //PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST; //for WebGL
             //  Unless you specifically need to support multitouch I would recommend setting this to 1
             this.input.maxPointers = 1;
@@ -60,8 +70,8 @@ var SSMAT;
     var Game = (function (_super) {
         __extends(Game, _super);
         function Game() {
-            console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
-            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
+            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
+            _super.call(this, window.innerWidth, window.innerHeight, Phaser.AUTO, 'content', null, true, false);
             this.state.add('Boot', SSMAT.Boot, false);
             this.state.add('Preloader', SSMAT.Preloader, false);
             this.state.add('MainMenu', SSMAT.MainMenu, false);
@@ -350,7 +360,7 @@ var SSMAT;
                     this.main.checkFinished();
                 }, this);
                 tween.onStart.addOnce(function () {
-                    this.main.painter.animations.play("paint", 8, true);
+                    this.main.painter.animations.play("paint", 4, true);
                 }, this);
             }
         };
@@ -479,11 +489,11 @@ var SSMAT;
             this.game.physics.arcade.enable(this.tiler);
             this.tiler.body.immovable = true;
             this.tiler.body.allowGravity = false;
+            this.grad = this.game.add.sprite(0, 0, "gradient");
             // the image painting itself;
             // Math.floor(Math.random() * (max - min + 1)) + min;
             var randomImage = Math.floor(Math.random() * (5 - 1 + 1)) + 1;
             var stringUrl = 'pic' + randomImage;
-            console.log(stringUrl);
             this.image = this.game.add.image(0, 0, stringUrl);
             this.image.width = 450;
             this.image.height = 253;
@@ -491,6 +501,8 @@ var SSMAT;
             var randomMax = (this.game.height) - this.image.height - 100;
             this.image.position.x = (this.game.width / 2) - (this.image.width / 2);
             this.image.position.y = Math.floor(Math.random() * (randomMax - randomMin + 1)) + randomMin;
+            this.grad.y = this.image.position.y - 14;
+            this.grad.x = this.image.position.x - 14;
             this.image.visible = false;
             // use the bitmap data as the texture for the sprite
             // generate the grid lines
@@ -513,7 +525,8 @@ var SSMAT;
             }
             // this is to initialize the main painter
             this.painter = new SSMAT.Painter(this.game, this.world.centerX, this.game.height, 90, this.gravity);
-            this.painter.y -= this.painter.height + this.tileHeight;
+            //this.painter.y -= this.painter.height + this.tileHeight + 50
+            this.painter.y = 509.1707368654838;
             this.painter.anchor.setTo(0.5, 0);
             this.game.physics.arcade.enable(this.painter);
             // adding the wheels for the pulley
@@ -522,8 +535,8 @@ var SSMAT;
             this.wheelGroup.addChild(this.wheel);
             this.wheel = this.add.sprite(0, 0, 'wheel', 0);
             this.wheelGroup.addChild(this.wheel);
-            this.wheelGroup.getChildAt(0).x = 400;
-            this.wheelGroup.getChildAt(1).x = this.game.width - 400;
+            this.wheelGroup.getChildAt(0).x = this.grad.x - this.wheel.width;
+            this.wheelGroup.getChildAt(1).x = this.grad.x + this.grad.width;
             // adding the tons for the pulley (0 for left, 1 for right)
             // tons2 is the weights that we are going to add from the button
             this.tons = [];
@@ -564,6 +577,8 @@ var SSMAT;
             this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, this.painter.x, this.painter.y);
             this.tons[1].angleA = Math.round(this.tons[1].angleA * 100) / 100;
             this.tons[0].angleA = Math.round(this.tons[0].angleA * 100) / 100;
+            this.tons[0].convertAngle();
+            this.tons[1].convertAngle();
             var temp2 = Math.round((Math.cos(this.tons[0].angleA) / Math.cos(this.tons[1].angleA)) * 1000) / 1000; // Tons1 = Cos(Ton0.angle) / Cos(Ton1.Angle)
             var temp = Math.round((temp2 * (Math.sin(this.tons[1].angleA)) + Math.sin(this.tons[0].angleA)) * 1000) / 1000;
             this.tons[0].force = Math.round((this.painter.force / temp) * 10) / 10;
@@ -768,7 +783,7 @@ var SSMAT;
         // Green button function
         MainMenu.prototype.reset = function () {
             this.painter.x = this.world.centerX;
-            this.painter.y = this.game.height - this.tileHeight - this.painter.height;
+            this.painter.y = 509.1707368654838;
             this.tons[0].y = this.tons[0]._dx.y;
             this.tons[1].y = this.tons[1]._dx.y;
             this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, this.painter.y);
@@ -900,11 +915,11 @@ var SSMAT;
             this.tons[0].dlengtha = Phaser.Math.distance(point2.x, point2.y, this.painter.x, this.painter.y);
             this.tons[0].dlengthb = Phaser.Math.distance(point2.x, point2.y, velo.x, velo.y);
             this.tons[0].dlength = this.tons[0].dlengtha - this.tons[0].dlengthb;
-            this.tons[0].dlength = this.tons[0].dlength / 2;
+            this.tons[0].dlength = this.tons[0].dlength;
             this.tons[1].dlengtha = Phaser.Math.distance(point1.x, point1.y, this.painter.x, this.painter.y);
             this.tons[1].dlengthb = Phaser.Math.distance(point1.x, point1.y, velo.x, velo.y);
             this.tons[1].dlength = this.tons[1].dlengtha - this.tons[1].dlengthb;
-            this.tons[1].dlength = this.tons[1].dlength / 2;
+            this.tons[1].dlength = this.tons[1].dlength;
             ton0Y = ton0Y + this.tons[0].dlength;
             ton1Y = ton1Y + this.tons[1].dlength;
             this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
@@ -1039,7 +1054,8 @@ var SSMAT;
             this.load.image('tile', 'assets/stone-tile.jpg');
             this.load.image('pic', 'assets/image.png');
             this.load.image('black', 'assets/background-menu.png');
-            this.game.load.spritesheet('painter', 'assets/painter.png', 50, 77, 9);
+            this.load.image('gradient', 'assets/gradient.gif');
+            this.game.load.spritesheet('painter', 'assets/painter.png', 50, 48, 4);
             this.game.load.spritesheet('help', 'assets/help.png', 24, 19, 2);
             this.game.load.spritesheet('button', 'assets/button.png', 24, 19, 2);
             this.game.load.spritesheet('reset', 'assets/reset.png', 24, 19, 2);

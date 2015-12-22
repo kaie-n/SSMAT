@@ -4,6 +4,7 @@ module SSMAT {
         background: Phaser.Sprite;
         wheel: Phaser.Sprite;
         black: Phaser.Sprite;
+        grad: Phaser.Sprite;
         tiler: Phaser.TileSprite;
         wheelGroup: Phaser.Group;
         graphics: Phaser.Graphics;
@@ -31,6 +32,7 @@ module SSMAT {
         spriteGroup: Phaser.Group;
         style: any;
         tileHeight: number;
+
         create() {
 
             Parse.User.logOut();
@@ -58,11 +60,12 @@ module SSMAT {
             this.tiler.body.immovable = true;
             this.tiler.body.allowGravity = false;
             
+            this.grad = this.game.add.sprite(0, 0, "gradient");
+
             // the image painting itself;
             // Math.floor(Math.random() * (max - min + 1)) + min;
             var randomImage = Math.floor(Math.random() * (5 - 1 + 1)) + 1;
             var stringUrl = 'pic' + randomImage 
-            console.log(stringUrl);
             this.image = this.game.add.image(0, 0, stringUrl);
             this.image.width = 450;
             this.image.height = 253;
@@ -70,6 +73,8 @@ module SSMAT {
             var randomMax = (this.game.height) - this.image.height - 100; 
             this.image.position.x = (this.game.width / 2) - (this.image.width / 2);
             this.image.position.y = Math.floor(Math.random() * (randomMax - randomMin + 1)) + randomMin;
+            this.grad.y = this.image.position.y - 14;
+            this.grad.x = this.image.position.x - 14;
             this.image.visible = false;
             // use the bitmap data as the texture for the sprite
             // generate the grid lines
@@ -91,10 +96,11 @@ module SSMAT {
                 }
                 distributeHeight += 126.5;
             }
-           
             // this is to initialize the main painter
             this.painter = new Painter(this.game, this.world.centerX, this.game.height, 90, this.gravity);
-            this.painter.y -= this.painter.height + this.tileHeight
+            //this.painter.y -= this.painter.height + this.tileHeight + 50
+            this.painter.y = 509.1707368654838;
+
             this.painter.anchor.setTo(0.5, 0);
             this.game.physics.arcade.enable(this.painter);
 
@@ -106,8 +112,8 @@ module SSMAT {
             this.wheel = this.add.sprite(0, 0, 'wheel', 0);
             this.wheelGroup.addChild(this.wheel);
 
-            this.wheelGroup.getChildAt(0).x = 400;
-            this.wheelGroup.getChildAt(1).x = this.game.width - 400;
+            this.wheelGroup.getChildAt(0).x = this.grad.x - this.wheel.width;
+            this.wheelGroup.getChildAt(1).x = this.grad.x + this.grad.width ;
 
             // adding the tons for the pulley (0 for left, 1 for right)
             // tons2 is the weights that we are going to add from the button
@@ -156,6 +162,8 @@ module SSMAT {
             this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, this.painter.x, this.painter.y)
             this.tons[1].angleA = Math.round(this.tons[1].angleA * 100) / 100
             this.tons[0].angleA = Math.round(this.tons[0].angleA * 100) / 100
+            this.tons[0].convertAngle();
+            this.tons[1].convertAngle();
             var temp2 = Math.round((Math.cos(this.tons[0].angleA) / Math.cos(this.tons[1].angleA)) * 1000) / 1000 // Tons1 = Cos(Ton0.angle) / Cos(Ton1.Angle)
             var temp = Math.round((temp2 * (Math.sin(this.tons[1].angleA)) + Math.sin(this.tons[0].angleA)) * 1000) / 1000
             this.tons[0].force = Math.round((this.painter.force / temp) * 10) / 10
@@ -386,7 +394,7 @@ module SSMAT {
         // Green button function
         reset() {
             this.painter.x = this.world.centerX;
-            this.painter.y = this.game.height - this.tileHeight - this.painter.height;
+            this.painter.y = 509.1707368654838
 
             this.tons[0].y = this.tons[0]._dx.y
             this.tons[1].y = this.tons[1]._dx.y
@@ -532,11 +540,11 @@ module SSMAT {
             this.tons[0].dlengtha = Phaser.Math.distance(point2.x, point2.y, this.painter.x, this.painter.y)
             this.tons[0].dlengthb = Phaser.Math.distance(point2.x, point2.y, velo.x, velo.y)
             this.tons[0].dlength = this.tons[0].dlengtha - this.tons[0].dlengthb;
-            this.tons[0].dlength = this.tons[0].dlength / 2;
+            this.tons[0].dlength = this.tons[0].dlength ;
             this.tons[1].dlengtha = Phaser.Math.distance(point1.x, point1.y, this.painter.x, this.painter.y)
             this.tons[1].dlengthb = Phaser.Math.distance(point1.x, point1.y, velo.x, velo.y)
             this.tons[1].dlength = this.tons[1].dlengtha - this.tons[1].dlengthb;
-            this.tons[1].dlength = this.tons[1].dlength / 2
+            this.tons[1].dlength = this.tons[1].dlength 
 
             ton0Y = ton0Y + this.tons[0].dlength
             ton1Y = ton1Y + this.tons[1].dlength

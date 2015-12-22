@@ -24,7 +24,6 @@
   <ItemGroup>
     <Content Include="app.css" />
     <Content Include="assets\background-menu.png" />
-    <Content Include="assets\background.jpg" />
     <Content Include="assets\background.png" />
     <Content Include="assets\building.png" />
     <Content Include="assets\button.png" />
@@ -35,14 +34,13 @@
     <Content Include="assets\cloud\3_0.png" />
     <Content Include="assets\cloud\4_0.png" />
     <Content Include="assets\cloud\5_0.png" />
-    <Content Include="assets\control-tower.png" />
     <Content Include="assets\esplanade.png" />
+    <Content Include="assets\gradient.gif" />
     <Content Include="assets\help.png" />
     <Content Include="assets\loader.GIF" />
     <Content Include="assets\merlion.png" />
     <Content Include="assets\painter.png" />
     <Content Include="assets\image.png" />
-    <Content Include="assets\background-menu.jpg" />
     <Content Include="assets\pictures\1.jpg" />
     <Content Include="assets\pictures\2.jpg" />
     <Content Include="assets\pictures\3.jpg" />
