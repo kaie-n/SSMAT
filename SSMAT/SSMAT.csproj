@@ -49,6 +49,7 @@
     <Content Include="assets\reset.png" />
     <Content Include="assets\stone-tile.jpg" />
     <Content Include="assets\x.png" />
+    <Content Include="game.js" />
     <Content Include="index.html" />
     <Content Include="assets\logo.png" />
     <Content Include="assets\loader.png" />
@@ -69,7 +70,7 @@
     <TypeScriptCompile Include="jquery.d.ts" />
     <TypeScriptCompile Include="login.ts" />
     <TypeScriptCompile Include="MainMenu.ts" />
-    <TypeScriptCompile Include="Game.ts" />
+    <TypeScriptCompile Include="game.ts" />
     <TypeScriptCompile Include="node.d.ts" />
     <TypeScriptCompile Include="p2.d.ts" />
     <TypeScriptCompile Include="Painter.ts" />
@@ -81,6 +82,7 @@
     <TypeScriptCompile Include="underscore.d.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="game.js.map" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

@@ -67,23 +67,6 @@ var SSMAT;
 })(SSMAT || (SSMAT = {}));
 var SSMAT;
 (function (SSMAT) {
-    var Game = (function (_super) {
-        __extends(Game, _super);
-        function Game() {
-            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
-            _super.call(this, window.innerWidth, window.innerHeight, Phaser.AUTO, 'content', null, true, false);
-            this.state.add('Boot', SSMAT.Boot, false);
-            this.state.add('Preloader', SSMAT.Preloader, false);
-            this.state.add('MainMenu', SSMAT.MainMenu, false);
-            this.state.add('GameOver', SSMAT.GameOver, false);
-            this.state.start('Boot');
-        }
-        return Game;
-    })(Phaser.Game);
-    SSMAT.Game = Game;
-})(SSMAT || (SSMAT = {}));
-var SSMAT;
-(function (SSMAT) {
     var GameOver = (function (_super) {
         __extends(GameOver, _super);
         function GameOver() {
@@ -1025,6 +1008,23 @@ var SSMAT;
             this.calcAll();
         }
 */
+var SSMAT;
+(function (SSMAT) {
+    var Game = (function (_super) {
+        __extends(Game, _super);
+        function Game() {
+            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
+            _super.call(this, window.innerWidth, window.innerHeight, Phaser.AUTO, 'content', null, true, false);
+            this.state.add('Boot', SSMAT.Boot, false);
+            this.state.add('Preloader', SSMAT.Preloader, false);
+            this.state.add('MainMenu', SSMAT.MainMenu, false);
+            this.state.add('GameOver', SSMAT.GameOver, false);
+            this.state.start('Boot');
+        }
+        return Game;
+    })(Phaser.Game);
+    SSMAT.Game = Game;
+})(SSMAT || (SSMAT = {}));
 var SSMAT;
 (function (SSMAT) {
     var Painter = (function (_super) {
