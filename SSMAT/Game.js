@@ -479,7 +479,7 @@ var SSMAT;
             this.gravity = 9.81;
             this.dt = 0.0833333333333333;
             this.t = 0;
-            this.equil = false;
+            this.dropped = false;
             this.started = false;
             // background
             this.background = this.add.sprite(0, 0, 'titlepage');
@@ -498,7 +498,7 @@ var SSMAT;
             this.image.width = 450;
             this.image.height = 253;
             var randomMin = (this.game.height / 2) - (this.image.height / 2) - 100;
-            var randomMax = (this.game.height) - this.image.height - 100;
+            var randomMax = (this.game.height) - this.image.height - 200;
             this.image.position.x = (this.game.width / 2) - (this.image.width / 2);
             this.image.position.y = Math.floor(Math.random() * (randomMax - randomMin + 1)) + randomMin;
             this.grad.y = this.image.position.y - 14;
@@ -568,7 +568,7 @@ var SSMAT;
             this.button = new SSMAT.ButtonLabel(this.game, this.game.world.width - 82, this.game.world.height - this.tileHeight, 'button', "Add Weight", this.addWeight, this, 0, 0, 1, 0);
             this.button.y -= this.button.height;
             this.button.anchor.setTo(0.5, 0);
-            this.help = new SSMAT.ButtonLabel(this.game, this.button.x + this.button.width + 1, this.button.y, 'help', "Tips", this.checkFinished, this, 0, 0, 1, 0);
+            this.help = new SSMAT.ButtonLabel(this.game, this.button.x + this.button.width + 1, this.button.y, 'help', "Tips", this.tips, this, 0, 0, 1, 0);
             this.help.anchor.setTo(0.5, 0);
             this.resetbtn = new SSMAT.ButtonLabel(this.game, this.help.x + this.button.width + 1, this.button.y, 'reset', "Reset!", this.reset, this, 0, 0, 1, 0);
             this.resetbtn.anchor.setTo(0.5, 0);
@@ -621,7 +621,7 @@ var SSMAT;
             this.game.time.reset();
         };
         MainMenu.prototype.update = function () {
-            //this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
+            this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
             if (this.started) {
                 this.updateTimer();
             }
@@ -779,6 +779,15 @@ var SSMAT;
         };
         // Yellow button function
         MainMenu.prototype.tips = function () {
+            var s = [];
+            s[0] = "Did you know that you can input negative values to the Tons?";
+            s[1] = "If you are stuck, press the green button to reset the pulleys!";
+            s[2] = "Hover over to the grey board for the respective angles on each grid!";
+            s[3] = "Remember your old friend, TOA CAH SOH?";
+            s[4] = "The pulley system is in equilibrium, so every time you add a weight at either side, it will move to the new equilibrium position!";
+            s[5] = "Static equilibrium means the sum of the net forces must equal to 0, ring any bell?";
+            var no = Math.floor(Math.random() * (5 - 0 + 1)) + 0;
+            alert(s[no]);
         };
         // Green button function
         MainMenu.prototype.reset = function () {
@@ -898,6 +907,7 @@ var SSMAT;
                     this.tons[1].angleA = 1.06;
                     this.tons[0].angleA = 0;
                 }
+                this.dropped = true;
             }
             if (isNaN(this.tons[0].angleA) || this.tons[0].angleA < 0) {
                 this.tons[0].angleA = 0;
@@ -915,24 +925,43 @@ var SSMAT;
             this.tons[0].dlengtha = Phaser.Math.distance(point2.x, point2.y, this.painter.x, this.painter.y);
             this.tons[0].dlengthb = Phaser.Math.distance(point2.x, point2.y, velo.x, velo.y);
             this.tons[0].dlength = this.tons[0].dlengtha - this.tons[0].dlengthb;
+            console.log(this.tons[0].dlength, "tons0 dlength");
             this.tons[0].dlength = this.tons[0].dlength / 2;
             this.tons[1].dlengtha = Phaser.Math.distance(point1.x, point1.y, this.painter.x, this.painter.y);
             this.tons[1].dlengthb = Phaser.Math.distance(point1.x, point1.y, velo.x, velo.y);
             this.tons[1].dlength = this.tons[1].dlengtha - this.tons[1].dlengthb;
+            console.log(this.tons[1].dlength, "tons1 dlength");
             this.tons[1].dlength = this.tons[1].dlength / 2;
             ton0Y = ton0Y + this.tons[0].dlength;
             ton1Y = ton1Y + this.tons[1].dlength;
-            this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
-            this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: ton1Y }, 2000, Phaser.Easing.Exponential.Out, true);
-            this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: ton0Y }, 2000, Phaser.Easing.Exponential.Out, true);
-            this.painter.tween.onUpdateCallback(function () {
-                this.paintTheLines(this.tons[t], t);
-                this.calcAll();
-            }, this);
-            this.painter.tween.onComplete.add(function () {
-                this.paintTheLines(this.tons[t], t);
-                this.calcAll();
-            }, this);
+            if (!this.dropped) {
+                this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: ton1Y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: ton0Y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.painter.tween.onUpdateCallback(function () {
+                    this.paintTheLines(this.tons[t], t);
+                    this.calcAll();
+                }, this);
+                this.painter.tween.onComplete.add(function () {
+                    this.paintTheLines(this.tons[t], t);
+                    this.calcAll();
+                }, this);
+            }
+            if (this.dropped) {
+                //if (ton1Y > ton0Y) { ton1Y = this.game.height - this.tileHeight - this.tons[0].height - (this.tons[0].height * this.tons[1].ton.length) }
+                //if (ton0Y > ton1Y) { ton0Y = this.game.height - this.tileHeight - this.tons[0].height - (this.tons[0].height * this.tons[0].ton.length) }
+                this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: ton1Y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: ton0Y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.painter.tween.onUpdateCallback(function () {
+                    this.paintTheLines(this.tons[t], t);
+                    this.calcAll();
+                }, this);
+                this.painter.tween.onComplete.add(function () {
+                    this.paintTheLines(this.tons[t], t);
+                    this.calcAll();
+                }, this);
+            }
         };
         MainMenu.prototype.calcAll = function () {
             var point1 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
