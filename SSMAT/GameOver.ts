@@ -22,6 +22,7 @@ module SSMAT {
             this.image.height = image.height;
             this.image.position.x = image.x;
             this.image.position.y = image.y;
+            
             //(<HTMLInputElement>document.getElementById("inputfield")).style.display = "inline";
         }
         create() {

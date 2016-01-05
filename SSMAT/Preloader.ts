@@ -34,6 +34,9 @@
             this.load.image('pic', 'assets/image.png');
             this.load.image('black', 'assets/background-menu.png');
             this.load.image('gradient', 'assets/gradient.gif');
+            this.load.image('arrow-red', 'assets/arrow.png');
+            this.load.image('arrow-green', 'assets/arrow-green.png');
+            this.load.image('arrow-blue', 'assets/arrow-blue.png');
             this.game.load.spritesheet('painter', 'assets/painter.png', 50, 48, 4);
             this.game.load.spritesheet('help', 'assets/help.png', 24, 19, 2);
             this.game.load.spritesheet('button', 'assets/button.png', 24, 19, 2);

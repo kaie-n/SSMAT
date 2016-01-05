@@ -1,4 +1,6 @@
+var _this = this;
 window.onload = function () {
+    global_style = { font: "14px Courier Bold", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: _this.width, align: "left" };
     global_game = new SSMAT.Game();
     admin_no = document.getElementById("admin_no").value;
     restartFromLeaderboard = false;
@@ -29,8 +31,8 @@ var SSMAT;
             this.load.spritesheet('preloadBar', 'assets/loader.png', 64, 64);
         };
         Boot.prototype.create = function () {
-            //Phaser.Canvas.setImageRenderingCrisp(this.game.canvas);  //for Canvas, modern approach
-            //Phaser.Canvas.setSmoothingEnabled(this.game.context, false);  //also for Canvas, legacy approach
+            Phaser.Canvas.setImageRenderingCrisp(this.game.canvas); //for Canvas, modern approach
+            Phaser.Canvas.setSmoothingEnabled(this.game.context, false); //also for Canvas, legacy approach
             //PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST; //for WebGL
             //  Unless you specifically need to support multitouch I would recommend setting this to 1
             this.input.maxPointers = 1;
@@ -49,14 +51,15 @@ var SSMAT;
         function ButtonLabel(game, x, y, key, label, callback, callbackContext, overFrame, outFrame, downFrame, upFrame) {
             _super.call(this, game, x, y, key, callback, callbackContext, overFrame, outFrame, downFrame, upFrame);
             game.add.existing(this);
-            var style = { font: "14px Courier bold", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: this.width, align: "left" };
-            this.label = game.add.text(0, 0, label, style);
+            this.label = game.add.text(0, 0, label, global_style);
             this.label.y = this.game.world.height - 30 - this.height;
             this.label.x = this.x;
             this.label.anchor.set(0.5, 0.5);
             this.label.y = this.label.y - this.label.height / 2;
             this.label.visible = false;
             this.label.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
+            this.label.y = Math.round(this.label.y);
+            this.label.x = Math.round(this.label.x);
             this.events.onInputOver.add(function () { this.label.visible = true; }, this);
             this.events.onInputOut.add(function () { this.label.visible = false; }, this);
             this.events.onInputDown.add(function () { this.label.visible = false; }, this);
@@ -64,6 +67,23 @@ var SSMAT;
         return ButtonLabel;
     })(Phaser.Button);
     SSMAT.ButtonLabel = ButtonLabel;
+})(SSMAT || (SSMAT = {}));
+var SSMAT;
+(function (SSMAT) {
+    var Game = (function (_super) {
+        __extends(Game, _super);
+        function Game() {
+            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
+            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
+            this.state.add('Boot', SSMAT.Boot, false);
+            this.state.add('Preloader', SSMAT.Preloader, false);
+            this.state.add('MainMenu', SSMAT.MainMenu, false);
+            this.state.add('GameOver', SSMAT.GameOver, false);
+            this.state.start('Boot');
+        }
+        return Game;
+    })(Phaser.Game);
+    SSMAT.Game = Game;
 })(SSMAT || (SSMAT = {}));
 var SSMAT;
 (function (SSMAT) {
@@ -455,7 +475,7 @@ var SSMAT;
             this.tileHeight = 30; // set the button height limit according to the tile
             this.clockTime = 0;
             this.noGridCompleted = 0;
-            this.style = { font: "14px Courier bold", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: 0, align: "center" };
+            this.style = { font: "20px Courier", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: 0, align: "center" };
             this.game.physics.startSystem(Phaser.Physics.ARCADE);
             this.score = "";
             //this.game.physics.arcade.gravity.y = 100; 
@@ -512,6 +532,8 @@ var SSMAT;
             this.painter.y = 509.1707368654838;
             this.painter.anchor.setTo(0.5, 0);
             this.game.physics.arcade.enable(this.painter);
+            this.stage.smoothed = false;
+            this.game.stage.smoothed = false;
             // adding the wheels for the pulley
             this.wheelGroup = this.game.add.group();
             this.wheel = this.add.sprite(0, 0, 'wheel', 0);
@@ -522,10 +544,11 @@ var SSMAT;
             this.wheelGroup.getChildAt(1).x = this.grad.x + this.grad.width;
             // adding the tons for the pulley (0 for left, 1 for right)
             // tons2 is the weights that we are going to add from the button
+            this.graphics = this.add.graphics(0, 0);
             this.tons = [];
             this.tons2 = [];
-            this.tons[0] = new SSMAT.Tons(this.game, this.wheelGroup.getChildAt(0).x, this.wheelGroup.getChildAt(0).y + this.wheel.height, 10, this.gravity);
-            this.tons[1] = new SSMAT.Tons(this.game, this.wheelGroup.getChildAt(1).x + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height, 10, this.gravity);
+            this.tons[0] = new SSMAT.Tons(this.game, this.wheelGroup.getChildAt(0).x, this.wheelGroup.getChildAt(0).y + this.wheel.height, 10, this.gravity, "left");
+            this.tons[1] = new SSMAT.Tons(this.game, this.wheelGroup.getChildAt(1).x + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height, 10, this.gravity, "right");
             this.tons[0].main = this;
             this.tons[1].main = this;
             this.tons[0].name = "left";
@@ -534,26 +557,25 @@ var SSMAT;
             this.tons[0].body.allowGravity = false;
             this.tons[1].body.allowGravity = false;
             // the pulley "strings"
-            this.graphics = this.add.graphics(0, 0);
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.tons[0].x, this.tons[0].y);
-            this.graphics.lineTo(this.tons[0].x, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            this.graphics.moveTo(Math.round(this.tons[0].x), Math.round(this.tons[0].y));
+            this.graphics.lineTo(Math.round(this.tons[0].x), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
-            this.graphics.lineTo(this.painter.x, this.painter.y);
+            this.graphics.moveTo(Math.round((this.tons[0].x) + this.wheel.width), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.painter.x, this.painter.y);
-            this.graphics.lineTo((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
+            this.graphics.lineTo(Math.round((this.tons[1].x) - this.wheel.width), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.tons[1].x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
-            this.graphics.lineTo(this.tons[1].x, this.tons[1].y);
+            this.graphics.moveTo(Math.round(this.tons[1].x), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.tons[1].x), Math.round(this.tons[1].y));
             // tweening the main intro screen
-            this.button = new SSMAT.ButtonLabel(this.game, this.game.world.width - 82, this.game.world.height - this.tileHeight, 'button', "Add Weight", this.addWeight, this, 0, 0, 1, 0);
+            this.button = new SSMAT.ButtonLabel(this.game, this.game.world.width - 82 - 100, this.game.world.height - this.tileHeight, 'button', "ADD WEIGHT", this.addWeight, this, 0, 0, 1, 0);
             this.button.y -= this.button.height;
             this.button.anchor.setTo(0.5, 0);
-            this.help = new SSMAT.ButtonLabel(this.game, this.button.x + this.button.width + 1, this.button.y, 'help', "Tips", this.tips, this, 0, 0, 1, 0);
+            this.help = new SSMAT.ButtonLabel(this.game, this.button.x + this.button.width + 1, this.button.y, 'help', "TIPS", this.tips, this, 0, 0, 1, 0);
             this.help.anchor.setTo(0.5, 0);
-            this.resetbtn = new SSMAT.ButtonLabel(this.game, this.help.x + this.button.width + 1, this.button.y, 'reset', "Reset!", this.reset, this, 0, 0, 1, 0);
+            this.resetbtn = new SSMAT.ButtonLabel(this.game, this.help.x + this.button.width + 1, this.button.y, 'reset', "RESET!", this.reset, this, 0, 0, 1, 0);
             this.resetbtn.anchor.setTo(0.5, 0);
             // calculations to make the system in an equilibrium
             this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, this.painter.y);
@@ -570,6 +592,8 @@ var SSMAT;
             this.tons[1].mass = Math.round((this.tons[1].force / this.gravity) * 10) / 10;
             this.tons[0]._dx = this.tons[0].position.clone();
             this.tons[1]._dx = this.tons[1].position.clone();
+            this.tons[0].setRotate();
+            this.tons[1].setRotate();
             // setting the correct answers for each grid dynamically
             for (var i = 0; i < 2; i++) {
                 for (var j = 0; j < 3; j++) {
@@ -585,9 +609,12 @@ var SSMAT;
                 }
             }
             // Timer for scoring purposes
-            this.timer = this.game.add.text(this.world.centerX, 20, "TIME\n00:00:00", this.style);
+            this.timer = this.game.add.text(this.world.centerX, 20, "TIME\n00:00:00", global_style);
+            this.timer.align = "center";
             this.timer.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
             this.timer.anchor.setTo(0.5, 0);
+            this.timer.x = Math.round(this.timer.x);
+            this.timer.y = Math.round(this.timer.y);
             this.world.alpha = 0;
             var worldTween = this.add.tween(this.world).to({ alpha: 1 }, 1000, Phaser.Easing.Exponential.InOut, true);
             worldTween.onComplete.addOnce(function () {
@@ -599,6 +626,8 @@ var SSMAT;
                 this.startGame();
             }, this);
             this.tiler.alpha = 1;
+            this.tons[0].dmass = this.tons[0].mass;
+            this.tons[1].dmass = this.tons[1].mass;
         };
         MainMenu.prototype.startGame = function () {
             this.game.time.reset();
@@ -666,17 +695,17 @@ var SSMAT;
             var ktemp = 0;
             this.graphics.clear();
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.tons[0].x, this.tons[0].y);
-            this.graphics.lineTo(this.tons[0].x, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            this.graphics.moveTo(Math.round(this.tons[0].x), Math.round(this.tons[0].y));
+            this.graphics.lineTo(Math.round(this.tons[0].x), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
-            this.graphics.lineTo(this.painter.x, this.painter.y);
+            this.graphics.moveTo(Math.round((this.tons[0].x) + this.wheel.width), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.painter.x, this.painter.y);
-            this.graphics.lineTo((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
+            this.graphics.lineTo(Math.round((this.tons[1].x) - this.wheel.width), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.tons[1].x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
-            this.graphics.lineTo(this.tons[1].x, this.tons[1].y);
+            this.graphics.moveTo(Math.round(this.tons[1].x), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.tons[1].x), Math.round(this.tons[1].y));
             if (t == 0) {
                 ktemp = 1;
             }
@@ -715,7 +744,7 @@ var SSMAT;
             if (Number(mass) > 0 || Number(mass) < 0) {
                 var l = this.tons2.length;
                 if (l < 5 && l >= 0) {
-                    this.tons2[l] = new SSMAT.Tons(this.game, this.button.x - this.button.width - 10, this.game.world.height - this.tileHeight - this.tons[0].height, Number(mass), this.gravity);
+                    this.tons2[l] = new SSMAT.Tons(this.game, this.button.x - this.button.width - 10, this.game.world.height - this.tileHeight - this.tons[0].height, Number(mass), this.gravity, "add");
                     this.game.physics.arcade.enable(this.tons2[l]);
                     this.tons2[l].body.allowGravity = false;
                     this.tons2[l].inputEnabled = true;
@@ -825,11 +854,12 @@ var SSMAT;
                     this.tons[p1.nT].ton[this.tons[p1.nT].ton.length - 1].inputEnabled = true;
                     this.tons[p1.nT].ton[this.tons[p1.nT].ton.length - 1].events.onDragStop.add(this.removeWeight, this);
                 }
+                //this.tons[i].dmass = this.tons[i].mass
                 this.tons[i].mass += p1.mass;
                 this.tons[i].ton.push(p1);
                 p1.events.onDragStop.remove(this.stopDrag, this);
                 //p1.destroy();
-                this.movePainter(i, true, p1.mass);
+                this.movePainter(i, true, p1);
                 //the pop() method removes the last element of an array
                 return;
             }
@@ -838,9 +868,10 @@ var SSMAT;
                     this.tons[p1.nT].ton[this.tons[p1.nT].ton.length - 1].inputEnabled = true;
                     this.tons[p1.nT].ton[this.tons[p1.nT].ton.length - 1].events.onDragStop.add(this.removeWeight, this);
                 }
+                //this.tons[p1.nT].dmass = this.tons[p1.nT].mass
                 this.tons[p1.nT].mass -= p1.mass;
                 this.tons[p1.nT].calcForce();
-                this.movePainter(p1.nT, false, p1.mass);
+                this.movePainter(p1.nT, false, p1);
                 this.tons[p1.nT].ton.pop();
                 p1.destroy();
                 return;
@@ -855,10 +886,12 @@ var SSMAT;
                     p1.position.x = this.tons[i].x;
                     p1.position.y = this.tons[i].y + this.tons[i].height;
                     this.tons[i].mass += p1.mass;
+                    p1.percent = ((p1.mass + this.tons[i].dmass) - this.tons[i].dmass) / this.tons[i].dmass;
+                    console.log(p1.percent, "p1 percentage", this.tons[i].dmass, "this.tons[i].dmass!");
                     this.tons[i].ton.push(p1);
                     p1.events.onDragStop.remove(this.stopDrag, this);
                     //p1.destroy();
-                    this.movePainter(i, true, p1.mass);
+                    this.movePainter(i, true, p1);
                     this.tons2.pop(); //the pop() method removes the last element of an array
                     if (this.tons2.length != 0) {
                         this.tons2[this.tons2.length - 1].inputEnabled = true;
@@ -869,7 +902,7 @@ var SSMAT;
                 }
             }
         };
-        MainMenu.prototype.movePainter = function (t, dir, mass) {
+        MainMenu.prototype.movePainter = function (t, dir, p1) {
             var point1 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
             var point2 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
             var equationA1 = (this.tons[0].calcForce() * 2);
@@ -915,36 +948,41 @@ var SSMAT;
             this.tons[1].dlength = this.tons[1].dlengtha - this.tons[1].dlengthb;
             console.log(this.tons[1].dlength, "tons1 dlength");
             this.tons[1].dlength = this.tons[1].dlength / 2;
+            console.log(this.tons[t].dmass, this.tons[t].mass, "DMASS & MASS");
             ton0Y = ton0Y + this.tons[0].dlength;
             ton1Y = ton1Y + this.tons[1].dlength;
-            if (!this.dropped) {
-                this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: ton1Y }, 2000, Phaser.Easing.Exponential.Out, true);
-                this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: ton0Y }, 2000, Phaser.Easing.Exponential.Out, true);
-                this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
-                this.painter.tween.onUpdateCallback(function () {
-                    this.paintTheLines(this.tons[t], t);
-                    this.calcAll();
-                }, this);
-                this.painter.tween.onComplete.add(function () {
-                    this.paintTheLines(this.tons[t], t);
-                    this.calcAll();
-                }, this);
+            var scale0 = 0;
+            if (dir && t == 1) {
+                scale0 = this.tons[t].arrow.scale.x + p1.percent;
             }
-            if (this.dropped) {
-                //if (ton1Y > ton0Y) { ton1Y = this.game.height - this.tileHeight - this.tons[0].height - (this.tons[0].height * this.tons[1].ton.length) }
-                //if (ton0Y > ton1Y) { ton0Y = this.game.height - this.tileHeight - this.tons[0].height - (this.tons[0].height * this.tons[0].ton.length) }
-                this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: ton1Y }, 2000, Phaser.Easing.Exponential.Out, true);
-                this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: ton0Y }, 2000, Phaser.Easing.Exponential.Out, true);
-                this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
-                this.painter.tween.onUpdateCallback(function () {
-                    this.paintTheLines(this.tons[t], t);
-                    this.calcAll();
-                }, this);
-                this.painter.tween.onComplete.add(function () {
-                    this.paintTheLines(this.tons[t], t);
-                    this.calcAll();
-                }, this);
+            if (!dir && t == 1) {
+                scale0 = this.tons[t].arrow.scale.x - p1.percent;
             }
+            if (dir && t == 0) {
+                scale0 = this.tons[t].arrow.scale.x - p1.percent;
+            }
+            if (!dir && t == 0) {
+                scale0 = this.tons[t].arrow.scale.x + p1.percent;
+            }
+            console.log(scale0);
+            this.game.add.tween(this.tons[t].arrow.scale).to({ x: scale0 }, 2000, Phaser.Easing.Exponential.Out, true);
+            var tweenarrowleft = this.game.add.tween(this.tons[0].arrow).to({ rotation: this.tons[0].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
+            var tweenarrowright = this.game.add.tween(this.tons[1].arrow).to({ rotation: -this.tons[1].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
+            //if (ton1Y > ton0Y) { ton1Y = this.game.height - this.tileHeight - this.tons[0].height - (this.tons[0].height * this.tons[1].ton.length) }
+            //if (ton0Y > ton1Y) { ton0Y = this.game.height - this.tileHeight - this.tons[0].height - (this.tons[0].height * this.tons[0].ton.length) }
+            this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: ton1Y }, 2000, Phaser.Easing.Exponential.Out, true);
+            this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: ton0Y }, 2000, Phaser.Easing.Exponential.Out, true);
+            this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
+            this.painter.tween.onUpdateCallback(function () {
+                this.paintTheLines(this.tons[t], t);
+                this.calcAll();
+            }, this);
+            this.painter.tween.onComplete.add(function () {
+                this.paintTheLines(this.tons[t], t);
+                this.calcAll();
+                console.log(this.tons[0].arrow.width, this.tons[0].arrow.height, "arrow width & height");
+                console.log(this.tons[1].arrow.width, this.tons[1].arrow.height, "arrow width & height");
+            }, this);
         };
         MainMenu.prototype.calcAll = function () {
             var point1 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
@@ -1010,23 +1048,6 @@ var SSMAT;
 */
 var SSMAT;
 (function (SSMAT) {
-    var Game = (function (_super) {
-        __extends(Game, _super);
-        function Game() {
-            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
-            _super.call(this, window.innerWidth, window.innerHeight, Phaser.AUTO, 'content', null, true, false);
-            this.state.add('Boot', SSMAT.Boot, false);
-            this.state.add('Preloader', SSMAT.Preloader, false);
-            this.state.add('MainMenu', SSMAT.MainMenu, false);
-            this.state.add('GameOver', SSMAT.GameOver, false);
-            this.state.start('Boot');
-        }
-        return Game;
-    })(Phaser.Game);
-    SSMAT.Game = Game;
-})(SSMAT || (SSMAT = {}));
-var SSMAT;
-(function (SSMAT) {
     var Painter = (function (_super) {
         __extends(Painter, _super);
         function Painter(game, x, y, mass, gravity) {
@@ -1035,19 +1056,28 @@ var SSMAT;
             this.mass = mass;
             this.gravity = gravity;
             this.force = Math.round((this.mass * this.gravity) * 10) / 10;
-            var style = { font: "14px Courier bold", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: this.width, align: "left" };
             //var pForce = this.force / 1000;
-            this.text = game.add.text(0, 0, "", style);
+            this.text = game.add.text(0, 0, "", global_style);
             this.text.anchor.set(0, 0.5);
             this.smoothed = false;
             this.animations.add("paint");
             this.text.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
+            this.text.stroke = '#000000';
+            this.text.strokeThickness = 0;
+            this.text.align = "left";
+            this.arrow = game.add.sprite(this.x, this.y, "arrow-red");
+            this.arrow.rotation = 1.57079633;
+            this.arrow.anchor.setTo(0, 0.5);
         }
         Painter.prototype.update = function () {
             //var pForce = this.force / 1000;
-            this.text.text = "M: " + this.mass + "KG \nF: " + Math.round(this.force * 10) / 10 + "N";
+            this.arrow.x = this.x;
+            this.arrow.y = this.y + this.height;
+            this.text.text = "M: " + this.mass + "KG\n  F: " + Math.round(this.force * 10) / 10 + "N";
             this.text.x = (this.x + this.width / 2);
             this.text.y = (this.y + this.text.height / 2);
+            this.text.x = Math.round(this.text.x);
+            this.text.y = Math.round(this.text.y);
         };
         return Painter;
     })(Phaser.Sprite);
@@ -1084,6 +1114,9 @@ var SSMAT;
             this.load.image('pic', 'assets/image.png');
             this.load.image('black', 'assets/background-menu.png');
             this.load.image('gradient', 'assets/gradient.gif');
+            this.load.image('arrow-red', 'assets/arrow.png');
+            this.load.image('arrow-green', 'assets/arrow-green.png');
+            this.load.image('arrow-blue', 'assets/arrow-blue.png');
             this.game.load.spritesheet('painter', 'assets/painter.png', 50, 48, 4);
             this.game.load.spritesheet('help', 'assets/help.png', 24, 19, 2);
             this.game.load.spritesheet('button', 'assets/button.png', 24, 19, 2);
@@ -1116,27 +1149,70 @@ var SSMAT;
 (function (SSMAT) {
     var Tons = (function (_super) {
         __extends(Tons, _super);
-        function Tons(game, x, y, mass, gravity) {
+        function Tons(game, x, y, mass, gravity, name) {
             _super.call(this, game, x, y, "ton");
             game.add.existing(this);
             this.anchor.setTo(0.5, 0);
             this.dy = y;
             this.mass = mass;
+            this.dmass = mass;
             this.gravity = gravity;
             this.calcForce();
             this.angleinDeg = Math.round(Phaser.Math.radToDeg(this.angleA) * 100) / 100;
             this.angleinDeg = Math.round(Phaser.Math.radToDeg(this.angleA) * 100) / 100;
             this.ton = [];
             this.smoothed = false;
-            var style = { font: "14px Courier bold", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: this.width, align: "left" };
-            this.text = game.add.text(0, 0, "", style);
-            this.text.smoothed = false;
-            this.text.anchor.set(0, 0.5);
-            this.text.setShadow(1, 1, 'rgba(0,0,0,0.5)', 1);
-            this.textAngle = game.add.text(0, 0, "", style);
-            this.textAngle.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
-            this.textAngle.smoothed = false;
-            this.textAngle.anchor.set(0, 0.5);
+            if (name == "left" || name == "right") {
+                this.text = game.add.text(0, 0, "", global_style);
+                this.text.smoothed = false;
+                this.text.anchor.set(0, 0.5);
+                this.text.setShadow(1, 1, 'rgba(0,0,0,0.5)', 1);
+                this.text.align = "center";
+                this.textAngle = game.add.text(0, 0, "", global_style);
+                this.textAngle.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
+                this.textAngle.smoothed = false;
+                this.textAngle.align = "center";
+                this.text.x = Math.round(this.text.x);
+                this.text.y = Math.round(this.text.y);
+                this.textAngle.y = Math.round(this.textAngle.y);
+                this.textAngle.x = Math.round(this.textAngle.x);
+                this.text.smoothed = false;
+                this.textAngle.smoothed = false;
+            }
+            ////this.textAngle.anchor.set(0, 0.5);
+            //this.text.stroke = '#000000';
+            //this.text.strokeThickness = 1;
+            //this.textAngle.stroke = '#000000';
+            //this.textAngle.strokeThickness = 1;
+            if (name == "left") {
+                //this.components = []
+                //this.components[0] = game.add.sprite(0, 0, "arrow-green"); // x component
+                //this.components[1] = game.add.sprite(0, 0, "arrow-green"); // y component
+                //var cropRectangle = new Phaser.Rectangle(0, 0, this.components[1].width, this.components[1].height / 2);
+                //this.components[1].crop(cropRectangle, true);
+                //this.components[1].rotation = -1.5708
+                //this.components[0].anchor.setTo(0, 0.5);
+                //this.components[1].anchor.setTo(0, 0.5);
+                this.arrow = game.add.sprite(0, 0, "arrow-green");
+                this.text.anchor.set(1.6, 0.5);
+            }
+            if (name == "right") {
+                //this.components = []
+                //this.components[0] = game.add.sprite(0, 0, "arrow-blue"); // x component
+                //this.components[1] = game.add.sprite(0, 0, "arrow-blue"); // y component
+                //var cropRectangle = new Phaser.Rectangle(0, this.components[1].height / 2, this.components[1].width, this.components[1].height / 2);
+                //this.components[1].crop(cropRectangle, true);
+                ////this.components[0].alpha = 0.1;
+                //this.components[1].rotation = -1.5708
+                //this.components[0].anchor.setTo(0, 0.5);
+                //this.components[1].anchor.setTo(0, 0.5);
+                this.arrow = game.add.sprite(0, 0, "arrow-blue");
+                this.text.anchor.set(-0.6, 0.5);
+            }
+            if (name != "add") {
+                this.arrow.visible = true;
+                this.arrow.anchor.setTo(0, 0.5);
+            }
         }
         Tons.prototype.clearTon = function () {
             if (this.ton.length > 0) {
@@ -1146,39 +1222,75 @@ var SSMAT;
             }
             this.ton = [];
         };
+        Tons.prototype.setRotate = function () {
+            if (this.name == "left") {
+                this.arrow.scale.x = -1;
+                //this.components[0].scale.x = -1;
+                this.arrow.rotation = this.angleA;
+            }
+            if (this.name == "right") {
+                this.arrow.rotation = -this.angleA;
+            }
+        };
         Tons.prototype.convertAngle = function () {
             this.angleinDeg = Math.round(Phaser.Math.radToDeg(this.angleA) * 100) / 100;
             this.angleA = Phaser.Math.degToRad(this.angleinDeg);
             return this.angleA;
         };
+        Tons.prototype.maintainComponents = function () {
+            // x components
+            this.components[0].position.copyFrom(this.main.painter.position);
+            // y components
+            this.components[1].position.copyFrom(this.main.painter.position);
+            this.components[1].width = this.arrow.getBounds().height - 10;
+            if (this.name == "left") {
+                this.components[0].width = -this.arrow.getBounds().width + 20;
+                this.components[1].x -= this.arrow.height / 4;
+            }
+            if (this.name == "right") {
+                this.components[0].width = this.arrow.getBounds().width - 20;
+                this.components[1].x += this.arrow.height / 4;
+            }
+            console.log(this.components[0].width, "THIS comp 0  WIDTH");
+            console.log(this.arrow.getBounds(), "GETBOUNDS arrow");
+        };
         Tons.prototype.update = function () {
             this.convertAngle();
             if (this.name == "left" || this.name == "right") {
+                //this.maintainComponents()
+                this.arrow.x = this.main.painter.x;
+                this.arrow.y = this.main.painter.y;
                 if (this.started) {
+                    this.arrow.visible = true;
                     this.visible = true;
-                    this.mass = Math.round(this.mass * 10) / 10;
                     this.textAngle.visible = true;
                     this.text.visible = true;
+                    this.started = false;
                 }
                 if (this.calcForce() >= 1000) {
                     this.force = this.calcForce() / 1000;
-                    this.text.text = "M: " + this.mass + "KG \nF: " + Math.round(this.force * 1000) / 1000 + "kN";
+                    this.text.text = "M: " + this.mass + "KG\nF: " + Math.round(this.force * 1000) / 1000 + "kN";
                 }
                 if (this.calcForce() < 1000) {
-                    this.text.text = "M: " + this.mass + "KG \nF: " + Math.round(this.force * 100) / 100 + "N";
+                    this.text.text = "M: " + this.mass + "KG\nF: " + Math.round(this.force * 100) / 100 + "N";
                 }
                 if (this.name == "left") {
                     this.textAngle.text = "α: " + String(this.angleinDeg) + "\xB0";
                     this.textAngle.x = this.main.painter.x - this.main.painter.width / 2 - this.textAngle.width;
-                    this.text.x = (this.x - this.text.width) - 10;
+                    this.text.x = (this.x - this.width / 2);
                 }
                 if (this.name == "right") {
                     this.textAngle.text = "β: " + String(this.angleinDeg) + "\xB0";
                     this.textAngle.x = this.main.painter.x + this.main.painter.width / 2;
                     this.text.x = (this.x + this.width / 2);
                 }
-                this.textAngle.y = this.main.painter.y - this.textAngle.height / 2;
+                this.textAngle.y = this.main.painter.y - this.textAngle.height;
                 this.text.y = (this.y + this.height / 2);
+                //round off;
+                this.text.x = Math.round(this.text.x);
+                this.text.y = Math.round(this.text.y);
+                this.textAngle.y = Math.round(this.textAngle.y);
+                this.textAngle.x = Math.round(this.textAngle.x);
             }
         };
         Tons.prototype.calcPow = function () {
@@ -1186,6 +1298,7 @@ var SSMAT;
             return a;
         };
         Tons.prototype.calcForce = function () {
+            this.mass = Math.round(this.mass * 10) / 10;
             this.force = Math.round((this.mass * this.gravity) * 10) / 10;
             return this.force;
         };
