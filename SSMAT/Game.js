@@ -952,20 +952,20 @@ var SSMAT;
             ton0Y = ton0Y + this.tons[0].dlength;
             ton1Y = ton1Y + this.tons[1].dlength;
             var scale0 = 0;
-            if (dir && t == 1) {
-                scale0 = this.tons[t].arrow.scale.x + p1.percent;
-            }
-            if (!dir && t == 1) {
-                scale0 = this.tons[t].arrow.scale.x - p1.percent;
-            }
-            if (dir && t == 0) {
-                scale0 = this.tons[t].arrow.scale.x - p1.percent;
-            }
-            if (!dir && t == 0) {
-                scale0 = this.tons[t].arrow.scale.x + p1.percent;
-            }
+            //if (dir && t == 1) {
+            //    scale0 = this.tons[t].arrow.scale.x + p1.percent;
+            //}
+            //if (!dir && t == 1) {
+            //    scale0 = this.tons[t].arrow.scale.x - p1.percent;
+            //}
+            //if (dir && t == 0) {
+            //    scale0 = this.tons[t].arrow.scale.x - p1.percent;
+            //}
+            //if (!dir && t == 0) {
+            //    scale0 = this.tons[t].arrow.scale.x + p1.percent;
+            //}
             console.log(scale0);
-            this.game.add.tween(this.tons[t].arrow.scale).to({ x: scale0 }, 2000, Phaser.Easing.Exponential.Out, true);
+            //this.game.add.tween(this.tons[t].arrow.scale).to({ x: scale0 }, 2000, Phaser.Easing.Exponential.Out, true);
             var tweenarrowleft = this.game.add.tween(this.tons[0].arrow).to({ rotation: this.tons[0].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
             var tweenarrowright = this.game.add.tween(this.tons[1].arrow).to({ rotation: -this.tons[1].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
             //if (ton1Y > ton0Y) { ton1Y = this.game.height - this.tileHeight - this.tons[0].height - (this.tons[0].height * this.tons[1].ton.length) }
