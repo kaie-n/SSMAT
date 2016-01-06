@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="app.js" />
     <Content Include="assets\arrow-blue.gif" />
     <Content Include="assets\arrow-green.gif" />
     <Content Include="assets\arrow-red.gif" />
@@ -53,11 +54,20 @@
     <Content Include="assets\vector.gif" />
     <Content Include="assets\weight.gif" />
     <Content Include="assets\wheel.gif" />
+    <Content Include="Boot.js" />
+    <Content Include="ButtonLabel.js" />
     <Content Include="Game.js" />
+    <Content Include="GameOver.js" />
+    <Content Include="Grid.js" />
     <Content Include="index.html" />
+    <Content Include="login.js" />
+    <Content Include="MainMenu.js" />
+    <Content Include="Painter.js" />
     <Content Include="phaser.js" />
     <Content Include="phaser.min.js" />
     <Content Include="all-ie-only.css" />
+    <Content Include="Preloader.js" />
+    <Content Include="Tons.js" />
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -83,6 +93,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="game.js.map" />
+    <Content Include="app.js.map" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
