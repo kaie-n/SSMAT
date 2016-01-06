@@ -33,6 +33,7 @@ module SSMAT {
         style: any;
         tileHeight: number;
         arrow: Array<SSMAT.Arrow>;
+        vector: Phaser.Button;
         create() {
 
             Parse.User.logOut();
@@ -156,7 +157,9 @@ module SSMAT {
 
             this.resetbtn = new SSMAT.ButtonLabel(this.game, this.help.x + this.button.width + 1, this.button.y, 'reset', "RESET!", this.reset, this, 0, 0, 1, 0);
             this.resetbtn.anchor.setTo(0.5, 0);
-            
+
+            this.vector = new SSMAT.ButtonLabel(this.game, this.resetbtn.x + this.button.width + 1, this.button.y, 'vector', "HIDE DETAILS!", this.hide, this, 0, 0, 1, 0);
+            this.vector.anchor.setTo(0.5, 0);
             // calculations to make the system in an equilibrium
 
             this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, this.painter.y)
@@ -214,23 +217,32 @@ module SSMAT {
             this.tons[1].dmass = this.tons[1].mass;
             this.createArrows();
         }
-
+        hide() {
+            for (var i = 0; i < this.arrow.length; i++) {
+                this.arrow[i].visible = !this.arrow[i].visible;
+                if (i < 2) {
+                    this.arrow[i].components[0].visible = this.arrow[i].visible;
+                    this.arrow[i].components[1].visible = this.arrow[i].visible;
+                }
+            }
+        }
         createArrows() {
             var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
             var point2 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
             var arrow0Point = new Phaser.Point((point1.x + this.painter.x) / 2, (point1.y + this.painter.y) / 2);
             var arrow1Point = new Phaser.Point((point2.x + this.painter.x) / 2, (point2.y + this.painter.y) / 2);
-            this.arrow[0] = new SSMAT.Arrow(this.game, arrow0Point.x, arrow0Point.y, "arrow-green");
-            this.arrow[0].scale.x = -1;
+            this.arrow[0] = new SSMAT.Arrow(this.game, arrow0Point.x, arrow0Point.y, "arrow-green", -1, true);
             this.arrow[0].rotation = this.tons[0].angleA;
             //
-            this.arrow[1] = new SSMAT.Arrow(this.game, arrow1Point.x, arrow1Point.y, "arrow-blue");
+            this.arrow[1] = new SSMAT.Arrow(this.game, arrow1Point.x, arrow1Point.y, "arrow-blue", 1, true);
             this.arrow[1].rotation = -this.tons[1].angleA;
             //
-            this.arrow[2] = new SSMAT.Arrow(this.game, this.painter.x, this.painter.y + this.painter.height, "arrow-red");
+            this.arrow[2] = new SSMAT.Arrow(this.game, this.painter.x, this.painter.y + this.painter.height, "arrow-red", 1, false);
            
             this.arrow[2].rotation = 1.57079633;
             this.arrow[2].main = this;
+
+            this.hide();
         }
         resetArrows() {
             var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);

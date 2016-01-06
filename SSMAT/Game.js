@@ -24,11 +24,29 @@ var SSMAT;
 (function (SSMAT) {
     var Arrow = (function (_super) {
         __extends(Arrow, _super);
-        function Arrow(game, x, y, key) {
+        function Arrow(game, x, y, key, scale, components) {
+            if (scale === void 0) { scale = 1; }
+            if (components === void 0) { components = true; }
             _super.call(this, game, x, y, key);
             this.anchor.setTo(0, 0.5);
             game.add.existing(this);
+            this.scale.x = scale;
+            this.components = [];
+            if (components) {
+                this.components[0] = game.add.sprite(0, 0, key);
+                this.components[0].rotation = -1.5708;
+                this.components[0].anchor.copyFrom(this.anchor);
+                this.components[1] = game.add.sprite(0, 0, key);
+                this.components[1].scale.x = scale;
+                this.components[1].anchor.copyFrom(this.anchor);
+            }
         }
+        Arrow.prototype.update = function () {
+            if (this.components.length > 0) {
+                this.components[0].position.copyFrom(this.position);
+                this.components[1].position.copyFrom(this.position);
+            }
+        };
         return Arrow;
     })(Phaser.Sprite);
     SSMAT.Arrow = Arrow;
@@ -81,6 +99,23 @@ var SSMAT;
         return ButtonLabel;
     })(Phaser.Button);
     SSMAT.ButtonLabel = ButtonLabel;
+})(SSMAT || (SSMAT = {}));
+var SSMAT;
+(function (SSMAT) {
+    var Game = (function (_super) {
+        __extends(Game, _super);
+        function Game() {
+            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
+            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
+            this.state.add('Boot', SSMAT.Boot, false);
+            this.state.add('Preloader', SSMAT.Preloader, false);
+            this.state.add('MainMenu', SSMAT.MainMenu, false);
+            this.state.add('GameOver', SSMAT.GameOver, false);
+            this.state.start('Boot');
+        }
+        return Game;
+    })(Phaser.Game);
+    SSMAT.Game = Game;
 })(SSMAT || (SSMAT = {}));
 var SSMAT;
 (function (SSMAT) {
@@ -573,6 +608,8 @@ var SSMAT;
             this.help.anchor.setTo(0.5, 0);
             this.resetbtn = new SSMAT.ButtonLabel(this.game, this.help.x + this.button.width + 1, this.button.y, 'reset', "RESET!", this.reset, this, 0, 0, 1, 0);
             this.resetbtn.anchor.setTo(0.5, 0);
+            this.vector = new SSMAT.ButtonLabel(this.game, this.resetbtn.x + this.button.width + 1, this.button.y, 'vector', "HIDE DETAILS!", this.hide, this, 0, 0, 1, 0);
+            this.vector.anchor.setTo(0.5, 0);
             // calculations to make the system in an equilibrium
             this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, this.painter.y);
             this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, this.painter.x, this.painter.y);
@@ -624,21 +661,30 @@ var SSMAT;
             this.tons[1].dmass = this.tons[1].mass;
             this.createArrows();
         };
+        MainMenu.prototype.hide = function () {
+            for (var i = 0; i < this.arrow.length; i++) {
+                this.arrow[i].visible = !this.arrow[i].visible;
+                if (i < 2) {
+                    this.arrow[i].components[0].visible = this.arrow[i].visible;
+                    this.arrow[i].components[1].visible = this.arrow[i].visible;
+                }
+            }
+        };
         MainMenu.prototype.createArrows = function () {
             var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
             var point2 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
             var arrow0Point = new Phaser.Point((point1.x + this.painter.x) / 2, (point1.y + this.painter.y) / 2);
             var arrow1Point = new Phaser.Point((point2.x + this.painter.x) / 2, (point2.y + this.painter.y) / 2);
-            this.arrow[0] = new SSMAT.Arrow(this.game, arrow0Point.x, arrow0Point.y, "arrow-green");
-            this.arrow[0].scale.x = -1;
+            this.arrow[0] = new SSMAT.Arrow(this.game, arrow0Point.x, arrow0Point.y, "arrow-green", -1, true);
             this.arrow[0].rotation = this.tons[0].angleA;
             //
-            this.arrow[1] = new SSMAT.Arrow(this.game, arrow1Point.x, arrow1Point.y, "arrow-blue");
+            this.arrow[1] = new SSMAT.Arrow(this.game, arrow1Point.x, arrow1Point.y, "arrow-blue", 1, true);
             this.arrow[1].rotation = -this.tons[1].angleA;
             //
-            this.arrow[2] = new SSMAT.Arrow(this.game, this.painter.x, this.painter.y + this.painter.height, "arrow-red");
+            this.arrow[2] = new SSMAT.Arrow(this.game, this.painter.x, this.painter.y + this.painter.height, "arrow-red", 1, false);
             this.arrow[2].rotation = 1.57079633;
             this.arrow[2].main = this;
+            this.hide();
         };
         MainMenu.prototype.resetArrows = function () {
             var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
@@ -1061,23 +1107,6 @@ var SSMAT;
             this.calcAll();
         }
 */
-var SSMAT;
-(function (SSMAT) {
-    var Game = (function (_super) {
-        __extends(Game, _super);
-        function Game() {
-            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
-            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
-            this.state.add('Boot', SSMAT.Boot, false);
-            this.state.add('Preloader', SSMAT.Preloader, false);
-            this.state.add('MainMenu', SSMAT.MainMenu, false);
-            this.state.add('GameOver', SSMAT.GameOver, false);
-            this.state.start('Boot');
-        }
-        return Game;
-    })(Phaser.Game);
-    SSMAT.Game = Game;
-})(SSMAT || (SSMAT = {}));
 var SSMAT;
 (function (SSMAT) {
     var Painter = (function (_super) {
