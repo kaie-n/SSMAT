@@ -47,7 +47,7 @@
         create() {
             this.tiler = this.game.add.tileSprite(0, this.world.height - this.tileHeight, this.game.width, this.game.height, 'tile');
             var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
-            var tween = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
+            var tween2 = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
             tween.onComplete.add(this.startMainMenu, this);
         }
 

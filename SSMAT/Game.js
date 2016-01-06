@@ -84,23 +84,6 @@ var SSMAT;
 })(SSMAT || (SSMAT = {}));
 var SSMAT;
 (function (SSMAT) {
-    var Game = (function (_super) {
-        __extends(Game, _super);
-        function Game() {
-            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
-            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
-            this.state.add('Boot', SSMAT.Boot, false);
-            this.state.add('Preloader', SSMAT.Preloader, false);
-            this.state.add('MainMenu', SSMAT.MainMenu, false);
-            this.state.add('GameOver', SSMAT.GameOver, false);
-            this.state.start('Boot');
-        }
-        return Game;
-    })(Phaser.Game);
-    SSMAT.Game = Game;
-})(SSMAT || (SSMAT = {}));
-var SSMAT;
-(function (SSMAT) {
     var GameOver = (function (_super) {
         __extends(GameOver, _super);
         function GameOver() {
@@ -1080,6 +1063,23 @@ var SSMAT;
 */
 var SSMAT;
 (function (SSMAT) {
+    var Game = (function (_super) {
+        __extends(Game, _super);
+        function Game() {
+            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
+            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
+            this.state.add('Boot', SSMAT.Boot, false);
+            this.state.add('Preloader', SSMAT.Preloader, false);
+            this.state.add('MainMenu', SSMAT.MainMenu, false);
+            this.state.add('GameOver', SSMAT.GameOver, false);
+            this.state.start('Boot');
+        }
+        return Game;
+    })(Phaser.Game);
+    SSMAT.Game = Game;
+})(SSMAT || (SSMAT = {}));
+var SSMAT;
+(function (SSMAT) {
     var Painter = (function (_super) {
         __extends(Painter, _super);
         function Painter(game, x, y, mass, gravity) {
@@ -1153,7 +1153,7 @@ var SSMAT;
         Preloader.prototype.create = function () {
             this.tiler = this.game.add.tileSprite(0, this.world.height - this.tileHeight, this.game.width, this.game.height, 'tile');
             var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
-            var tween = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
+            var tween2 = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
             tween.onComplete.add(this.startMainMenu, this);
         };
         Preloader.prototype.startMainMenu = function () {
