@@ -9,14 +9,15 @@ var SSMAT;
         __extends(Grid, _super);
         function Grid(game, x, y) {
             var bmd = new Phaser.Graphics(game, 0, 0);
-            bmd.beginFill(0x904820);
-            bmd.lineStyle(1, 0x682401, 1);
+            bmd.beginFill(0x333333);
+            bmd.lineStyle(1, 0x222222, 1);
             bmd.drawRect(0, 0, 150, 127);
             bmd.endFill();
             bmd.boundsPadding = 0;
             var texture = bmd.generateTexture();
             _super.call(this, game, x, y, texture);
             game.add.existing(this);
+            this.hitted = false;
             var style = { font: "14px Courier", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: this.width, align: "center" };
             this.text = game.add.text(0, 0, "", style);
             this.text.anchor.set(0.5);
@@ -26,10 +27,14 @@ var SSMAT;
             this.text.y = Math.floor(this.y + this.height / 2);
             this.text.alpha = 0;
             this.events.onInputOver.add(function () {
-                var tween = this.main.add.tween(this.text).to({ alpha: 1 }, 1000, Phaser.Easing.Linear.None, true);
+                if (this.alpha == 1) {
+                    var tween = this.main.add.tween(this.text).to({ alpha: 1 }, 1000, Phaser.Easing.Linear.None, true);
+                }
             }, this);
             this.events.onInputOut.add(function () {
-                var tween = this.main.add.tween(this.text).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
+                if (this.alpha == 1) {
+                    var tween = this.main.add.tween(this.text).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
+                }
             }, this);
             this.angleinRad = [];
         }
@@ -47,13 +52,19 @@ var SSMAT;
             if (this.main.started) {
                 this.text.text = "α: " + String(this.angleA) + " β: " + String(this.angleB);
             }
-            if (this.main.tons[0].angleinDeg == this.angleA && this.main.tons[1].angleinDeg == this.angleB && this.alpha == 1 && this.main.tons[0].mass == this.answerA && this.main.tons[1].mass == this.answerB) {
+            if (this.hitted == false && this.main.tons[0].angleinDeg == this.angleA && this.main.tons[1].angleinDeg == this.angleB && this.alpha == 1 && this.main.tons[0].mass == this.answerA && this.main.tons[1].mass == this.answerB) {
+                this.hitted = true;
+                this.main.add.tween(this.text).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
+                this.events.onInputOver.removeAll();
+                this.events.onInputOut.removeAll();
                 var tween = this.main.add.tween(this).to({ alpha: 0 }, 4000, Phaser.Easing.Linear.None, true, 2000);
-                tween.onComplete.add(function () {
+                tween.onComplete.addOnce(function () {
+                    this.main.noGridCompleted++;
                     this.main.painter.animations.stop(null, true);
+                    this.main.checkFinished();
                 }, this);
                 tween.onStart.addOnce(function () {
-                    this.main.painter.animations.play("paint", 8, true);
+                    this.main.painter.animations.play("paint", 4, true);
                 }, this);
             }
         };

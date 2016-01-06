@@ -7,30 +7,42 @@ var SSMAT;
 (function (SSMAT) {
     var Tons = (function (_super) {
         __extends(Tons, _super);
-        function Tons(game, x, y, mass, gravity) {
+        function Tons(game, x, y, mass, gravity, name) {
             _super.call(this, game, x, y, "ton");
             game.add.existing(this);
             this.anchor.setTo(0.5, 0);
             this.dy = y;
             this.mass = mass;
+            this.dmass = mass;
             this.gravity = gravity;
             this.calcForce();
             this.angleinDeg = Math.round(Phaser.Math.radToDeg(this.angleA) * 100) / 100;
             this.angleinDeg = Math.round(Phaser.Math.radToDeg(this.angleA) * 100) / 100;
-            this.visible = false;
             this.ton = [];
             this.smoothed = false;
-            var style = { font: "14px Courier", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: this.width, align: "left" };
-            this.text = game.add.text(0, 0, "", style);
-            this.text.smoothed = false;
-            this.text.anchor.set(0, 0.5);
-            this.text.visible = false;
-            this.text.setShadow(1, 1, 'rgba(0,0,0,0.5)', 1);
-            this.textAngle = game.add.text(0, 0, "", style);
-            this.textAngle.setShadow(1, 1, 'rgba(0,0,0,0.5)', 1);
-            this.textAngle.smoothed = false;
-            this.textAngle.anchor.set(0, 0.5);
-            this.textAngle.visible = false;
+            if (name == "left" || name == "right") {
+                this.text = game.add.text(0, 0, "", global_style);
+                this.text.smoothed = false;
+                this.text.anchor.set(0, 0.5);
+                this.text.setShadow(1, 1, 'rgba(0,0,0,0.5)', 1);
+                this.text.align = "center";
+                this.textAngle = game.add.text(0, 0, "", global_style);
+                this.textAngle.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
+                this.textAngle.smoothed = false;
+                this.textAngle.align = "center";
+                this.text.x = Math.round(this.text.x);
+                this.text.y = Math.round(this.text.y);
+                this.textAngle.y = Math.round(this.textAngle.y);
+                this.textAngle.x = Math.round(this.textAngle.x);
+                this.text.smoothed = false;
+                this.textAngle.smoothed = false;
+                if (name == "left") {
+                    this.text.anchor.set(1.6, 0.5);
+                }
+                if (name == "right") {
+                    this.text.anchor.set(-0.6, 0.5);
+                }
+            }
         }
         Tons.prototype.clearTon = function () {
             if (this.ton.length > 0) {
@@ -46,33 +58,37 @@ var SSMAT;
             return this.angleA;
         };
         Tons.prototype.update = function () {
-            this.convertAngle();
             if (this.name == "left" || this.name == "right") {
+                this.convertAngle();
                 if (this.started) {
                     this.visible = true;
-                    this.mass = Math.round(this.mass * 10) / 10;
                     this.textAngle.visible = true;
                     this.text.visible = true;
+                    this.started = false;
                 }
                 if (this.calcForce() >= 1000) {
                     this.force = this.calcForce() / 1000;
-                    this.text.text = "M: " + this.mass + "KG \nF: " + Math.round(this.force * 1000) / 1000 + "kN";
+                    this.text.text = "M: " + this.mass + "KG\nF: " + Math.round(this.force * 1000) / 1000 + "kN";
                 }
                 if (this.calcForce() < 1000) {
-                    this.text.text = "M: " + this.mass + "KG \nF: " + Math.round(this.force * 100) / 100 + "N";
+                    this.text.text = "M: " + this.mass + "KG\nF: " + Math.round(this.force * 100) / 100 + "N";
                 }
                 if (this.name == "left") {
                     this.textAngle.text = "α: " + String(this.angleinDeg) + "\xB0";
                     this.textAngle.x = this.main.painter.x - this.main.painter.width / 2 - this.textAngle.width;
-                    this.text.x = (this.x - this.text.width) - 10;
+                    this.text.x = (this.x - this.width / 2);
                 }
                 if (this.name == "right") {
                     this.textAngle.text = "β: " + String(this.angleinDeg) + "\xB0";
                     this.textAngle.x = this.main.painter.x + this.main.painter.width / 2;
                     this.text.x = (this.x + this.width / 2);
                 }
-                this.textAngle.y = this.main.painter.y - this.textAngle.height / 2;
+                this.textAngle.y = this.main.painter.y - this.textAngle.height;
                 this.text.y = (this.y + this.height / 2);
+                this.text.x = Math.round(this.text.x);
+                this.text.y = Math.round(this.text.y);
+                this.textAngle.y = Math.round(this.textAngle.y);
+                this.textAngle.x = Math.round(this.textAngle.x);
             }
         };
         Tons.prototype.calcPow = function () {
@@ -80,6 +96,7 @@ var SSMAT;
             return a;
         };
         Tons.prototype.calcForce = function () {
+            this.mass = Math.round(this.mass * 10) / 10;
             this.force = Math.round((this.mass * this.gravity) * 10) / 10;
             return this.force;
         };

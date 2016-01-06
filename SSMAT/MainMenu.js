@@ -12,26 +12,35 @@ var SSMAT;
         }
         MainMenu.prototype.create = function () {
             Parse.User.logOut();
-            this.style = { font: "14px Courier", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: 0, align: "center" };
+            this.tileHeight = 30;
+            this.clockTime = 0;
+            this.noGridCompleted = 0;
+            this.style = { font: "20px Courier", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: 0, align: "center" };
             this.game.physics.startSystem(Phaser.Physics.ARCADE);
             this.score = "";
-            this.pulleyMass = 100;
             this.gravity = 9.81;
             this.dt = 0.0833333333333333;
             this.t = 0;
-            this.equil = false;
+            this.dropped = false;
             this.started = false;
-            this.background = this.add.sprite(0, 0, 'titlepage');
-            this.background.alpha = 0;
-            this.tiler = this.game.add.tileSprite(0, this.world.height - 11, 800, 600, 'tile');
-            this.tiler.alpha = 0;
+            this.arrow = [];
+            this.tiler = this.game.add.tileSprite(0, this.world.height - this.tileHeight, this.game.width, this.game.height, 'tile');
+            this.tiler.alpha = 1;
             this.game.physics.arcade.enable(this.tiler);
             this.tiler.body.immovable = true;
             this.tiler.body.allowGravity = false;
-            this.image = this.game.add.image(0, 0, 'pic');
+            this.grad = this.game.add.sprite(0, 0, "gradient");
+            var randomImage = Math.floor(Math.random() * (5 - 1 + 1)) + 1;
+            var stringUrl = 'pic' + randomImage;
+            this.image = this.game.add.image(0, 0, stringUrl);
+            this.image.width = 450;
+            this.image.height = 253;
+            var randomMin = (this.game.height / 2) - (this.image.height / 2) - 100;
+            var randomMax = (this.game.height) - this.image.height - 200;
             this.image.position.x = (this.game.width / 2) - (this.image.width / 2);
-            this.image.position.y = (this.game.height / 2) - (this.image.height / 2) - 100;
-            this.image.alpha = 0;
+            this.image.position.y = Math.floor(Math.random() * (randomMax - randomMin + 1)) + randomMin;
+            this.grad.y = this.image.position.y - 14;
+            this.grad.x = this.image.position.x - 14;
             this.image.visible = false;
             var distributeWidth = this.image.position.x;
             var distributeHeight = this.image.position.y;
@@ -42,32 +51,32 @@ var SSMAT;
                 distributeWidth = this.image.position.x;
                 for (var j = 0; j < 3; j++) {
                     this.sprite[i][j] = new SSMAT.Grid(this.game, distributeWidth, distributeHeight);
-                    this.sprite[i][j].alpha = 1;
                     distributeWidth += this.sprite[i][j].width - 1;
                     this.sprite[i][j].inputEnabled = true;
                     this.sprite[i][j].main = this;
                     this.spriteGroup.addChild(this.sprite[i][j]);
+                    this.sprite[i][j].events.onInputDown.add(this.testClick, this);
                 }
                 distributeHeight += 126.5;
             }
-            this.spriteGroup.alpha = 0;
             this.painter = new SSMAT.Painter(this.game, this.world.centerX, this.game.height, 90, this.gravity);
-            this.painter.y -= this.painter.height + 11;
+            this.painter.y = 509.1707368654838;
             this.painter.anchor.setTo(0.5, 0);
-            this.painter.alpha = 0;
             this.game.physics.arcade.enable(this.painter);
+            this.stage.smoothed = false;
+            this.game.stage.smoothed = false;
             this.wheelGroup = this.game.add.group();
             this.wheel = this.add.sprite(0, 0, 'wheel', 0);
             this.wheelGroup.addChild(this.wheel);
             this.wheel = this.add.sprite(0, 0, 'wheel', 0);
             this.wheelGroup.addChild(this.wheel);
-            this.wheelGroup.getChildAt(0).x = 109;
-            this.wheelGroup.getChildAt(1).x = 655;
-            this.wheelGroup.alpha = 0;
+            this.wheelGroup.getChildAt(0).x = this.grad.x - this.wheel.width;
+            this.wheelGroup.getChildAt(1).x = this.grad.x + this.grad.width;
+            this.graphics = this.add.graphics(0, 0);
             this.tons = [];
             this.tons2 = [];
-            this.tons[0] = new SSMAT.Tons(this.game, this.wheelGroup.getChildAt(0).x, this.wheelGroup.getChildAt(0).y + this.wheel.height, 10, this.gravity);
-            this.tons[1] = new SSMAT.Tons(this.game, this.wheelGroup.getChildAt(1).x + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height, 10, this.gravity);
+            this.tons[0] = new SSMAT.Tons(this.game, this.wheelGroup.getChildAt(0).x, this.wheelGroup.getChildAt(0).y + this.wheel.height, 10, this.gravity, "left");
+            this.tons[1] = new SSMAT.Tons(this.game, this.wheelGroup.getChildAt(1).x + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height, 10, this.gravity, "right");
             this.tons[0].main = this;
             this.tons[1].main = this;
             this.tons[0].name = "left";
@@ -75,48 +84,31 @@ var SSMAT;
             this.game.physics.arcade.enable([this.tons[0], this.tons[1]]);
             this.tons[0].body.allowGravity = false;
             this.tons[1].body.allowGravity = false;
-            this.graphics = this.add.graphics(0, 0);
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.tons[0].x, this.tons[0].y);
-            this.graphics.lineTo(this.tons[0].x, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            this.graphics.moveTo(Math.round(this.tons[0].x), Math.round(this.tons[0].y));
+            this.graphics.lineTo(Math.round(this.tons[0].x), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
-            this.graphics.lineTo(this.painter.x, this.painter.y);
+            this.graphics.moveTo(Math.round((this.tons[0].x) + this.wheel.width), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.painter.x, this.painter.y);
-            this.graphics.lineTo((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
+            this.graphics.lineTo(Math.round((this.tons[1].x) - this.wheel.width), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.tons[1].x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
-            this.graphics.lineTo(this.tons[1].x, this.tons[1].y);
-            this.black = this.add.sprite(0, 0, "black");
-            this.black.alpha = 1;
-            this.logo = this.add.sprite(this.world.centerX, this.world.centerY, 'logo');
-            this.logo.alpha = 0;
-            this.logo.anchor.setTo(0.5, 0.5);
-            this.click = this.add.sprite(this.world.centerX, this.world.centerY, 'click');
-            this.click.alpha = 0;
-            this.click.anchor.setTo(0.5, 0.5);
-            this.add.tween(this.black).to({ alpha: 1 }, 200, Phaser.Easing.Linear.None, true);
-            this.logo["start"] = this.add.tween(this.logo).to({ alpha: 1 }, 2000, Phaser.Easing.Linear.None, true, 0);
-            this.click["start"] = this.add.tween(this.click).to({ alpha: 1 }, 400, Phaser.Easing.Linear.None, true, 2000, -1, true);
-            this.input.onDown.addOnce(this.fadeOut, this);
-            this.button = new SSMAT.ButtonLabel(this.game, this.game.world.width - 82, this.game.world.height - 11, 'button', "Add Weight", this.addWeight, this, 0, 0, 1, 0);
+            this.graphics.moveTo(Math.round(this.tons[1].x), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.tons[1].x), Math.round(this.tons[1].y));
+            this.button = new SSMAT.ButtonLabel(this.game, this.game.world.width - 82 - 100, this.game.world.height - this.tileHeight, 'button', "ADD WEIGHT", this.addWeight, this, 0, 0, 1, 0);
             this.button.y -= this.button.height;
             this.button.anchor.setTo(0.5, 0);
-            this.button.visible = false;
-            this.button.alpha = 0;
-            this.help = new SSMAT.ButtonLabel(this.game, this.button.x + this.button.width + 1, this.button.y, 'help', "Tips", this.tips, this, 0, 0, 1, 0);
+            this.help = new SSMAT.ButtonLabel(this.game, this.button.x + this.button.width + 1, this.button.y, 'help', "TIPS", this.tips, this, 0, 0, 1, 0);
             this.help.anchor.setTo(0.5, 0);
-            this.help.visible = false;
-            this.help.alpha = 0;
-            this.resetbtn = new SSMAT.ButtonLabel(this.game, this.help.x + this.button.width + 1, this.button.y, 'reset', "Reset!", this.reset, this, 0, 0, 1, 0);
+            this.resetbtn = new SSMAT.ButtonLabel(this.game, this.help.x + this.button.width + 1, this.button.y, 'reset', "RESET!", this.reset, this, 0, 0, 1, 0);
             this.resetbtn.anchor.setTo(0.5, 0);
-            this.resetbtn.alpha = 0;
-            this.resetbtn.visible = false;
             this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, this.painter.y);
             this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, this.painter.x, this.painter.y);
             this.tons[1].angleA = Math.round(this.tons[1].angleA * 100) / 100;
             this.tons[0].angleA = Math.round(this.tons[0].angleA * 100) / 100;
+            this.tons[0].convertAngle();
+            this.tons[1].convertAngle();
             var temp2 = Math.round((Math.cos(this.tons[0].angleA) / Math.cos(this.tons[1].angleA)) * 1000) / 1000;
             var temp = Math.round((temp2 * (Math.sin(this.tons[1].angleA)) + Math.sin(this.tons[0].angleA)) * 1000) / 1000;
             this.tons[0].force = Math.round((this.painter.force / temp) * 10) / 10;
@@ -125,45 +117,6 @@ var SSMAT;
             this.tons[1].mass = Math.round((this.tons[1].force / this.gravity) * 10) / 10;
             this.tons[0]._dx = this.tons[0].position.clone();
             this.tons[1]._dx = this.tons[1].position.clone();
-            this.graphics.visible = false;
-        };
-        MainMenu.prototype.fadeOut = function () {
-            this.tweens.remove(this.click["start"]);
-            this.tweens.remove(this.logo["start"]);
-            var tween = this.add.tween(this.logo).to({ alpha: 0 }, 500, Phaser.Easing.Linear.None, true);
-            this.add.tween(this.click).to({ alpha: 0 }, 500, Phaser.Easing.Linear.None, true);
-            tween.onComplete.add(this.startGame, this);
-            tween.onStart.add(function () {
-                this.wheelGroup.alpha = 1;
-                this.painter.alpha = 1;
-                this.tiler.alpha = 1;
-                this.black.alpha = 1;
-                this.spriteGroup.alpha = 1;
-                this.background.alpha = 1;
-                this.painter.started = true;
-                this.tons[0].started = true;
-                this.tons[1].started = true;
-                this.button.visible = true;
-                this.help.visible = true;
-                this.resetbtn.visible = true;
-                this.image.visible = true;
-                this.graphics.visible = true;
-            }, this);
-            this.add.tween(this.black).to({ alpha: 0 }, 500, Phaser.Easing.Linear.None, true);
-            this.add.tween(this.button).to({ alpha: 1 }, 1000, Phaser.Easing.Linear.None, true);
-            this.add.tween(this.help).to({ alpha: 1 }, 1000, Phaser.Easing.Linear.None, true);
-            this.add.tween(this.resetbtn).to({ alpha: 1 }, 1000, Phaser.Easing.Linear.None, true);
-            this.timer = this.game.add.text(this.world.centerX, 20, "TIME\n00:00:00", this.style);
-            this.timer.alpha = 0;
-            this.timer.setShadow(1, 1, 'rgba(0,0,0,0.5)', 1);
-            this.timer.anchor.setTo(0.5, 0);
-            this.add.tween(this.timer).to({ alpha: 1 }, 1000, Phaser.Easing.Linear.None, true);
-        };
-        MainMenu.prototype.startGame = function () {
-            this.background.alpha = 1;
-            this.image.alpha = 1;
-            this.game.time.reset();
-            this.started = true;
             for (var i = 0; i < 2; i++) {
                 for (var j = 0; j < 3; j++) {
                     var tempPoint = new Phaser.Point(this.sprite[i][j].x + this.sprite[i][j].width / 2, this.sprite[i][j].y + (this.sprite[i][j].height / 2) - (this.painter.height / 2));
@@ -174,19 +127,107 @@ var SSMAT;
                     this.sprite[i][j].angleA = Math.round(Phaser.Math.radToDeg(this.sprite[i][j].angleA) * 100) / 100;
                     this.sprite[i][j].angleB = Math.round(Phaser.Math.radToDeg(this.sprite[i][j].angleB) * 100) / 100;
                     this.sprite[i][j].setAnswers();
+                    console.log(this.sprite[i][j].answerA, this.sprite[i][j].answerB);
                 }
             }
+            this.timer = this.game.add.text(this.world.centerX, 20, "TIME\n00:00:00", global_style);
+            this.timer.align = "center";
+            this.timer.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
+            this.timer.anchor.setTo(0.5, 0);
+            this.timer.x = Math.round(this.timer.x);
+            this.timer.y = Math.round(this.timer.y);
+            this.world.alpha = 0;
+            var worldTween = this.add.tween(this.world).to({ alpha: 1 }, 1000, Phaser.Easing.Exponential.InOut, true);
+            worldTween.onComplete.addOnce(function () {
+                this.image.visible = true;
+                this.painter.started = true;
+                this.tons[0].started = true;
+                this.tons[1].started = true;
+                this.started = true;
+                this.startGame();
+            }, this);
+            this.tiler.alpha = 1;
+            this.tons[0].dmass = this.tons[0].mass;
+            this.tons[1].dmass = this.tons[1].mass;
+            this.createArrows();
+        };
+        MainMenu.prototype.createArrows = function () {
+            var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            var point2 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            var arrow0Point = new Phaser.Point((point1.x + this.painter.x) / 2, (point1.y + this.painter.y) / 2);
+            var arrow1Point = new Phaser.Point((point2.x + this.painter.x) / 2, (point2.y + this.painter.y) / 2);
+            this.arrow[0] = new SSMAT.Arrow(this.game, arrow0Point.x, arrow0Point.y, "arrow-green");
+            this.arrow[0].scale.x = -1;
+            this.arrow[0].rotation = this.tons[0].angleA;
+            this.arrow[1] = new SSMAT.Arrow(this.game, arrow1Point.x, arrow1Point.y, "arrow-blue");
+            this.arrow[1].rotation = -this.tons[1].angleA;
+            this.arrow[2] = new SSMAT.Arrow(this.game, this.painter.x, this.painter.y + this.painter.height, "arrow-red");
+            this.arrow[2].rotation = 1.57079633;
+            this.arrow[2].main = this;
+        };
+        MainMenu.prototype.resetArrows = function () {
+            var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            var point2 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            var arrow0Point = new Phaser.Point((point1.x + this.painter.x) / 2, (point1.y + this.painter.y) / 2);
+            var arrow1Point = new Phaser.Point((point2.x + this.painter.x) / 2, (point2.y + this.painter.y) / 2);
+            this.arrow[0].position.copyFrom(arrow0Point);
+            this.arrow[0].rotation = this.tons[0].angleA;
+            this.arrow[1].position.copyFrom(arrow1Point);
+            this.arrow[1].rotation = -this.tons[1].angleA;
+            this.arrow[2].position.copyFrom(this.painter.position);
+            this.arrow[2].y += this.painter.height;
+        };
+        MainMenu.prototype.moveArrows = function () {
+            var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            var point2 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            var arrow0Point = new Phaser.Point((point1.x + this.painter.x) / 2, (point1.y + this.painter.y) / 2);
+            var arrow1Point = new Phaser.Point((point2.x + this.painter.x) / 2, (point2.y + this.painter.y) / 2);
+            this.arrow[0].position.copyFrom(arrow0Point);
+            this.arrow[1].position.copyFrom(arrow1Point);
+            this.arrow[2].position.copyFrom(this.painter.position);
+            this.arrow[2].y += this.painter.height;
+        };
+        MainMenu.prototype.startGame = function () {
+            this.game.time.reset();
         };
         MainMenu.prototype.update = function () {
-            this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
             if (this.started) {
                 this.updateTimer();
+            }
+        };
+        MainMenu.prototype.checkFinished = function () {
+            if (this.noGridCompleted == 6) {
+                this.started = false;
+                this.black = this.add.sprite(0, 0, "black");
+                this.black.alpha = 0;
+                document.getElementById("scoretime").innerHTML = "Your time: " + this.score;
+                var test = this.image.key;
+                var yPos = this.image.position.clone();
+                this.image.destroy(true);
+                this.image = this.game.add.image(yPos.x, yPos.y, test);
+                this.image.width = 450;
+                this.image.height = 253;
+                var newPos = (this.game.height / 2) - (this.image.height / 2) - 100;
+                this.add.tween(this.image).to({ y: 0, x: 0, width: this.game.width, height: this.game.height }, 1000, Phaser.Easing.Exponential.Out, true);
+                var inputadmin_no = document.getElementById("inputfield");
+                inputadmin_no.style.opacity = '0';
+                document.getElementById("inputfield").style.display = "inline";
+                this.add.tween(this.timer).to({ alpha: 0 }, 1000, Phaser.Easing.Exponential.Out, true);
+                var tween = this.add.tween(this.black).to({ alpha: 1 }, 1000, Phaser.Easing.Exponential.Out, true);
+                tween.onUpdateCallback(function () {
+                    inputadmin_no.style.opacity = String(this.black.alpha);
+                }, this);
+                tween.onComplete.addOnce(function () {
+                    inputadmin_no.style.opacity = String(this.black.alpha);
+                    this.game.state.start('GameOver', true, false, this.score, this.clockTime, this.image);
+                }, this);
             }
         };
         MainMenu.prototype.updateTimer = function () {
             var hours = Math.floor(this.game.time.totalElapsedSeconds() / 3600) % 24;
             var minutes = Math.floor(this.game.time.totalElapsedSeconds() / 60) % 60;
             var seconds = Math.floor(this.game.time.totalElapsedSeconds()) % 60;
+            this.clockTime = Math.round(this.game.time.totalElapsedSeconds() * 100) / 100;
             var seconds1 = String(seconds);
             var minutes1 = String(minutes);
             var hours1 = String(hours);
@@ -203,20 +244,21 @@ var SSMAT;
             this.timer.text = "TIME\n" + hours1 + ":" + minutes1 + ":" + seconds1;
         };
         MainMenu.prototype.paintTheLines = function (p1, t) {
+            this.moveArrows();
             var ktemp = 0;
             this.graphics.clear();
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.tons[0].x, this.tons[0].y);
-            this.graphics.lineTo(this.tons[0].x, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            this.graphics.moveTo(Math.round(this.tons[0].x), Math.round(this.tons[0].y));
+            this.graphics.lineTo(Math.round(this.tons[0].x), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
-            this.graphics.lineTo(this.painter.x, this.painter.y);
+            this.graphics.moveTo(Math.round((this.tons[0].x) + this.wheel.width), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.painter.x, this.painter.y);
-            this.graphics.lineTo((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
+            this.graphics.lineTo(Math.round((this.tons[1].x) - this.wheel.width), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
             this.graphics.lineStyle(1, 0x111111);
-            this.graphics.moveTo(this.tons[1].x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
-            this.graphics.lineTo(this.tons[1].x, this.tons[1].y);
+            this.graphics.moveTo(Math.round(this.tons[1].x), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.tons[1].x), Math.round(this.tons[1].y));
             if (t == 0) {
                 ktemp = 1;
             }
@@ -253,7 +295,7 @@ var SSMAT;
             if (Number(mass) > 0 || Number(mass) < 0) {
                 var l = this.tons2.length;
                 if (l < 5 && l >= 0) {
-                    this.tons2[l] = new SSMAT.Tons(this.game, this.button.x - this.button.width - 10, this.game.world.height - 11 - this.tons[0].height, Number(mass), this.gravity);
+                    this.tons2[l] = new SSMAT.Tons(this.game, this.button.x - this.button.width - 10, this.game.world.height - this.tileHeight - this.tons[0].height, Number(mass), this.gravity, "add");
                     this.game.physics.arcade.enable(this.tons2[l]);
                     this.tons2[l].body.allowGravity = false;
                     this.tons2[l].inputEnabled = true;
@@ -271,12 +313,46 @@ var SSMAT;
                 }
             }
         };
+        MainMenu.prototype.testClick = function (p1) {
+            this.painter.x = p1.x + p1.width / 2;
+            this.painter.y = p1.y + p1.height / 2 - this.painter.height / 2;
+            this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, this.painter.y);
+            this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, this.painter.x, this.painter.y);
+            this.tons[1].angleA = Math.round(this.tons[1].angleA * 100) / 100;
+            this.tons[0].angleA = Math.round(this.tons[0].angleA * 100) / 100;
+            this.tons[1].convertAngle();
+            this.tons[0].convertAngle();
+            var temp2 = (Math.cos(this.tons[0].angleA) / Math.cos(this.tons[1].angleA));
+            var temp = (temp2 * (Math.sin(this.tons[1].angleA)) + Math.sin(this.tons[0].angleA));
+            this.tons[0].force = Math.round((this.painter.force / temp) * 10) / 10;
+            this.tons[1].force = Math.round((this.tons[0].force * temp2) * 10) / 10;
+            this.tons[0].mass = Math.round((this.tons[0].force / this.gravity) * 10) / 10;
+            this.tons[1].mass = Math.round((this.tons[1].force / this.gravity) * 10) / 10;
+            this.sumFx = this.tons[1].calcFx() - this.tons[0].calcFx();
+            this.sumFy = (this.tons[1].calcFy() + this.tons[0].calcFy()) - this.painter.force;
+            this.sumR = (this.sumFx * 2) + (this.sumFy * 2);
+            if (this.sumR < 0) {
+                this.sumR = this.sumR * -1;
+            }
+            this.sumR = Math.sqrt(this.sumR);
+            this.sumR = Math.round(this.sumR * 10) / 10;
+            this.paintTheLines(this.tons[0], 0);
+            this.calcAll();
+        };
         MainMenu.prototype.tips = function () {
-            this.game.state.start('GameOver', true, false, this.score, this.game.time.totalElapsedSeconds());
+            var s = [];
+            s[0] = "Did you know that you can input negative values to the Tons?";
+            s[1] = "If you are stuck, press the green button to reset the pulleys!";
+            s[2] = "Hover over to the grey board for the respective angles on each grid!";
+            s[3] = "Remember your old friend, TOA CAH SOH?";
+            s[4] = "The pulley system is in equilibrium, so every time you add a weight at either side, it will move to the new equilibrium position!";
+            s[5] = "Static equilibrium means the sum of the net forces must equal to 0, ring any bell?";
+            var no = Math.floor(Math.random() * (5 - 0 + 1)) + 0;
+            alert(s[no]);
         };
         MainMenu.prototype.reset = function () {
             this.painter.x = this.world.centerX;
-            this.painter.y = this.game.height - this.painter.height - 11;
+            this.painter.y = 509.1707368654838;
             this.tons[0].y = this.tons[0]._dx.y;
             this.tons[1].y = this.tons[1]._dx.y;
             this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, this.painter.y);
@@ -307,6 +383,7 @@ var SSMAT;
             this.graphics.lineTo(this.tons[1].x, this.tons[1].y);
             this.tons[0].clearTon();
             this.tons[1].clearTon();
+            this.resetArrows();
         };
         MainMenu.prototype.removeWeight = function (p1) {
             var i = 0;
@@ -329,7 +406,7 @@ var SSMAT;
                 this.tons[i].mass += p1.mass;
                 this.tons[i].ton.push(p1);
                 p1.events.onDragStop.remove(this.stopDrag, this);
-                this.movePainter(i, true, p1.mass);
+                this.movePainter(i, true, p1);
                 return;
             }
             if (!this.game.physics.arcade.overlap(p1, this.tons[p1.nT])) {
@@ -339,7 +416,7 @@ var SSMAT;
                 }
                 this.tons[p1.nT].mass -= p1.mass;
                 this.tons[p1.nT].calcForce();
-                this.movePainter(p1.nT, false, p1.mass);
+                this.movePainter(p1.nT, false, p1);
                 this.tons[p1.nT].ton.pop();
                 p1.destroy();
                 return;
@@ -354,9 +431,10 @@ var SSMAT;
                     p1.position.x = this.tons[i].x;
                     p1.position.y = this.tons[i].y + this.tons[i].height;
                     this.tons[i].mass += p1.mass;
+                    p1.percent = ((p1.mass + this.tons[i].dmass) - this.tons[i].dmass) / this.tons[i].dmass;
                     this.tons[i].ton.push(p1);
                     p1.events.onDragStop.remove(this.stopDrag, this);
-                    this.movePainter(i, true, p1.mass);
+                    this.movePainter(i, true, p1);
                     this.tons2.pop();
                     if (this.tons2.length != 0) {
                         this.tons2[this.tons2.length - 1].inputEnabled = true;
@@ -367,7 +445,7 @@ var SSMAT;
                 }
             }
         };
-        MainMenu.prototype.movePainter = function (t, dir, mass) {
+        MainMenu.prototype.movePainter = function (t, dir, p1) {
             var point1 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
             var point2 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
             var equationA1 = (this.tons[0].calcForce() * 2);
@@ -388,6 +466,7 @@ var SSMAT;
                     this.tons[1].angleA = 1.06;
                     this.tons[0].angleA = 0;
                 }
+                this.dropped = true;
             }
             if (isNaN(this.tons[0].angleA) || this.tons[0].angleA < 0) {
                 this.tons[0].angleA = 0;
@@ -410,9 +489,11 @@ var SSMAT;
             this.tons[1].dlength = this.tons[1].dlength / 2;
             ton0Y = ton0Y + this.tons[0].dlength;
             ton1Y = ton1Y + this.tons[1].dlength;
-            this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
             this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: ton1Y }, 2000, Phaser.Easing.Exponential.Out, true);
             this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: ton0Y }, 2000, Phaser.Easing.Exponential.Out, true);
+            this.add.tween(this.arrow[1]).to({ rotation: -this.tons[1].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
+            this.add.tween(this.arrow[0]).to({ rotation: this.tons[0].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
+            this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
             this.painter.tween.onUpdateCallback(function () {
                 this.paintTheLines(this.tons[t], t);
                 this.calcAll();
