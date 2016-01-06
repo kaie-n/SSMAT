@@ -32,7 +32,8 @@ module SSMAT {
         spriteGroup: Phaser.Group;
         style: any;
         tileHeight: number;
-
+        arrow: Array<SSMAT.Arrow>;
+        vector: Phaser.Button;
         create() {
 
             Parse.User.logOut();
@@ -44,14 +45,14 @@ module SSMAT {
             this.style = { font: "20px Courier", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: 0, align: "center" };
             this.game.physics.startSystem(Phaser.Physics.ARCADE);
             this.score = "";
-            //this.game.physics.arcade.gravity.y = 100; 
             this.gravity = 9.81;
             this.dt = 0.0833333333333333;
             this.t = 0;
             this.dropped = false;
             this.started = false;
+            this.arrow = [];
+
             // background
-            this.background = this.add.sprite(0, 0, 'titlepage');
 
             // ground tiles
             this.tiler = this.game.add.tileSprite(0, this.world.height - this.tileHeight, this.game.width, this.game.height, 'tile');
@@ -133,7 +134,7 @@ module SSMAT {
 
             // the pulley "strings"
             this.graphics.lineStyle(1, 0x111111);
-            
+
             this.graphics.moveTo(Math.round(this.tons[0].x), Math.round(this.tons[0].y));
             this.graphics.lineTo(Math.round(this.tons[0].x), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
             this.graphics.lineStyle(1, 0x111111);
@@ -156,7 +157,9 @@ module SSMAT {
 
             this.resetbtn = new SSMAT.ButtonLabel(this.game, this.help.x + this.button.width + 1, this.button.y, 'reset', "RESET!", this.reset, this, 0, 0, 1, 0);
             this.resetbtn.anchor.setTo(0.5, 0);
-            
+
+            this.vector = new SSMAT.ButtonLabel(this.game, this.resetbtn.x + this.button.width + 1, this.button.y, 'vector', "HIDE DETAILS!", this.hide, this, 0, 0, 1, 0);
+            this.vector.anchor.setTo(0.5, 0);
             // calculations to make the system in an equilibrium
 
             this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, this.painter.y)
@@ -173,8 +176,6 @@ module SSMAT {
             this.tons[1].mass = Math.round((this.tons[1].force / this.gravity) * 10) / 10
             this.tons[0]._dx = this.tons[0].position.clone();
             this.tons[1]._dx = this.tons[1].position.clone();
-            this.tons[0].setRotate();
-            this.tons[1].setRotate();
             // setting the correct answers for each grid dynamically
             for (var i = 0; i < 2; i++) {
                 for (var j = 0; j < 3; j++) {
@@ -214,21 +215,77 @@ module SSMAT {
             this.tiler.alpha = 1;
             this.tons[0].dmass = this.tons[0].mass;
             this.tons[1].dmass = this.tons[1].mass;
+            this.createArrows();
+        }
+        hide() {
+            for (var i = 0; i < this.arrow.length; i++) {
+                this.arrow[i].visible = !this.arrow[i].visible;
+                if (i < 2) {
+                    this.arrow[i].components[0].visible = this.arrow[i].visible;
+                    this.arrow[i].components[1].visible = this.arrow[i].visible;
+                }
+            }
+        }
+        createArrows() {
+            var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            var point2 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            var arrow0Point = new Phaser.Point((point1.x + this.painter.x) / 2, (point1.y + this.painter.y) / 2);
+            var arrow1Point = new Phaser.Point((point2.x + this.painter.x) / 2, (point2.y + this.painter.y) / 2);
+            this.arrow[0] = new SSMAT.Arrow(this.game, arrow0Point.x, arrow0Point.y, "arrow-green", -1, true);
+            this.arrow[0].rotation = this.tons[0].angleA;
+            //
+            this.arrow[1] = new SSMAT.Arrow(this.game, arrow1Point.x, arrow1Point.y, "arrow-blue", 1, true);
+            this.arrow[1].rotation = -this.tons[1].angleA;
+            //
+            this.arrow[2] = new SSMAT.Arrow(this.game, this.painter.x, this.painter.y + this.painter.height, "arrow-red", 1, false);
+           
+            this.arrow[2].rotation = 1.57079633;
+            this.arrow[2].main = this;
+
+            this.hide();
+        }
+        resetArrows() {
+            var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            var point2 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            var arrow0Point = new Phaser.Point((point1.x + this.painter.x) / 2, (point1.y + this.painter.y) / 2);
+            var arrow1Point = new Phaser.Point((point2.x + this.painter.x) / 2, (point2.y + this.painter.y) / 2);
+
+            this.arrow[0].position.copyFrom(arrow0Point);
+            this.arrow[0].rotation = this.tons[0].angleA;
+            //
+            this.arrow[1].position.copyFrom(arrow1Point);
+            this.arrow[1].rotation = -this.tons[1].angleA;
+            //
+            this.arrow[2].position.copyFrom(this.painter.position);
+            this.arrow[2].y += this.painter.height;
+        }
+        moveArrows() {
+            var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            var point2 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            var arrow0Point = new Phaser.Point((point1.x + this.painter.x) / 2, (point1.y + this.painter.y) / 2);
+            var arrow1Point = new Phaser.Point((point2.x + this.painter.x) / 2, (point2.y + this.painter.y) / 2);
+           
+            this.arrow[0].position.copyFrom(arrow0Point);
+            //this.arrow[0].rotation = this.tons[0].angleA;
+            //
+            this.arrow[1].position.copyFrom(arrow1Point);
+            //this.arrow[1].rotation = -this.tons[1].angleA;
+            //
+            this.arrow[2].position.copyFrom(this.painter.position);
+            this.arrow[2].y += this.painter.height;
         }
 
         startGame() {
             this.game.time.reset();
-
         }
         update() {
-            this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
+            //this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
             if (this.started) {
                 this.updateTimer();
             }
         }
 
         checkFinished() {
-            console.log(this.noGridCompleted);
             if (this.noGridCompleted == 6) {
                 this.started = false;
                 // moving up the fading background's z-index
@@ -287,6 +344,7 @@ module SSMAT {
             this.timer.text = "TIME\n" + hours1 + ":" + minutes1 + ":" + seconds1 // timer height is 40;
         }
         paintTheLines(p1, t) {
+            this.moveArrows();
             var ktemp: number = 0;
             this.graphics.clear();
             this.graphics.lineStyle(1, 0x111111);
@@ -375,7 +433,6 @@ module SSMAT {
 
             this.tons[1].convertAngle();
             this.tons[0].convertAngle();
-            console.log(this.tons[1].angleA)
             var temp2 = (Math.cos(this.tons[0].angleA) / Math.cos(this.tons[1].angleA)) // Tons1 = Cos(Ton0.angle) / Cos(Ton1.Angle)
             var temp = (temp2 * (Math.sin(this.tons[1].angleA)) + Math.sin(this.tons[0].angleA))
             this.tons[0].force = Math.round((this.painter.force / temp) * 10) / 10
@@ -410,6 +467,7 @@ module SSMAT {
         }
         // Green button function
         reset() {
+        
             this.painter.x = this.world.centerX;
             this.painter.y = 509.1707368654838
 
@@ -443,6 +501,7 @@ module SSMAT {
             this.graphics.lineTo(this.tons[1].x, this.tons[1].y);
             this.tons[0].clearTon();
             this.tons[1].clearTon();
+            this.resetArrows()
         }
         removeWeight(p1) {
             var i = 0;
@@ -497,7 +556,6 @@ module SSMAT {
                     this.tons[i].mass += p1.mass;
 
                     p1.percent = ((p1.mass + this.tons[i].dmass) - this.tons[i].dmass) / this.tons[i].dmass;
-                    console.log(p1.percent, "p1 percentage", this.tons[i].dmass, "this.tons[i].dmass!" );
                     this.tons[i].ton.push(p1);
 
                     p1.events.onDragStop.remove(this.stopDrag, this);
@@ -562,42 +620,22 @@ module SSMAT {
             this.tons[0].dlengtha = Phaser.Math.distance(point2.x, point2.y, this.painter.x, this.painter.y)
             this.tons[0].dlengthb = Phaser.Math.distance(point2.x, point2.y, velo.x, velo.y)
             this.tons[0].dlength = this.tons[0].dlengtha - this.tons[0].dlengthb;
-            console.log(this.tons[0].dlength, "tons0 dlength");
 
             this.tons[0].dlength = this.tons[0].dlength / 2;
             this.tons[1].dlengtha = Phaser.Math.distance(point1.x, point1.y, this.painter.x, this.painter.y)
             this.tons[1].dlengthb = Phaser.Math.distance(point1.x, point1.y, velo.x, velo.y)
             this.tons[1].dlength = this.tons[1].dlengtha - this.tons[1].dlengthb;
 
-            console.log(this.tons[1].dlength, "tons1 dlength");
             this.tons[1].dlength = this.tons[1].dlength / 2;
-            
-            console.log(this.tons[t].dmass, this.tons[t].mass ,"DMASS & MASS");
+
             ton0Y = ton0Y + this.tons[0].dlength
             ton1Y = ton1Y + this.tons[1].dlength
-            var scale0 = 0;
-            //if (dir && t == 1) {
-            //    scale0 = this.tons[t].arrow.scale.x + p1.percent;
-            //}
-            //if (!dir && t == 1) {
-            //    scale0 = this.tons[t].arrow.scale.x - p1.percent;
-            //}
-            //if (dir && t == 0) {
-            //    scale0 = this.tons[t].arrow.scale.x - p1.percent;
-            //}
-            //if (!dir && t == 0) {
-            //    scale0 = this.tons[t].arrow.scale.x + p1.percent;
-            //}
-            console.log(scale0);
-            //this.game.add.tween(this.tons[t].arrow.scale).to({ x: scale0 }, 2000, Phaser.Easing.Exponential.Out, true);
-            var tweenarrowleft = this.game.add.tween(this.tons[0].arrow).to({ rotation: this.tons[0].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
-            var tweenarrowright = this.game.add.tween(this.tons[1].arrow).to({ rotation: -this.tons[1].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
-            
-            //if (ton1Y > ton0Y) { ton1Y = this.game.height - this.tileHeight - this.tons[0].height - (this.tons[0].height * this.tons[1].ton.length) }
-            //if (ton0Y > ton1Y) { ton0Y = this.game.height - this.tileHeight - this.tons[0].height - (this.tons[0].height * this.tons[0].ton.length) }
             this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: ton1Y }, 2000, Phaser.Easing.Exponential.Out, true);
             this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: ton0Y }, 2000, Phaser.Easing.Exponential.Out, true);
+            this.add.tween(this.arrow[1]).to({ rotation: -this.tons[1].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
+            this.add.tween(this.arrow[0]).to({ rotation: this.tons[0].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
             this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
+
             this.painter.tween.onUpdateCallback(function () {
                 this.paintTheLines(this.tons[t], t);
                 this.calcAll()
@@ -606,8 +644,6 @@ module SSMAT {
             this.painter.tween.onComplete.add(function () {
                 this.paintTheLines(this.tons[t], t);
                 this.calcAll();
-                console.log(this.tons[0].arrow.width, this.tons[0].arrow.height, "arrow width & height"); 
-                console.log(this.tons[1].arrow.width, this.tons[1].arrow.height, "arrow width & height");
             }, this);
         }
         calcAll() {
@@ -656,7 +692,6 @@ module SSMAT {
             
             this.tons[1].convertAngle();
             this.tons[0].convertAngle();
-            console.log(this.tons[1].angleA)
             var temp2 = (Math.cos(this.tons[0].angleA) / Math.cos(this.tons[1].angleA)) // Tons1 = Cos(Ton0.angle) / Cos(Ton1.Angle)
             var temp = (temp2 * (Math.sin(this.tons[1].angleA)) + Math.sin(this.tons[0].angleA))
             this.tons[0].force = Math.round((this.painter.force / temp) * 10) / 10

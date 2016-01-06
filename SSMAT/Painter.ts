@@ -22,15 +22,9 @@
             this.text.stroke = '#000000';
             this.text.strokeThickness = 0;
             this.text.align = "left";
-            this.arrow = game.add.sprite(this.x, this.y, "arrow-red");
-            this.arrow.rotation = 1.57079633;
-            this.arrow.anchor.setTo(0, 0.5);
-                
         }
         update() {
                 //var pForce = this.force / 1000;
-            this.arrow.x = this.x;
-            this.arrow.y = this.y + this.height;
                 this.text.text = "M: " + this.mass + "KG\n  F: " + Math.round(this.force * 10) / 10 + "N";
                 this.text.x = (this.x + this.width / 2);
                 this.text.y = (this.y + this.text.height / 2);

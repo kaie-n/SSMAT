@@ -4,8 +4,8 @@
 
         preload() {
 
-            this.load.spritesheet('preloadBar', 'assets/loader.png', 64, 64);
-
+            this.load.image('loadEmpty', 'assets/loading-bar-empty.gif');
+            this.load.image('loadFill', 'assets/loading-bar-fill.gif');
         }
 
         create() {

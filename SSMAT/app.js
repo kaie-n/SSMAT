@@ -1,4 +1,7 @@
+var _this = this;
 window.onload = function () {
-    var game = new SSMAT.Game();
-    admin_no = document.getElementById("admin_no");
+    global_style = { font: "14px Courier Bold", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: _this.width, align: "left" };
+    global_game = new SSMAT.Game();
+    admin_no = document.getElementById("admin_no").value;
+    restartFromLeaderboard = false;
 };
