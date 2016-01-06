@@ -40,7 +40,9 @@
     <Content Include="assets\esplanade.gif" />
     <Content Include="assets\gradient.gif" />
     <Content Include="assets\help.gif" />
-    <Content Include="assets\loader.gif" />
+    <Content Include="assets\loaders.gif" />
+    <Content Include="assets\loading-bar-empty.gif" />
+    <Content Include="assets\loading-bar-fill.gif" />
     <Content Include="assets\logo.gif" />
     <Content Include="assets\merlion.png" />
     <Content Include="assets\painter.gif" />

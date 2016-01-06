@@ -3,6 +3,7 @@
     export class Preloader extends Phaser.State {
 
         preloadBar: Phaser.Sprite;
+        preloadBarFill: Phaser.Sprite;
         logo: Phaser.Sprite;
         click: Phaser.Sprite;
         tiler: Phaser.TileSprite;
@@ -11,13 +12,13 @@
 
             //  Set-up our preloader sprite
             this.tileHeight = 30;
-            this.preloadBar = this.add.sprite(this.game.width / 2, this.game.height / 2, 'preloadBar');
-            this.preloadBar.anchor.setTo(0.5, 0.5);
-            this.preloadBar.position.setTo(this.game.width / 2, this.game.height / 2);
-
-            this.preloadBar.animations.add('load');
-            this.preloadBar.animations.play('load', 24, true);
-            this.load.setPreloadSprite(this.preloadBar);
+            this.preloadBar = this.add.sprite(this.game.width / 2, this.game.height / 2, 'loadEmpty');
+            this.preloadBarFill = this.add.sprite(this.game.width / 2, this.game.height / 2, 'loadFill');
+            this.preloadBar.x -= this.preloadBar.width / 2;
+            this.preloadBar.y -= this.preloadBar.height / 2;
+            this.preloadBarFill.x = this.preloadBar.x;
+            this.preloadBarFill.y = this.preloadBar.y;
+            this.load.setPreloadSprite(this.preloadBarFill);
 
             for (var i = 1; i < 6; i++) {
                 var pic = 'pic' + i; 
@@ -35,6 +36,7 @@
             this.load.image('arrow-red', 'assets/arrow-red.gif');
             this.load.image('arrow-green', 'assets/arrow-green.gif');
             this.load.image('arrow-blue', 'assets/arrow-blue.gif');
+            this.load.spritesheet('preloadBar', 'assets/loader.gif', 64, 64);
             this.game.load.spritesheet('painter', 'assets/painter.gif', 50, 48, 4);
             this.game.load.spritesheet('help', 'assets/help.gif', 24, 19, 2);
             this.game.load.spritesheet('button', 'assets/button.gif', 24, 19, 2);
@@ -44,12 +46,12 @@
 
         create() {
             this.tiler = this.game.add.tileSprite(0, this.world.height - this.tileHeight, this.game.width, this.game.height, 'tile');
-            var tween = this.add.tween(this.preloadBar).to({ alpha: 1 }, 1000, Phaser.Easing.Linear.None, true);
+            var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
+            var tween = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
             tween.onComplete.add(this.startMainMenu, this);
         }
 
         startMainMenu() {
-            this.preloadBar.destroy();
             this.logo = this.add.sprite(this.world.centerX, this.world.centerY, 'logo');
             this.logo.anchor.setTo(0.5, 0.5);
             this.logo.alpha = 0;
