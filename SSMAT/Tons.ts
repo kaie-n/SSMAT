@@ -51,45 +51,15 @@
                 this.text.y = Math.round(this.text.y);
                 this.textAngle.y = Math.round(this.textAngle.y);
                 this.textAngle.x = Math.round(this.textAngle.x);
-
+                
                 this.text.smoothed = false;
                 this.textAngle.smoothed = false;
-            }
-            ////this.textAngle.anchor.set(0, 0.5);
-            //this.text.stroke = '#000000';
-            //this.text.strokeThickness = 1;
-            //this.textAngle.stroke = '#000000';
-            //this.textAngle.strokeThickness = 1;
-            if (name == "left") {
-                //this.components = []
-
-                //this.components[0] = game.add.sprite(0, 0, "arrow-green"); // x component
-                //this.components[1] = game.add.sprite(0, 0, "arrow-green"); // y component
-                //var cropRectangle = new Phaser.Rectangle(0, 0, this.components[1].width, this.components[1].height / 2);
-                //this.components[1].crop(cropRectangle, true);
-                //this.components[1].rotation = -1.5708
-                //this.components[0].anchor.setTo(0, 0.5);
-                //this.components[1].anchor.setTo(0, 0.5);
-                this.arrow = game.add.sprite(0, 0, "arrow-green");
-                this.text.anchor.set(1.6, 0.5);
-            }
-            if (name == "right") {
-                //this.components = []
-                //this.components[0] = game.add.sprite(0, 0, "arrow-blue"); // x component
-                //this.components[1] = game.add.sprite(0, 0, "arrow-blue"); // y component
-                //var cropRectangle = new Phaser.Rectangle(0, this.components[1].height / 2, this.components[1].width, this.components[1].height / 2);
-                //this.components[1].crop(cropRectangle, true);
-                ////this.components[0].alpha = 0.1;
-                //this.components[1].rotation = -1.5708
-                //this.components[0].anchor.setTo(0, 0.5);
-                //this.components[1].anchor.setTo(0, 0.5);
-                this.arrow = game.add.sprite(0, 0, "arrow-blue");
-                this.text.anchor.set(-0.6, 0.5);
-            }
-            if (name != "add") {
-
-                this.arrow.visible = true;
-                this.arrow.anchor.setTo(0, 0.5);
+                if (name == "left") {
+                    this.text.anchor.set(1.6, 0.5);
+                }
+                if (name == "right") {
+                    this.text.anchor.set(-0.6, 0.5);
+                }
             }
         }
         clearTon() {
@@ -100,17 +70,6 @@
             }
             this.ton = [];
         }
-        setRotate() {
-
-            if (this.name == "left") {
-                this.arrow.scale.x = -1;
-                //this.components[0].scale.x = -1;
-                this.arrow.rotation = this.angleA
-            }
-            if (this.name == "right") {
-                this.arrow.rotation = -this.angleA
-            }
-        }
 
         convertAngle() {
             this.angleinDeg = Math.round(Phaser.Math.radToDeg(this.angleA) * 100) / 100;
@@ -118,32 +77,11 @@
 
             return this.angleA;
         }
-        maintainComponents() {
-            // x components
-            this.components[0].position.copyFrom(this.main.painter.position);
-            // y components
-            this.components[1].position.copyFrom(this.main.painter.position);
-            this.components[1].width = this.arrow.getBounds().height - 10;
-            if (this.name == "left") {
-                this.components[0].width = -this.arrow.getBounds().width + 20;
-                this.components[1].x -= this.arrow.height / 4
-            }
-            if (this.name == "right") {
-                this.components[0].width = this.arrow.getBounds().width - 20;
-                this.components[1].x += this.arrow.height / 4
-            }
-
-            console.log(this.components[0].width, "THIS comp 0  WIDTH");
-            console.log(this.arrow.getBounds(), "GETBOUNDS arrow");
-        }
         update() {
-            this.convertAngle();
+           
             if (this.name == "left" || this.name == "right") {
-                //this.maintainComponents()
-                this.arrow.x = this.main.painter.x;
-                this.arrow.y = this.main.painter.y;
+                this.convertAngle();
                 if (this.started) {
-                    this.arrow.visible = true;
                     this.visible = true;
 
                     this.textAngle.visible = true;

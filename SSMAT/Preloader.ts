@@ -25,22 +25,21 @@
                 this.load.image(pic, images);
             }
             //  Load our actual games assets
-            this.load.image('titlepage', 'assets/background.png');
-            this.load.image('logo', 'assets/logo.png');
-            this.load.image('wheel', 'assets/wheel.png');
-            this.load.image('ton', 'assets/weight.png');
-            this.load.image('click', 'assets/click.png');
-            this.load.image('tile', 'assets/stone-tile.jpg');
-            this.load.image('pic', 'assets/image.png');
-            this.load.image('black', 'assets/background-menu.png');
+            this.load.image('logo', 'assets/logo.gif');
+            this.load.image('wheel', 'assets/wheel.gif');
+            this.load.image('ton', 'assets/weight.gif');
+            this.load.image('click', 'assets/click.gif');
+            this.load.image('tile', 'assets/stone-tile.gif');
+            this.load.image('black', 'assets/background-menu.gif');
             this.load.image('gradient', 'assets/gradient.gif');
-            this.load.image('arrow-red', 'assets/arrow.png');
-            this.load.image('arrow-green', 'assets/arrow-green.png');
-            this.load.image('arrow-blue', 'assets/arrow-blue.png');
-            this.game.load.spritesheet('painter', 'assets/painter.png', 50, 48, 4);
-            this.game.load.spritesheet('help', 'assets/help.png', 24, 19, 2);
-            this.game.load.spritesheet('button', 'assets/button.png', 24, 19, 2);
-            this.game.load.spritesheet('reset', 'assets/reset.png', 24, 19, 2);
+            this.load.image('arrow-red', 'assets/arrow-red.gif');
+            this.load.image('arrow-green', 'assets/arrow-green.gif');
+            this.load.image('arrow-blue', 'assets/arrow-blue.gif');
+            this.game.load.spritesheet('painter', 'assets/painter.gif', 50, 48, 4);
+            this.game.load.spritesheet('help', 'assets/help.gif', 24, 19, 2);
+            this.game.load.spritesheet('button', 'assets/button.gif', 24, 19, 2);
+            this.game.load.spritesheet('reset', 'assets/reset.gif', 24, 19, 2);
+            this.game.load.spritesheet('vector', 'assets/vector.gif', 24, 19, 2);
         }
 
         create() {
@@ -54,7 +53,7 @@
             this.logo = this.add.sprite(this.world.centerX, this.world.centerY, 'logo');
             this.logo.anchor.setTo(0.5, 0.5);
             this.logo.alpha = 0;
-            this.click = this.add.sprite(this.world.centerX, this.world.centerY, 'click');
+            this.click = this.add.sprite(this.world.centerX, this.world.centerY + this.logo.height, 'click');
             this.click.anchor.setTo(0.5, 0.5);
             this.click.alpha = 0;
             this.logo["start"] = this.add.tween(this.logo).to({ alpha: 1 }, 2000, Phaser.Easing.Linear.None, true, 0);
