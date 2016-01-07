@@ -14,7 +14,7 @@
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-
+    <link href="css/bootstrap-responsive.css" rel="stylesheet">
     <!-- Custom CSS -->
     <link href="css/stylish-portfolio.css" rel="stylesheet">
 
@@ -28,7 +28,19 @@
         <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
-
+    <!--<script src="js/bootstrap.min.js"></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/plugins/CSSPlugin.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/easing/EasePack.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/1.18.2/TweenLite.min.js"></script>
+    <!-- Custom Theme JavaScript -->
+    <script>
+        window.onload = function () {
+            var footer = document.getElementById("footer");
+            var logo = document.getElementById("top")
+            TweenLite.to(footer, 1, { bottom: "20px", delay: 0.5, ease: Power4.easeOut })
+            TweenLite.to(logo, 1.5, { opacity: 1, delay: 0.5, ease: Power4.easeOut })
+        }
+    </script>
 </head>
 
 <body>
@@ -42,16 +54,16 @@
                 <a href="#top" onclick="">Start Bootstrap</a>
             </li>
             <li>
-                <a href="#top"  onclick="">Home</a>
+                <a href="#top" onclick="">Home</a>
             </li>
             <li>
-                <a href="#about"  onclick="">About</a>
+                <a href="#about" onclick="">About</a>
             </li>
             <li>
-                <a href="#services"  onclick="">Services</a>
+                <a href="#services" onclick="">Services</a>
             </li>
             <li>
-                <a href="#portfolio"  onclick="">Portfolio</a>
+                <a href="#portfolio" onclick="">Portfolio</a>
             </li>
             <li>
                 <a href="#contact" onclick="">Contact</a>
@@ -62,20 +74,19 @@
     <!-- Header -->
     <header id="top" class="header">
         <div class="text-vertical-center">
-            <h1>KAIENX</h1>
-            <h3>coming soon</h3>
-            <br>
+            <img id="logo" src="apple-touch-icon.png" />
+            <br> 
         </div>
     </header>
 
-
+    <footer>
+        <div id="footer">
+            <address>2015 © KAIENX</address>
+        </div>
+    </footer>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="js/bootstrap.min.js"></script>
 
-    <!-- Custom Theme JavaScript -->
-    <script>
-    </script>
 
 </body>
 
