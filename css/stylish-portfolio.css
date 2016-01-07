@@ -241,6 +241,29 @@ hr.small {
     bottom: -40px;
     left: 40px;
 }
+
+/* portrait */
+@media screen and (orientation:portrait) { 
+	/* portrait-specific styles */ 
+	#footer {
+		position: fixed;
+        z-index: 100;
+        bottom: 40px;
+        left: 50%;
+	}
+}
+
+/* landscape */
+@media screen and (orientation:landscape) {
+	/* landscape-specific styles */
+	#footer {
+    position: fixed;
+    z-index: 100;
+    bottom: 40px;
+    left: 40px;
+	}
+}
+
 /* Large desktop */
 @media (min-width: 1200px) {  }
  
