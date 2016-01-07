@@ -300,6 +300,7 @@ address {
 
     address {
         position: relative;
+        margin-bottom: 20px !important;
         bottom: -40px;
         left: 0;
         text-align: center;
