@@ -292,6 +292,7 @@ address {
     position: relative;
     bottom: -40px;
     left: 40px;
+    text-align: left;
 }
 
 /* portrait */
@@ -299,7 +300,7 @@ address {
     /* portrait-specific styles */
 
     address {
-        position: absolute;
+        position: relative;
         margin-bottom: 20px !important;
         bottom: -40px;
         left: 0px;
