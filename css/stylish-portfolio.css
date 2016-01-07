@@ -288,6 +288,7 @@ hr.small {
 
 address {
     transition: all 0.5s ease-out;
+    margin-bottom: 20px !important;
     position: relative;
     bottom: -40px;
     left: 40px;
