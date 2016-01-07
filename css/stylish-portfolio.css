@@ -299,7 +299,7 @@ address {
     /* portrait-specific styles */
 
     address {
-        position: absoulute;
+        position: absolute;
         margin-bottom: 20px !important;
         bottom: -40px;
         left: 0px;
