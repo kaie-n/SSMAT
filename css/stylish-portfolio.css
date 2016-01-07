@@ -299,10 +299,10 @@ address {
     /* portrait-specific styles */
 
     address {
-        position: relative;
+        position: absoulute;
         margin-bottom: 20px !important;
         bottom: -40px;
-        left: 0;
+        left: 0px;
         text-align: center;
     }
 }
