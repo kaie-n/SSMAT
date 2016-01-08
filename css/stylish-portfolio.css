@@ -209,9 +209,73 @@ hr.small {
     -o-background-size: cover;
 }
 
+
+
 #logo {
     transition: all 0.5s ease-out;
+    background: url(../img/mask.jpg) no-repeat;
+    width: 180px;
+    height: 180px;
+    margin: auto;
 }
+#logo-overlay {
+    background: url(../img/mask-overlay.png) no-repeat;
+    width: 180px;
+    height: 180px;
+    margin: auto;
+}
+
+@-webkit-keyframes play {
+    from {
+        background-position: 0px;
+    }
+
+    to {
+        background-position: -720px;
+    }
+}
+
+@-moz-keyframes play {
+    from {
+        background-position: 0px;
+    }
+
+    to {
+        background-position: -720px;
+    }
+}
+
+@-ms-keyframes play {
+    from {
+        background-position: 0px;
+    }
+
+    to {
+        background-position: -720px;
+    }
+}
+
+@-o-keyframes play {
+    from {
+        background-position: 0px;
+    }
+
+    to {
+        background-position: -720px;
+    }
+}
+
+@keyframes play {
+    from {
+        background-position: 0px;
+    }
+
+    to {
+        background-position: -720px;
+    }
+}
+
+
 
 /* About */
 

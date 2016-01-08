@@ -35,11 +35,15 @@
     <!-- Custom Theme JavaScript -->
     <script>
         window.onload = function () {
-            ;
+
             var footer = document.getElementsByTagName("address")[0];
-            var logo = document.getElementById("top")
+            var header = document.getElementById("top")
+            var logo = document.getElementById("logo-overlay")
+            logo.onmouseover = function () { TweenLite.to(logo, 1.5, { rotation: -25, transformOrigin: "85px 165px", ease: Power4.easeOut }) };
+            logo.onmouseout = function () { TweenLite.to(logo, 1.5, { rotation: 0, transformOrigin: "85px 165px", ease: Power4.easeOut }) };
             TweenLite.to(footer, 1, { bottom: "0px", delay: 0.5, ease: Power4.easeOut })
-            TweenLite.to(logo, 1.5, { opacity: 1, delay: 0.5, ease: Power4.easeOut })
+            TweenLite.to(header, 1.5, { opacity: 1, delay: 0.5, ease: Power4.easeOut })
+
         }
     </script>
 </head>
@@ -50,7 +54,9 @@
     <!-- Header -->
     <header id="top" class="header">
         <div class="text-vertical-center">
-            <img id="logo" src="apple-touch-icon.png" />
+            <div id="logo"><div id="logo-overlay"></div></div>
+
+            <!--<img id="logo" src="apple-touch-icon.png" />-->
             <br>
             <p class="lead">I have bigger dreams</p>
 
