@@ -39,8 +39,12 @@
             var footer = document.getElementsByTagName("address")[0];
             var header = document.getElementById("top")
             var logo = document.getElementById("logo-overlay")
-            logo.onmouseover = function () { TweenLite.to(logo, 1.5, { rotation: -25, transformOrigin: "85px 165px", ease: Power4.easeOut }) };
-            logo.onmouseout = function () { TweenLite.to(logo, 1.5, { rotation: 0, transformOrigin: "85px 165px", ease: Power4.easeOut }) };
+            //logo.onmouseover = function () { TweenLite.to(logo, 1.5, { rotation: -25, transformOrigin: "85px 165px", ease: Power4.easeOut }) };
+            //logo.onmouseout = function () { TweenLite.to(logo, 1.5, { rotation: 0, transformOrigin: "85px 165px", ease: Power4.easeOut }) };
+            logo.onmousedown = function () {
+                if (logo.id == "logo-overlay") {
+                }
+            };
             TweenLite.to(footer, 1, { bottom: "0px", delay: 0.5, ease: Power4.easeOut })
             TweenLite.to(header, 1.5, { opacity: 1, delay: 0.5, ease: Power4.easeOut })
 
