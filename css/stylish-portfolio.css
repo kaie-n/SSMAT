@@ -218,24 +218,24 @@ hr.small {
     height: 180px;
     margin: auto;
 }
-#logo-overlay:hover {
-    transform-origin: 85px 165px 0px; transform: matrix(0.9063, -0.42261, 0.42261, 0.9063, 0, 0);
-}
-#logo-overlay #clicked {
-     transform-origin: 85px 165px 0px; transform: matrix(0.9063, -0.42261, 0.42261, 0.9063, 0, 0);
-}
-#logo-overlay:active {
-    transform-origin: 85px 165px 0px; transform: matrix(0.9063, -0.42261, 0.42261, 0.9063, 0, 0);
-}
-#logo-overlay {
+.logo-overlay {
     transition: all 0.5s ease-out;
     transform-origin: 85px 165px 0px;
+     transform: none;
     background: url(../img/mask-overlay.png) no-repeat;
     width: 180px;
     height: 180px;
     margin: auto;
 }
 
+.logo-overlay.clicked {
+    transition: all 0.5s ease-out;
+     transform-origin: 85px 165px 0px; transform: matrix(0.9063, -0.42261, 0.42261, 0.9063, 0, 0);
+}
+
+/*.logo-overlay:active {
+    transform-origin: 85px 165px 0px; transform: matrix(0.9063, -0.42261, 0.42261, 0.9063, 0, 0);
+}*/
 @-webkit-keyframes play {
     from {
         background-position: 0px;
