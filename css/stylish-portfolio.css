@@ -14,10 +14,14 @@ body {
 
 body {
     font-family: "Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;
-    
 }
 
 .text-vertical-center {
+    -webkit-transition: all 0.4s ease 0s;
+    -moz-transition: all 0.4s ease 0s;
+    -ms-transition: all 0.4s ease 0s;
+    -o-transition: all 0.4s ease 0s;
+    transition: all 0.4s ease 0s;
     display: table-cell;
     text-align: center;
     vertical-align: middle;
@@ -168,10 +172,10 @@ hr.small {
 
 .share {
     height: 40px;
-    width: 120px;
+    width: 126px;
     left: 50%;
     position: fixed;
-    margin-left: -60px;
+    margin-left: -62.5px;
 }
 
 #sidebar-wrapper.active {
@@ -194,8 +198,8 @@ hr.small {
     opacity: 0;
     display: table;
     position: fixed;
-    left:0px;
-    top:0px;
+    left: 0px;
+    top: 0px;
     width: 100%;
     height: 100%;
     background: url(../img/bg.jpg) no-repeat center center scroll;
@@ -318,10 +322,17 @@ address {
         position: fixed;
         z-index: 100;
     }
+
+    .text-vertical-center {
+        vertical-align: top;
+    }
 }
 
 /* Large desktop */
-@media (min-width: 1200px) {
+@media (min-width: 768px) {
+    .text-vertical-center {
+        vertical-align: middle;
+    }
 }
 
 /* Portrait tablet to landscape and desktop */
