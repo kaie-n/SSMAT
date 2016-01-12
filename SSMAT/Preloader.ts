@@ -7,6 +7,7 @@
         logo: Phaser.Sprite;
         click: Phaser.Sprite;
         tiler: Phaser.TileSprite;
+        levels: Array<Phaser.Sprite>;
         tileHeight: number;
         preload() {
 
@@ -36,15 +37,19 @@
             this.load.image('arrow-red', 'assets/arrow-red.gif');
             this.load.image('arrow-green', 'assets/arrow-green.gif');
             this.load.image('arrow-blue', 'assets/arrow-blue.gif');
+            this.load.image('level0', 'assets/level0.gif');
+            this.load.image('level1', 'assets/level1.gif');
             this.load.spritesheet('preloadBar', 'assets/loader.gif', 64, 64);
             this.game.load.spritesheet('painter', 'assets/painter.gif', 50, 48, 4);
             this.game.load.spritesheet('help', 'assets/help.gif', 24, 19, 2);
             this.game.load.spritesheet('button', 'assets/button.gif', 24, 19, 2);
             this.game.load.spritesheet('reset', 'assets/reset.gif', 24, 19, 2);
             this.game.load.spritesheet('vector', 'assets/vector.gif', 24, 19, 2);
+            this.game.load.spritesheet('flag', 'assets/flag.gif', 40, 90, 8);
         }
 
         create() {
+            this.levels = [];
             this.tiler = this.game.add.tileSprite(0, this.world.height - this.tileHeight, this.game.width, this.game.height, 'tile');
             var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
             var tween2 = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
@@ -60,10 +65,34 @@
             this.click.alpha = 0;
             this.logo["start"] = this.add.tween(this.logo).to({ alpha: 1 }, 2000, Phaser.Easing.Linear.None, true, 0);
             this.click["start"] = this.add.tween(this.click).to({ alpha: 1 }, 400, Phaser.Easing.Linear.None, true, 2000, -1, true);
+            
+
             this.input.onDown.addOnce(function () {
+                this.chooseLevel()
+                //this.game.state.start('MainMenu', true, false)
+            }, this);
+        }
+
+        chooseLevel() {
+            this.click.destroy();
+            this.logo.destroy();
+
+            this.levels[0] = this.add.sprite(this.world.centerX, this.world.centerY, 'level0');
+            this.levels[0].anchor.setTo(0.5, 0.5);
+            this.levels[0].position.setTo(this.world.centerX, this.world.centerY - this.levels[0].height);
+            this.levels[0].inputEnabled = true;
+            this.levels[0].input.useHandCursor = true;
+            this.levels[0].events.onInputUp.addOnce(function () {
                 this.game.state.start('MainMenu', true, false)
             }, this);
-
+            this.levels[1] = this.add.sprite(this.world.centerX, this.world.centerY, 'level1');
+            this.levels[1].anchor.setTo(0.5, 0.5);
+            this.levels[1].position.setTo(this.world.centerX, this.world.centerY + this.levels[0].height);
+            this.levels[1].inputEnabled = true;
+            this.levels[1].input.useHandCursor = true;
+            this.levels[1].events.onInputUp.addOnce(function () {
+                this.game.state.start('AdvancedMenu', true, false)
+            }, this);
         }
 
     }

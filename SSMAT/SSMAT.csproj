@@ -38,8 +38,11 @@
     <Content Include="assets\cloud\4_0.png" />
     <Content Include="assets\cloud\5_0.png" />
     <Content Include="assets\esplanade.gif" />
+    <Content Include="assets\flag.gif" />
     <Content Include="assets\gradient.gif" />
     <Content Include="assets\help.gif" />
+    <Content Include="assets\level0.gif" />
+    <Content Include="assets\level1.gif" />
     <Content Include="assets\loader.gif" />
     <Content Include="assets\loading-bar-empty.gif" />
     <Content Include="assets\loading-bar-fill.gif" />
@@ -73,6 +76,7 @@
     <Content Include="web.config" />
   </ItemGroup>
   <ItemGroup>
+    <TypeScriptCompile Include="AdvancedMenu.ts" />
     <TypeScriptCompile Include="app.ts" />
     <TypeScriptCompile Include="Arrow.ts" />
     <TypeScriptCompile Include="Boot.ts" />
