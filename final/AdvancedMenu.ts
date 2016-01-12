@@ -220,7 +220,7 @@ module SSMAT {
             this.createArrows();
 
             // wind
-            this.wind = this.game.rnd.integerInRange(0, 100);
+            this.wind = this.game.rnd.integerInRange(25, 100);
             var randomScale = Math.round(Math.random()) * 2 - 1
             console.log(randomScale);
             this.windText = this.game.add.text(0, 0, "Wind: " + this.wind + "N", global_style);

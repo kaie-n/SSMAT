@@ -3,9 +3,9 @@
 // Definitions by: Ullisen Media Group <http://ullisenmedia.com>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
-/// <reference path="../SSMAT/node.d.ts" />
-/// <reference path="../SSMAT/jquery.d.ts" />
-/// <reference path="../SSMAT/underscore.d.ts" />
+/// <reference path="../final/node.d.ts" />
+/// <reference path="../final/jquery.d.ts" />
+/// <reference path="../final/underscore.d.ts" />
 
 declare namespace Parse {
 
