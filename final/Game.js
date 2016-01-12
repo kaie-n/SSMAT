@@ -183,6 +183,19 @@ var SSMAT;
             this.flag.animations.add('wave');
             this.flag.animations.play('wave', this.wind / 4, true);
             this.flag.scale.x = randomScale;
+            this.gameTimer = this.game.time.create(false);
+            var ESCAPE = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+            ESCAPE.onDown.add(function () {
+                this.gameTimer.pause();
+                var r = confirm("Exit the game?");
+                if (r) {
+                    this.game.state.start('Preloader', true, false);
+                    this.game.paused = true;
+                }
+                else {
+                    this.game.paused = false;
+                }
+            }, this);
         };
         AdvancedMenu.prototype.hide = function () {
             for (var i = 0; i < this.arrow.length; i++) {
@@ -238,7 +251,9 @@ var SSMAT;
             this.arrow[2].y += this.painter.height;
         };
         AdvancedMenu.prototype.startGame = function () {
-            this.game.time.reset();
+            this.gameTimer = this.game.time.create(false);
+            this.gameTimer.start();
+            //this.game.time.reset();
         };
         AdvancedMenu.prototype.update = function () {
             //this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
@@ -278,10 +293,14 @@ var SSMAT;
             }
         };
         AdvancedMenu.prototype.updateTimer = function () {
-            var hours = Math.floor(this.game.time.totalElapsedSeconds() / 3600) % 24;
-            var minutes = Math.floor(this.game.time.totalElapsedSeconds() / 60) % 60;
-            var seconds = Math.floor(this.game.time.totalElapsedSeconds()) % 60;
-            this.clockTime = Math.round(this.game.time.totalElapsedSeconds() * 100) / 100;
+            var hours = Math.floor(this.gameTimer.seconds / 3600) % 24;
+            var minutes = Math.floor(this.gameTimer.seconds / 60) % 60;
+            var seconds = Math.floor(this.gameTimer.seconds) % 60;
+            this.clockTime = Math.round(this.gameTimer.seconds * 100) / 100;
+            //var hours = Math.floor(this.game.time.totalElapsedSeconds() / 3600) % 24;
+            //var minutes = Math.floor(this.game.time.totalElapsedSeconds() / 60) % 60;
+            //var seconds = Math.floor(this.game.time.totalElapsedSeconds()) % 60;
+            //this.clockTime = Math.round(this.game.time.totalElapsedSeconds() * 100) / 100;
             var seconds1 = String(seconds);
             var minutes1 = String(minutes);
             var hours1 = String(hours);
@@ -636,6 +655,7 @@ window.onload = function () {
     global_game = new SSMAT.Game();
     admin_no = document.getElementById("admin_no").value;
     restartFromLeaderboard = false;
+    level_choice = "";
 };
 //function adjust() {
 //    var divgame = document.getElementById("content");
@@ -729,6 +749,24 @@ var SSMAT;
 })(SSMAT || (SSMAT = {}));
 var SSMAT;
 (function (SSMAT) {
+    var Game = (function (_super) {
+        __extends(Game, _super);
+        function Game() {
+            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
+            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
+            this.state.add('Boot', SSMAT.Boot, false);
+            this.state.add('Preloader', SSMAT.Preloader, false);
+            this.state.add('MainMenu', SSMAT.MainMenu, false);
+            this.state.add('AdvancedMenu', SSMAT.AdvancedMenu, false);
+            this.state.add('GameOver', SSMAT.GameOver, false);
+            this.state.start('Boot');
+        }
+        return Game;
+    })(Phaser.Game);
+    SSMAT.Game = Game;
+})(SSMAT || (SSMAT = {}));
+var SSMAT;
+(function (SSMAT) {
     var GameOver = (function (_super) {
         __extends(GameOver, _super);
         function GameOver() {
@@ -762,7 +800,7 @@ var SSMAT;
                 this.preloadBar.position.setTo(this.game.width / 2, this.game.height / 2);
                 this.preloadBar.animations.add('load');
                 this.preloadBar.animations.play('load', 24, true);
-                var score = Parse.Object.extend("LeaderBoard");
+                var score = Parse.Object.extend(level_choice);
                 var addscore = new score();
                 addscore.currentname = Parse.User.current();
                 addscore.numscore = this.numscore;
@@ -870,7 +908,7 @@ var SSMAT;
             }
         };
         GameOver.prototype.showLeaderBoard = function () {
-            var score = Parse.Object.extend("LeaderBoard");
+            var score = Parse.Object.extend(level_choice);
             var query = new Parse.Query(score);
             var preloadBar = this.preloadBar;
             var temp_this = this;
@@ -1270,6 +1308,18 @@ var SSMAT;
             this.tons[0].dmass = this.tons[0].mass;
             this.tons[1].dmass = this.tons[1].mass;
             this.createArrows();
+            var ESCAPE = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+            this.gameTimer = this.game.time.create(false);
+            ESCAPE.onDown.add(function () {
+                this.gameTimer.pause();
+                var r = confirm("Exit the game?");
+                if (r) {
+                    this.game.state.start('Preloader', true, false);
+                }
+                else {
+                    this.gameTimer.resume();
+                }
+            }, this);
         };
         MainMenu.prototype.hide = function () {
             for (var i = 0; i < this.arrow.length; i++) {
@@ -1324,15 +1374,6 @@ var SSMAT;
             this.arrow[2].position.copyFrom(this.painter.position);
             this.arrow[2].y += this.painter.height;
         };
-        MainMenu.prototype.startGame = function () {
-            this.game.time.reset();
-        };
-        MainMenu.prototype.update = function () {
-            //this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
-            if (this.started) {
-                this.updateTimer();
-            }
-        };
         MainMenu.prototype.checkFinished = function () {
             if (this.noGridCompleted == 6) {
                 this.started = false;
@@ -1364,11 +1405,25 @@ var SSMAT;
                 }, this);
             }
         };
+        MainMenu.prototype.startGame = function () {
+            this.gameTimer.start();
+            //this.game.time.reset();
+        };
+        MainMenu.prototype.update = function () {
+            //this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
+            if (this.started) {
+                this.updateTimer();
+            }
+        };
         MainMenu.prototype.updateTimer = function () {
-            var hours = Math.floor(this.game.time.totalElapsedSeconds() / 3600) % 24;
-            var minutes = Math.floor(this.game.time.totalElapsedSeconds() / 60) % 60;
-            var seconds = Math.floor(this.game.time.totalElapsedSeconds()) % 60;
-            this.clockTime = Math.round(this.game.time.totalElapsedSeconds() * 100) / 100;
+            var hours = Math.floor(this.gameTimer.seconds / 3600) % 24;
+            var minutes = Math.floor(this.gameTimer.seconds / 60) % 60;
+            var seconds = Math.floor(this.gameTimer.seconds) % 60;
+            this.clockTime = Math.round(this.gameTimer.seconds * 100) / 100;
+            //var hours = Math.floor(this.game.time.totalElapsedSeconds() / 3600) % 24;
+            //var minutes = Math.floor(this.game.time.totalElapsedSeconds() / 60) % 60;
+            //var seconds = Math.floor(this.game.time.totalElapsedSeconds()) % 60;
+            //this.clockTime = Math.round(this.game.time.totalElapsedSeconds() * 100) / 100;
             var seconds1 = String(seconds);
             var minutes1 = String(minutes);
             var hours1 = String(hours);
@@ -1719,24 +1774,6 @@ var SSMAT;
 */
 var SSMAT;
 (function (SSMAT) {
-    var Game = (function (_super) {
-        __extends(Game, _super);
-        function Game() {
-            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
-            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
-            this.state.add('Boot', SSMAT.Boot, false);
-            this.state.add('Preloader', SSMAT.Preloader, false);
-            this.state.add('MainMenu', SSMAT.MainMenu, false);
-            this.state.add('AdvancedMenu', SSMAT.AdvancedMenu, false);
-            this.state.add('GameOver', SSMAT.GameOver, false);
-            this.state.start('Boot');
-        }
-        return Game;
-    })(Phaser.Game);
-    SSMAT.Game = Game;
-})(SSMAT || (SSMAT = {}));
-var SSMAT;
-(function (SSMAT) {
     var Painter = (function (_super) {
         __extends(Painter, _super);
         function Painter(game, x, y, mass, gravity) {
@@ -1813,18 +1850,23 @@ var SSMAT;
         Preloader.prototype.create = function () {
             this.levels = [];
             this.tiler = this.game.add.tileSprite(0, this.world.height - this.tileHeight, this.game.width, this.game.height, 'tile');
-            var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
-            var tween2 = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
+            var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
+            var tween2 = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
             tween.onComplete.add(this.startMainMenu, this);
+            var t = new Phaser.Loader(this.game);
+            if (t.hasLoaded) {
+                this.preloadBar.alpha = 0;
+                this.preloadBarFill.alpha = 0;
+            }
         };
         Preloader.prototype.startMainMenu = function () {
-            this.logo = this.add.sprite(this.world.centerX, this.world.centerY, 'logo');
+            this.logo = this.add.sprite(Math.round(this.world.centerX), this.world.centerY - 1.5, 'logo');
             this.logo.anchor.setTo(0.5, 0.5);
             this.logo.alpha = 0;
             this.click = this.add.sprite(this.world.centerX, this.world.centerY + this.logo.height, 'click');
             this.click.anchor.setTo(0.5, 0.5);
             this.click.alpha = 0;
-            this.logo["start"] = this.add.tween(this.logo).to({ alpha: 1 }, 2000, Phaser.Easing.Linear.None, true, 0);
+            this.logo["start"] = this.add.tween(this.logo).to({ alpha: 1 }, 500, Phaser.Easing.Linear.None, true, 0);
             this.click["start"] = this.add.tween(this.click).to({ alpha: 1 }, 400, Phaser.Easing.Linear.None, true, 2000, -1, true);
             this.input.onDown.addOnce(function () {
                 this.chooseLevel();
@@ -1839,7 +1881,14 @@ var SSMAT;
             this.levels[0].position.setTo(this.world.centerX, this.world.centerY - this.levels[0].height);
             this.levels[0].inputEnabled = true;
             this.levels[0].input.useHandCursor = true;
+            this.levels[0].events.onInputOver.add(function () {
+                this.add.tween(this.levels[0]).to({ alpha: 0.5 }, 250, Phaser.Easing.Linear.None, true, -1, true);
+            }, this);
+            this.levels[0].events.onInputOut.add(function () {
+                this.add.tween(this.levels[0]).to({ alpha: 1 }, 250, Phaser.Easing.Linear.None, true);
+            }, this);
             this.levels[0].events.onInputUp.addOnce(function () {
+                level_choice = "LeaderBoard";
                 this.game.state.start('MainMenu', true, false);
             }, this);
             this.levels[1] = this.add.sprite(this.world.centerX, this.world.centerY, 'level1');
@@ -1848,7 +1897,14 @@ var SSMAT;
             this.levels[1].inputEnabled = true;
             this.levels[1].input.useHandCursor = true;
             this.levels[1].events.onInputUp.addOnce(function () {
+                level_choice = "LeaderBoard2";
                 this.game.state.start('AdvancedMenu', true, false);
+            }, this);
+            this.levels[1].events.onInputOver.add(function () {
+                this.add.tween(this.levels[1]).to({ alpha: 0.5 }, 250, Phaser.Easing.Linear.None, true, -1, true);
+            }, this);
+            this.levels[1].events.onInputOut.add(function () {
+                this.add.tween(this.levels[1]).to({ alpha: 1 }, 250, Phaser.Easing.Linear.None, true);
             }, this);
         };
         return Preloader;

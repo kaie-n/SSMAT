@@ -51,19 +51,26 @@
         create() {
             this.levels = [];
             this.tiler = this.game.add.tileSprite(0, this.world.height - this.tileHeight, this.game.width, this.game.height, 'tile');
-            var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
-            var tween2 = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 1000, Phaser.Easing.Linear.None, true);
+            
+            var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
+            var tween2 = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
             tween.onComplete.add(this.startMainMenu, this);
+            var t: Phaser.Loader = new Phaser.Loader(this.game);
+            if (t.hasLoaded) {
+                this.preloadBar.alpha = 0;
+                this.preloadBarFill.alpha = 0;
+            }
         }
 
         startMainMenu() {
-            this.logo = this.add.sprite(this.world.centerX, this.world.centerY, 'logo');
+
+            this.logo = this.add.sprite(Math.round(this.world.centerX), this.world.centerY - 1.5, 'logo');
             this.logo.anchor.setTo(0.5, 0.5);
             this.logo.alpha = 0;
             this.click = this.add.sprite(this.world.centerX, this.world.centerY + this.logo.height, 'click');
             this.click.anchor.setTo(0.5, 0.5);
             this.click.alpha = 0;
-            this.logo["start"] = this.add.tween(this.logo).to({ alpha: 1 }, 2000, Phaser.Easing.Linear.None, true, 0);
+            this.logo["start"] = this.add.tween(this.logo).to({ alpha: 1 }, 500, Phaser.Easing.Linear.None, true, 0);
             this.click["start"] = this.add.tween(this.click).to({ alpha: 1 }, 400, Phaser.Easing.Linear.None, true, 2000, -1, true);
             
 
@@ -82,7 +89,18 @@
             this.levels[0].position.setTo(this.world.centerX, this.world.centerY - this.levels[0].height);
             this.levels[0].inputEnabled = true;
             this.levels[0].input.useHandCursor = true;
+            this.levels[0].events.onInputOver.add(function () {
+            
+                this.add.tween(this.levels[0]).to({ alpha: 0.5 }, 250, Phaser.Easing.Linear.None, true, -1, true);
+            
+            }, this);
+            this.levels[0].events.onInputOut.add(function () {
+               
+                this.add.tween(this.levels[0]).to({ alpha: 1 }, 250, Phaser.Easing.Linear.None, true);
+              
+            }, this);
             this.levels[0].events.onInputUp.addOnce(function () {
+                level_choice = "LeaderBoard";
                 this.game.state.start('MainMenu', true, false)
             }, this);
             this.levels[1] = this.add.sprite(this.world.centerX, this.world.centerY, 'level1');
@@ -91,7 +109,18 @@
             this.levels[1].inputEnabled = true;
             this.levels[1].input.useHandCursor = true;
             this.levels[1].events.onInputUp.addOnce(function () {
+                level_choice = "LeaderBoard2";
                 this.game.state.start('AdvancedMenu', true, false)
+            }, this);
+            this.levels[1].events.onInputOver.add(function () {
+              
+               this.add.tween(this.levels[1]).to({ alpha: 0.5 }, 250, Phaser.Easing.Linear.None, true, -1, true);
+               
+            }, this);
+            this.levels[1].events.onInputOut.add(function () {
+                
+                this.add.tween(this.levels[1]).to({ alpha: 1 }, 250, Phaser.Easing.Linear.None, true);
+               
             }, this);
         }
 

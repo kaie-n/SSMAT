@@ -1,6 +1,6 @@
 ﻿module SSMAT {
     export class Arrow extends Phaser.Sprite {
-        main: SSMAT.MainMenu;
+        main:any;
         components: Array<Phaser.Sprite>;
         group: Phaser.Group;
         constructor(game: Phaser.Game, x: number, y: number, key: string, scale: number = 1, components: boolean = true) {

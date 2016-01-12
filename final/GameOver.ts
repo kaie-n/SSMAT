@@ -41,7 +41,7 @@ module SSMAT {
                 this.preloadBar.position.setTo(this.game.width / 2, this.game.height / 2);
                 this.preloadBar.animations.add('load');
                 this.preloadBar.animations.play('load', 24, true);
-                var score = Parse.Object.extend("LeaderBoard");
+                var score = Parse.Object.extend(level_choice);
                 var addscore = new score();
                 addscore.currentname = Parse.User.current();
                 addscore.numscore = this.numscore;
@@ -154,7 +154,7 @@ module SSMAT {
         }
 
         showLeaderBoard() {
-            var score = Parse.Object.extend("LeaderBoard");
+            var score = Parse.Object.extend(level_choice);
             var query = new Parse.Query(score);
             var preloadBar = this.preloadBar;
             var temp_this = this;

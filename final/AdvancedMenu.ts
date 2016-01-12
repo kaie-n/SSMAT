@@ -37,6 +37,7 @@ module SSMAT {
         tileHeight: number;
         arrow: Array<SSMAT.Arrow>;
         vector: Phaser.Button;
+        gameTimer: Phaser.Timer;
         create() {
 
             Parse.User.logOut();
@@ -234,6 +235,19 @@ module SSMAT {
             this.flag.animations.add('wave');
             this.flag.animations.play('wave', this.wind / 4, true);
             this.flag.scale.x = randomScale;
+            this.gameTimer = this.game.time.create(false);
+            var ESCAPE = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+            ESCAPE.onDown.add(function () {
+                this.gameTimer.pause();
+                var r = confirm("Exit the game?");
+                if (r) {
+                    this.game.state.start('Preloader', true, false);
+                    this.game.paused = true;
+                }
+                else {
+                    this.game.paused = false;
+                }
+            }, this);
 
         }
         hide() {
@@ -257,7 +271,7 @@ module SSMAT {
             this.arrow[1].rotation = -this.tons[1].angleA;
             //
             this.arrow[2] = new SSMAT.Arrow(this.game, this.painter.x, this.painter.y + this.painter.height, "arrow-red", 1, false);
-           
+
             this.arrow[2].rotation = 1.57079633;
             this.arrow[2].main = this;
 
@@ -283,7 +297,7 @@ module SSMAT {
             var point2 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
             var arrow0Point = new Phaser.Point((point1.x + this.painter.x) / 2, (point1.y + this.painter.y) / 2);
             var arrow1Point = new Phaser.Point((point2.x + this.painter.x) / 2, (point2.y + this.painter.y) / 2);
-           
+
             this.arrow[0].position.copyFrom(arrow0Point);
             //this.arrow[0].rotation = this.tons[0].angleA;
             //
@@ -295,7 +309,9 @@ module SSMAT {
         }
 
         startGame() {
-            this.game.time.reset();
+            this.gameTimer = this.game.time.create(false);
+            this.gameTimer.start();
+            //this.game.time.reset();
         }
         update() {
             //this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
@@ -342,10 +358,14 @@ module SSMAT {
         }
 
         updateTimer() {
-            var hours = Math.floor(this.game.time.totalElapsedSeconds() / 3600) % 24;
-            var minutes = Math.floor(this.game.time.totalElapsedSeconds() / 60) % 60;
-            var seconds = Math.floor(this.game.time.totalElapsedSeconds()) % 60;
-            this.clockTime = Math.round(this.game.time.totalElapsedSeconds() * 100) / 100;
+            var hours = Math.floor(this.gameTimer.seconds / 3600) % 24;
+            var minutes = Math.floor(this.gameTimer.seconds / 60) % 60;
+            var seconds = Math.floor(this.gameTimer.seconds) % 60;
+            this.clockTime = Math.round(this.gameTimer.seconds * 100) / 100;
+            //var hours = Math.floor(this.game.time.totalElapsedSeconds() / 3600) % 24;
+            //var minutes = Math.floor(this.game.time.totalElapsedSeconds() / 60) % 60;
+            //var seconds = Math.floor(this.game.time.totalElapsedSeconds()) % 60;
+            //this.clockTime = Math.round(this.game.time.totalElapsedSeconds() * 100) / 100;
             var seconds1 = String(seconds);
             var minutes1 = String(minutes);
             var hours1 = String(hours);
@@ -486,7 +506,7 @@ module SSMAT {
         }
         // Green button function
         reset() {
-        
+
             this.painter.x = this.world.centerX;
             this.painter.y = 509.1707368654838
 

@@ -2,7 +2,7 @@
     export class Grid extends Phaser.Sprite {
 
         text: Phaser.Text;
-        main: SSMAT.MainMenu;
+        main: any;
         angleA: number;
         angleB: number;
         answerA: number;

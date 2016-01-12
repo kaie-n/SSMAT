@@ -14,7 +14,7 @@
         text: Phaser.Text;
         textAngle: Phaser.Text;
         started: boolean;
-        main: SSMAT.MainMenu
+        main: any;
         dlength: number;
         dlengtha: number;
         dlengthb: number;
