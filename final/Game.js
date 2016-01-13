@@ -61,7 +61,6 @@ var SSMAT;
                     this.sprite[i][j].inputEnabled = true;
                     this.sprite[i][j].main = this;
                     this.spriteGroup.addChild(this.sprite[i][j]);
-                    this.sprite[i][j].events.onInputDown.add(this.testClick, this);
                 }
                 distributeHeight += 126.5;
             }
@@ -185,15 +184,17 @@ var SSMAT;
             this.flag.scale.x = randomScale;
             this.gameTimer = this.game.time.create(false);
             var ESCAPE = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+            this.escape = new SSMAT.Exit(this.game, this.world.centerX, this.world.centerY);
+            this.escape.visible = false;
+            this.escape.toggleVisibility();
             ESCAPE.onDown.add(function () {
-                this.gameTimer.pause();
-                var r = confirm("Exit the game?");
-                if (r) {
-                    this.game.state.start('Preloader', true, false);
-                    this.game.paused = true;
+                if (this.escape.visible) {
+                    this.escape.visible = false;
+                    this.escape.toggleVisibility();
                 }
                 else {
-                    this.game.paused = false;
+                    this.escape.visible = true;
+                    this.escape.toggleVisibility();
                 }
             }, this);
         };
@@ -749,6 +750,36 @@ var SSMAT;
 })(SSMAT || (SSMAT = {}));
 var SSMAT;
 (function (SSMAT) {
+    var Exit = (function (_super) {
+        __extends(Exit, _super);
+        function Exit(game, x, y) {
+            _super.call(this, game, x, y, "exit");
+            this.anchor.setTo(0.5, 0.6);
+            game.add.existing(this);
+            this.ok = this.game.add.button(0, 0, "ok-btn", this.exit, this, 1, 0, 1, 0);
+            this.ok.anchor.setTo(0.5, 0.5);
+            this.cancel = this.game.add.button(0, 0, "cancel-btn", this.cancelled, this, 1, 0, 1, 0);
+            this.cancel.anchor.setTo(0.5, 0.5);
+            this.ok.position.setTo(this.x - (this.ok.width / 2) - 10, this.y + this.height - 150);
+            this.cancel.position.setTo(this.ok.x + this.ok.width + 10, this.y + this.height - 150);
+        }
+        Exit.prototype.toggleVisibility = function () {
+            this.cancel.visible = this.visible;
+            this.ok.visible = this.visible;
+        };
+        Exit.prototype.exit = function () {
+            this.game.state.start('Preloader', true, false);
+        };
+        Exit.prototype.cancelled = function () {
+            this.visible = false;
+            this.toggleVisibility();
+        };
+        return Exit;
+    })(Phaser.Sprite);
+    SSMAT.Exit = Exit;
+})(SSMAT || (SSMAT = {}));
+var SSMAT;
+(function (SSMAT) {
     var Game = (function (_super) {
         __extends(Game, _super);
         function Game() {
@@ -1201,7 +1232,6 @@ var SSMAT;
                     this.sprite[i][j].inputEnabled = true;
                     this.sprite[i][j].main = this;
                     this.spriteGroup.addChild(this.sprite[i][j]);
-                    this.sprite[i][j].events.onInputDown.add(this.testClick, this);
                 }
                 distributeHeight += 126.5;
             }
@@ -1308,16 +1338,19 @@ var SSMAT;
             this.tons[0].dmass = this.tons[0].mass;
             this.tons[1].dmass = this.tons[1].mass;
             this.createArrows();
-            var ESCAPE = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
             this.gameTimer = this.game.time.create(false);
+            var ESCAPE = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+            this.escape = new SSMAT.Exit(this.game, this.world.centerX, this.world.centerY);
+            this.escape.visible = false;
+            this.escape.toggleVisibility();
             ESCAPE.onDown.add(function () {
-                this.gameTimer.pause();
-                var r = confirm("Exit the game?");
-                if (r) {
-                    this.game.state.start('Preloader', true, false);
+                if (this.escape.visible) {
+                    this.escape.visible = false;
+                    this.escape.toggleVisibility();
                 }
                 else {
-                    this.gameTimer.resume();
+                    this.escape.visible = true;
+                    this.escape.toggleVisibility();
                 }
             }, this);
         };
@@ -1411,7 +1444,7 @@ var SSMAT;
         };
         MainMenu.prototype.update = function () {
             //this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
-            if (this.started) {
+            if (this.started && !this.game.paused) {
                 this.updateTimer();
             }
         };
@@ -1488,7 +1521,7 @@ var SSMAT;
                 p1.ton[p1.ton.length - 1].nT = t;
             }
         };
-        // Red button fucntion
+        // Red button function
         MainMenu.prototype.addWeight = function () {
             var mass = prompt("Please enter the weight/mass:", "0");
             if (Number(mass) > 0 || Number(mass) < 0) {
@@ -1839,6 +1872,7 @@ var SSMAT;
             this.load.image('arrow-blue', 'assets/arrow-blue.gif');
             this.load.image('level0', 'assets/level0.gif');
             this.load.image('level1', 'assets/level1.gif');
+            this.load.image('exit', 'assets/exit.gif');
             this.load.spritesheet('preloadBar', 'assets/loader.gif', 64, 64);
             this.game.load.spritesheet('painter', 'assets/painter.gif', 50, 48, 4);
             this.game.load.spritesheet('help', 'assets/help.gif', 24, 19, 2);
@@ -1846,6 +1880,8 @@ var SSMAT;
             this.game.load.spritesheet('reset', 'assets/reset.gif', 24, 19, 2);
             this.game.load.spritesheet('vector', 'assets/vector.gif', 24, 19, 2);
             this.game.load.spritesheet('flag', 'assets/flag.gif', 40, 90, 8);
+            this.game.load.spritesheet('ok-btn', 'assets/ok-btn.gif', 71, 30, 2);
+            this.game.load.spritesheet('cancel-btn', 'assets/cancel-btn.gif', 71, 30, 2);
         };
         Preloader.prototype.create = function () {
             this.levels = [];

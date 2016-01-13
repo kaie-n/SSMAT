@@ -30,6 +30,7 @@
     <Content Include="assets\background-menu.gif" />
     <Content Include="assets\building.gif" />
     <Content Include="assets\button.gif" />
+    <Content Include="assets\cancel-btn.gif" />
     <Content Include="assets\click.gif" />
     <Content Include="assets\cloud\0_0.png" />
     <Content Include="assets\cloud\1_0.png" />
@@ -38,6 +39,7 @@
     <Content Include="assets\cloud\4_0.png" />
     <Content Include="assets\cloud\5_0.png" />
     <Content Include="assets\esplanade.gif" />
+    <Content Include="assets\exit.gif" />
     <Content Include="assets\flag.gif" />
     <Content Include="assets\gradient.gif" />
     <Content Include="assets\help.gif" />
@@ -48,6 +50,7 @@
     <Content Include="assets\loading-bar-fill.gif" />
     <Content Include="assets\logo.gif" />
     <Content Include="assets\merlion.png" />
+    <Content Include="assets\ok-btn.gif" />
     <Content Include="assets\painter.gif" />
     <Content Include="assets\pictures\1.jpg" />
     <Content Include="assets\pictures\2.jpg" />
@@ -81,6 +84,7 @@
     <TypeScriptCompile Include="Arrow.ts" />
     <TypeScriptCompile Include="Boot.ts" />
     <TypeScriptCompile Include="ButtonLabel.ts" />
+    <TypeScriptCompile Include="Exit.ts" />
     <TypeScriptCompile Include="GameOver.ts" />
     <TypeScriptCompile Include="Grid.ts" />
     <TypeScriptCompile Include="jquery.d.ts" />

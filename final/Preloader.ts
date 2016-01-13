@@ -39,6 +39,7 @@
             this.load.image('arrow-blue', 'assets/arrow-blue.gif');
             this.load.image('level0', 'assets/level0.gif');
             this.load.image('level1', 'assets/level1.gif');
+            this.load.image('exit', 'assets/exit.gif');
             this.load.spritesheet('preloadBar', 'assets/loader.gif', 64, 64);
             this.game.load.spritesheet('painter', 'assets/painter.gif', 50, 48, 4);
             this.game.load.spritesheet('help', 'assets/help.gif', 24, 19, 2);
@@ -46,6 +47,8 @@
             this.game.load.spritesheet('reset', 'assets/reset.gif', 24, 19, 2);
             this.game.load.spritesheet('vector', 'assets/vector.gif', 24, 19, 2);
             this.game.load.spritesheet('flag', 'assets/flag.gif', 40, 90, 8);
+            this.game.load.spritesheet('ok-btn', 'assets/ok-btn.gif', 71, 30, 2);
+            this.game.load.spritesheet('cancel-btn', 'assets/cancel-btn.gif', 71, 30, 2);
         }
 
         create() {

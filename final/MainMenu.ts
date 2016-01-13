@@ -35,6 +35,7 @@ module SSMAT {
         arrow: Array<SSMAT.Arrow>;
         vector: Phaser.Button;
         gameTimer: Phaser.Timer;
+        escape: SSMAT.Exit;
         create() {
 
             Parse.User.logOut();
@@ -93,7 +94,8 @@ module SSMAT {
                     this.sprite[i][j].inputEnabled = true;
                     this.sprite[i][j].main = this;
                     this.spriteGroup.addChild(this.sprite[i][j]);
-                    this.sprite[i][j].events.onInputDown.add(this.testClick, this)
+                    // # REMOVE THIS IF DEPLOYING //
+                    //this.sprite[i][j].events.onInputDown.add(this.testClick, this)
                 }
                 distributeHeight += 126.5;
             }
@@ -217,18 +219,22 @@ module SSMAT {
             this.tons[0].dmass = this.tons[0].mass;
             this.tons[1].dmass = this.tons[1].mass;
             this.createArrows();
-            var ESCAPE = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
             this.gameTimer = this.game.time.create(false);
-            
+            var ESCAPE = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+            this.escape = new SSMAT.Exit(this.game, this.world.centerX, this.world.centerY);
+            this.escape.visible = false;
+            this.escape.toggleVisibility();
             ESCAPE.onDown.add(function () {
-                this.gameTimer.pause();
-                var r = confirm("Exit the game?");
-                if (r) {
-                    this.game.state.start('Preloader', true, false);
+                
+                if (this.escape.visible) {
+                    this.escape.visible = false;
+                    this.escape.toggleVisibility();
                 }
                 else {
-                    this.gameTimer.resume()
+                    this.escape.visible = true;
+                    this.escape.toggleVisibility();
                 }
+                
             }, this);
         }
         hide() {
@@ -334,7 +340,7 @@ module SSMAT {
         }
         update() {
             //this.game.physics.arcade.collide(this.tiler, [this.tons[0], this.tons[1], this.painter]);
-            if (this.started) {
+            if (this.started && !this.game.paused) {
                 this.updateTimer();
             }
         }
@@ -415,7 +421,7 @@ module SSMAT {
                 p1.ton[p1.ton.length - 1].nT = t;
             }
         }
-        // Red button fucntion
+        // Red button function
         addWeight() {
             var mass = prompt("Please enter the weight/mass:", "0");
 

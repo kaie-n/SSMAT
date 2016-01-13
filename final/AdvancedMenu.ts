@@ -38,6 +38,7 @@ module SSMAT {
         arrow: Array<SSMAT.Arrow>;
         vector: Phaser.Button;
         gameTimer: Phaser.Timer;
+        escape: SSMAT.Exit;
         create() {
 
             Parse.User.logOut();
@@ -94,7 +95,8 @@ module SSMAT {
                     this.sprite[i][j].inputEnabled = true;
                     this.sprite[i][j].main = this;
                     this.spriteGroup.addChild(this.sprite[i][j]);
-                    this.sprite[i][j].events.onInputDown.add(this.testClick, this)
+                     // # REMOVE THIS IF DEPLOYING //
+                    //this.sprite[i][j].events.onInputDown.add(this.testClick, this)
                 }
                 distributeHeight += 126.5;
             }
@@ -237,18 +239,21 @@ module SSMAT {
             this.flag.scale.x = randomScale;
             this.gameTimer = this.game.time.create(false);
             var ESCAPE = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
+            this.escape = new SSMAT.Exit(this.game, this.world.centerX, this.world.centerY);
+            this.escape.visible = false;
+            this.escape.toggleVisibility();
             ESCAPE.onDown.add(function () {
-                this.gameTimer.pause();
-                var r = confirm("Exit the game?");
-                if (r) {
-                    this.game.state.start('Preloader', true, false);
-                    this.game.paused = true;
+
+                if (this.escape.visible) {
+                    this.escape.visible = false;
+                    this.escape.toggleVisibility();
                 }
                 else {
-                    this.game.paused = false;
+                    this.escape.visible = true;
+                    this.escape.toggleVisibility();
                 }
-            }, this);
 
+            }, this);
         }
         hide() {
             for (var i = 0; i < this.arrow.length; i++) {
