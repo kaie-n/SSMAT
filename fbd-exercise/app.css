@@ -1,0 +1,34 @@
+﻿body {
+    font: 14px 'Segoe UI', sans-serif;
+    color: #101010;
+}
+
+span {
+    font-style: italic;
+}
+
+#wrapper {
+    display: table;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    left: 0;
+    top: 0;
+}
+
+#content {
+    display: table-cell;
+    vertical-align: middle;
+    margin: 0 auto;
+    text-align:center;
+    width:100%;
+}
+h1, h2, h3, h4 {
+    margin: 0;
+}
+#questions {
+    vertical-align: middle;
+    margin: 0 auto;
+    text-align:center;
+    width:50%;
+}
