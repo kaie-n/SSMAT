@@ -25,6 +25,8 @@
     <Content Include="app.css" />
     <Content Include="assets\loading-bar-empty.gif" />
     <Content Include="assets\loading-bar-fill.gif" />
+    <Content Include="assets\questions\1.gif" />
+    <Content Include="assets\submit-btn.gif" />
     <Content Include="index.html" />
     <Content Include="phaser.js" />
     <Content Include="phaser.min.js" />
@@ -32,6 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="Diagram.ts" />
     <TypeScriptCompile Include="Game.ts" />
     <TypeScriptCompile Include="Boot.ts" />
     <TypeScriptCompile Include="Question1.ts" />
@@ -40,8 +43,10 @@
     <TypeScriptCompile Include="p2.d.ts" />
     <TypeScriptCompile Include="phaser.d.ts" />
     <TypeScriptCompile Include="pixi.d.ts" />
+    <TypeScriptCompile Include="Vector.ts" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\1.psd" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>

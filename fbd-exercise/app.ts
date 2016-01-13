@@ -1,4 +1,6 @@
 ﻿
 window.onload = () => {
-    var el = document.getElementById('content');
+
+    var game = new fbd.Game();
+
 };

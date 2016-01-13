@@ -4,8 +4,7 @@
 
         constructor() {
 
-            super(450, 140, Phaser.AUTO, 'cannyvas', null);
-
+            super(623, 300, Phaser.CANVAS, 'cannyvas', null, true, false);
             this.state.add('Boot', Boot, false);
             this.state.add('Preloader', Preloader, false);
             this.state.add('MainMenu', MainMenu, false);

@@ -4,9 +4,20 @@
 }
 
 span {
-    font-style: italic;
 }
 
+h1, h2, h3, h4 {
+    margin: 0;
+}
+
+/* Gradient color1 - color2 - color1 */
+
+hr.style-one {
+    border: 0;
+    height: 1px;
+    background: #333;
+    background-image: linear-gradient(to right, #ccc, #333, #ccc);
+}
 #wrapper {
     display: table;
     position: absolute;
@@ -18,17 +29,18 @@ span {
 
 #content {
     display: table-cell;
-    vertical-align: middle;
+    /*vertical-align: middle;*/
     margin: 0 auto;
     text-align:center;
     width:100%;
-}
-h1, h2, h3, h4 {
-    margin: 0;
 }
 #questions {
     vertical-align: middle;
     margin: 0 auto;
     text-align:center;
     width:50%;
+    height:100%
+}
+#cannyvas {
+    padding: 30px 30px 30px 30px;
 }
