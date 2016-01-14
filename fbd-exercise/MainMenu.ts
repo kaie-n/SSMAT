@@ -4,7 +4,10 @@
 
 
         create() {
-            this.game.state.start('Question1', true, false)
+            this.game.state.start('Question', true, false)
+
+            _q = 0;
+            _p = 0;
             
         }
 

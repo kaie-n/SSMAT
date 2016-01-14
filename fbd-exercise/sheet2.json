@@ -1,0 +1,38 @@
+﻿{
+  "question": [
+    {
+      "part": [
+        {
+          "instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Assume there is no friction between the object and the inclined surface. Click on the SUBMIT button to check your answer.",
+          "answer": [
+            {
+              "0": 1.5708,
+              "1": 1,
+              "2": 0.5
+            }
+          ],
+          "correct": "Click on the NEXT button to proceed.",
+          "type": "1"
+        },
+        {
+          "instruction": "Drag the arrows into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
+          "answer": [
+            {
+              "0": 1.5708,
+              "1": 1
+            }
+          ],
+          "correct": "Click on the NEXT button to proceed to the next exercise.",
+          "type": "2"
+        },
+        {
+          "instruction": "From the information given, which formula would you use to find the unknown (?). Select a formula and click on the SUBMIT button to check your answer.",
+          "answer": 1,
+          "correct": "Click on the NEXT button to proceed to the next exercise.",
+          "type": "2"
+        }
+      ],
+      "pic": "pic1"
+    }
+  ]
+}

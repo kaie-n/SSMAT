@@ -8,7 +8,7 @@
             this.state.add('Boot', Boot, false);
             this.state.add('Preloader', Preloader, false);
             this.state.add('MainMenu', MainMenu, false);
-            this.state.add('Question1', Question1, false);
+            this.state.add('Question', Question, false);
 
             this.state.start('Boot');
 

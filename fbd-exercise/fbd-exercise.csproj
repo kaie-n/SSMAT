@@ -38,16 +38,18 @@
     <TypeScriptCompile Include="Diagram.ts" />
     <TypeScriptCompile Include="Game.ts" />
     <TypeScriptCompile Include="Boot.ts" />
-    <TypeScriptCompile Include="Question1.ts" />
+    <TypeScriptCompile Include="Question.ts" />
     <TypeScriptCompile Include="MainMenu.ts" />
     <TypeScriptCompile Include="Preloader.ts" />
     <TypeScriptCompile Include="p2.d.ts" />
     <TypeScriptCompile Include="phaser.d.ts" />
     <TypeScriptCompile Include="pixi.d.ts" />
+    <TypeScriptCompile Include="SquareBox.ts" />
     <TypeScriptCompile Include="Vector.ts" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="assets\1.psd" />
+    <Content Include="sheet.json" />
     <None Include="web.Debug.config">
       <DependentUpon>web.config</DependentUpon>
     </None>
@@ -79,6 +81,7 @@
           <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
         </WebProjectProperties>
       </FlavorProperties>
+      <UserProperties sheet_1json__JSONSchema="http://json.schemastore.org/config" />
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">

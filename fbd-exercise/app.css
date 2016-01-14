@@ -44,3 +44,6 @@ hr.style-one {
 #cannyvas {
     padding: 30px 30px 30px 30px;
 }
+#cannyvas canvas {
+    cursor: default !important;
+}

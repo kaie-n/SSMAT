@@ -3,24 +3,27 @@
     export class Vector extends Phaser.Sprite {
         bmd: Phaser.BitmapData;
         bmdSprite: Phaser.Sprite;
+        arrow: Phaser.Sprite;
         startingPoint: Phaser.Point;
         clickRegion: Phaser.Rectangle;
-        arrow: Phaser.Sprite;
+        group: Phaser.Group;
         target: boolean;
         inside: boolean;
+        
         constructor(game: Phaser.Game, x, y, regionX, regionY) {
-
-
-            this.bmd = game.add.bitmapData(game.width, game.height);
-            this.bmdSprite = game.add.sprite(0, 0, this.bmd);
+            this.bmd = game.make.bitmapData(game.width, game.height);
+            this.bmdSprite = game.make.sprite(0, 0, this.bmd);
+           
             super(game, x, y, "arrow-head");
-            game.add.existing(this);
+            //game.add.existing(this);
+            game.make.sprite(x, y, "arrow-head");
             
+            this.addChild(this.bmdSprite);
             this.bmd.ctx.strokeStyle = "black";
             this.startingPoint = new Phaser.Point(x, y);
 
             // click region initialize
-            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 200, 200);
+            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 100, 100);
             this.clickRegion.centerOn(regionX, regionY);
             this.startingPoint = new Phaser.Point(regionX, regionY);
 
@@ -31,18 +34,15 @@
                 this.drag();
                 this.target = true;
             }, this);
-            //this.arrow = game.add.sprite(this.game.input.x, this.game.input.y, "arrow-head");
-            //this.arrow.anchor.setTo(0, 0.5);
-            //this.arrow.inputEnabled = true;
-            //this.arrow.input.enableDrag();
-            //this.arrow.events.onDragUpdate.add(this.drag, this);
             this.target = true;
             this.inside = this.clickRegion.contains(this.x, this.y)
+            this.group = game.add.group();
+            this.group.add(this.bmdSprite);
+            this.group.add(this);
         }
 
         update() {
             if (this.game.input.mousePointer.isDown && this.target) {
-
                 this.drag();
             }
             if (!this.game.input.mousePointer.isDown) {
@@ -56,27 +56,28 @@
         drag() {
 
             this.inside = this.clickRegion.contains(this.x, this.y)  
-            //if user click on the region god damn it
-            if (!this.inside) {
-                this.inside = this.clickRegion.contains(this.game.input.x, this.game.input.y)  
-            }
-            console.log(this.inside);
-            if (this.inside) {
-                this.x = this.game.input.x;
-                this.y = this.game.input.y;
-                this.position.setTo(this.rounder(this.x), this.rounder(this.y))
-                this.bmd.clear();
-                this.bmd.ctx.beginPath();
-                this.bmd.ctx.beginPath();
-                this.bmd.ctx.moveTo(this.startingPoint.x, this.startingPoint.y);
-                this.bmd.ctx.lineTo(this.rounder(this.x), this.rounder(this.y));
-                this.bmd.ctx.lineWidth = 2;
-                this.bmd.ctx.stroke();
-                this.bmd.ctx.closePath();
-                this.bmd.render();
-                this.rotation = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y))
-                //console.log(this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(pointer.x), this.rounder(pointer.y)));
-                //console.log(this.rounder(this.x), this.rounder(this.y));
+            if (this.x > 0) {
+                //if user click on the region god damn it
+                if (!this.inside) {
+                    this.inside = this.clickRegion.contains(this.game.input.x, this.game.input.y)
+                }
+                if (this.inside) {
+                    this.x = this.game.input.x;
+                    this.y = this.game.input.y;
+                    this.position.setTo(this.rounder(this.x), this.rounder(this.y))
+                    this.bmd.clear();
+                    this.bmd.ctx.beginPath();
+                    this.bmd.ctx.moveTo(this.startingPoint.x, this.startingPoint.y);
+                    this.bmd.ctx.lineTo(this.rounder(this.x), this.rounder(this.y));
+                    this.bmd.ctx.lineWidth = 2;
+                    this.bmd.ctx.stroke();
+                    this.bmd.ctx.closePath();
+                    this.bmd.render();
+                    this.rotation = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y))
+                    //console.log(this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(pointer.x), this.rounder(pointer.y)));
+                    //console.log(this.rounder(this.x), this.rounder(this.y));
+                    
+                }
             }
         }
 

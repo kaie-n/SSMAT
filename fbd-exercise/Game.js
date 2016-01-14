@@ -37,39 +37,39 @@ var fbd;
         __extends(Diagram, _super);
         function Diagram(game, x, y, key) {
             _super.call(this, game, x, y, key);
-            game.add.existing(this);
+            this.game = game;
+            this.game.add.existing(this);
             // diagram
-            this.picture = this.game.add.sprite(0, 0, key);
-            // square box initialize
-            var width = 150; // example;
-            var height = 100; // example;
-            var bmd = this.game.add.bitmapData(width, height);
-            bmd.ctx.beginPath();
-            bmd.ctx.rect(0, 0, width, height);
-            bmd.ctx.fillStyle = '#ffffff';
-            bmd.ctx.fill();
-            bmd.ctx.strokeStyle = '#000000';
-            bmd.ctx.stroke();
-            this.squareBox = this.game.add.sprite(this.game.world.width, this.picture.height, bmd);
-            this.squareBox.anchor.setTo(1, 1);
+            this.picture = this.game.make.sprite(0, 0, key);
+            this.addChild(this.picture);
+            this.squareBox = new fbd.SquareBox(game, this.game.world.width, this.picture.height, 1);
             this.vector = [];
             var circle = game.add.bitmapData(10, 10);
             circle.circle(5, 5, 5, '#000000');
-            this.circle = game.add.sprite(185, 66, circle);
+            this.circle = game.make.sprite(185, 66, circle);
             this.circle.anchor.setTo(0.5, 0.5);
             this.circle.inputEnabled = true;
             this.circle.events.onInputDown.add(this.addVector, this);
-            this.limit = 3;
+            this.addChild(this.circle);
+            this.addChild(this.squareBox);
+            this.limit = 4;
             //this.game.input.onDown.add(this.addVector, this);
         }
+        Diagram.prototype.destroyAll = function () {
+            this.destroy();
+            for (var i = 0; i < this.vector.length; i++) {
+                this.vector[i].group.destroy();
+                this.vector[i].destroy();
+            }
+        };
         Diagram.prototype.addVector = function () {
             if (this.vector.length < this.limit) {
-                if (this.vector.length == 0) {
-                    this.vector[0] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, 185, 66);
+                var i = this.vector.length;
+                if (i == 0) {
+                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, 185, 66);
                     console.log(this.vector.length);
                 }
                 else {
-                    var i = this.vector.length;
                     this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, 185, 66);
                     console.log(this.vector.length);
                 }
@@ -88,7 +88,7 @@ var fbd;
             this.state.add('Boot', fbd.Boot, false);
             this.state.add('Preloader', fbd.Preloader, false);
             this.state.add('MainMenu', fbd.MainMenu, false);
-            this.state.add('Question1', fbd.Question1, false);
+            this.state.add('Question', fbd.Question, false);
             this.state.start('Boot');
         }
         return Game;
@@ -103,7 +103,9 @@ var fbd;
             _super.apply(this, arguments);
         }
         MainMenu.prototype.create = function () {
-            this.game.state.start('Question1', true, false);
+            this.game.state.start('Question', true, false);
+            _q = 0;
+            _p = 0;
         };
         return MainMenu;
     })(Phaser.State);
@@ -131,7 +133,8 @@ var fbd;
                 var images = 'assets/questions/' + i + '.gif';
                 this.load.image(pic, images);
             }
-            this.load.image('arrow-head', 'assets/arrow-head.gif');
+            this.game.load.image('arrow-head', 'assets/arrow-head.gif');
+            this.game.load.json('sheet', 'sheet.json');
         };
         Preloader.prototype.create = function () {
             var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
@@ -152,33 +155,71 @@ var fbd;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
-    var Question1 = (function (_super) {
-        __extends(Question1, _super);
-        function Question1() {
+    var Question = (function (_super) {
+        __extends(Question, _super);
+        function Question() {
             _super.apply(this, arguments);
         }
-        Question1.prototype.create = function () {
-            this.diagram = new fbd.Diagram(this.game, 0, 0, "pic1");
+        Question.prototype.create = function () {
+            // getting data externally
+            this.sheet = this.game.cache.getJSON('sheet');
+            // diagram initializing
+            this.diagram = [];
+            this.diagram[0] = new fbd.Diagram(this.game, 0, 0, "pic1");
+            document.getElementById("instructions").innerHTML = this.sheet[0].Instruction;
+            this.input.onDown.add(this.test, this);
         };
-        Question1.prototype.render = function () {
+        Question.prototype.test = function () {
+            var rand = this.game.rnd.integerInRange(0, 2);
+            console.log(this.sheet[rand].Question, this.sheet[rand].Part);
         };
-        return Question1;
+        Question.prototype.render = function () {
+        };
+        return Question;
     })(Phaser.State);
-    fbd.Question1 = Question1;
+    fbd.Question = Question;
+})(fbd || (fbd = {}));
+var fbd;
+(function (fbd) {
+    var SquareBox = (function (_super) {
+        __extends(SquareBox, _super);
+        function SquareBox(game, x, y, type) {
+            // square box initialize
+            var width = 200; // example;
+            var height = 150; // example;
+            var bmd = game.add.bitmapData(width, height);
+            bmd.ctx.beginPath();
+            bmd.ctx.rect(0, 0, width, height);
+            bmd.ctx.fillStyle = '#ffffff';
+            bmd.ctx.fill();
+            bmd.ctx.strokeStyle = '#000000';
+            bmd.ctx.stroke();
+            _super.call(this, game, x, y, bmd);
+            game.make.sprite(x, y, bmd);
+            //game.add.existing(this);
+            this.anchor.setTo(1, 1);
+        }
+        SquareBox.prototype.update = function () {
+        };
+        return SquareBox;
+    })(Phaser.Sprite);
+    fbd.SquareBox = SquareBox;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
     var Vector = (function (_super) {
         __extends(Vector, _super);
         function Vector(game, x, y, regionX, regionY) {
-            this.bmd = game.add.bitmapData(game.width, game.height);
-            this.bmdSprite = game.add.sprite(0, 0, this.bmd);
+            this.bmd = game.make.bitmapData(game.width, game.height);
+            this.bmdSprite = game.make.sprite(0, 0, this.bmd);
             _super.call(this, game, x, y, "arrow-head");
-            game.add.existing(this);
+            //game.add.existing(this);
+            game.make.sprite(x, y, "arrow-head");
+            this.addChild(this.bmdSprite);
             this.bmd.ctx.strokeStyle = "black";
             this.startingPoint = new Phaser.Point(x, y);
             // click region initialize
-            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 200, 200);
+            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 100, 100);
             this.clickRegion.centerOn(regionX, regionY);
             this.startingPoint = new Phaser.Point(regionX, regionY);
             // arrow head initialize
@@ -188,13 +229,11 @@ var fbd;
                 this.drag();
                 this.target = true;
             }, this);
-            //this.arrow = game.add.sprite(this.game.input.x, this.game.input.y, "arrow-head");
-            //this.arrow.anchor.setTo(0, 0.5);
-            //this.arrow.inputEnabled = true;
-            //this.arrow.input.enableDrag();
-            //this.arrow.events.onDragUpdate.add(this.drag, this);
             this.target = true;
             this.inside = this.clickRegion.contains(this.x, this.y);
+            this.group = game.add.group();
+            this.group.add(this.bmdSprite);
+            this.group.add(this);
         }
         Vector.prototype.update = function () {
             if (this.game.input.mousePointer.isDown && this.target) {
@@ -209,25 +248,25 @@ var fbd;
         };
         Vector.prototype.drag = function () {
             this.inside = this.clickRegion.contains(this.x, this.y);
-            //if user click on the region god damn it
-            if (!this.inside) {
-                this.inside = this.clickRegion.contains(this.game.input.x, this.game.input.y);
-            }
-            console.log(this.inside);
-            if (this.inside) {
-                this.x = this.game.input.x;
-                this.y = this.game.input.y;
-                this.position.setTo(this.rounder(this.x), this.rounder(this.y));
-                this.bmd.clear();
-                this.bmd.ctx.beginPath();
-                this.bmd.ctx.beginPath();
-                this.bmd.ctx.moveTo(this.startingPoint.x, this.startingPoint.y);
-                this.bmd.ctx.lineTo(this.rounder(this.x), this.rounder(this.y));
-                this.bmd.ctx.lineWidth = 2;
-                this.bmd.ctx.stroke();
-                this.bmd.ctx.closePath();
-                this.bmd.render();
-                this.rotation = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y));
+            if (this.x > 0) {
+                //if user click on the region god damn it
+                if (!this.inside) {
+                    this.inside = this.clickRegion.contains(this.game.input.x, this.game.input.y);
+                }
+                if (this.inside) {
+                    this.x = this.game.input.x;
+                    this.y = this.game.input.y;
+                    this.position.setTo(this.rounder(this.x), this.rounder(this.y));
+                    this.bmd.clear();
+                    this.bmd.ctx.beginPath();
+                    this.bmd.ctx.moveTo(this.startingPoint.x, this.startingPoint.y);
+                    this.bmd.ctx.lineTo(this.rounder(this.x), this.rounder(this.y));
+                    this.bmd.ctx.lineWidth = 2;
+                    this.bmd.ctx.stroke();
+                    this.bmd.ctx.closePath();
+                    this.bmd.render();
+                    this.rotation = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y));
+                }
             }
         };
         Vector.prototype.rounder = function (x) {
