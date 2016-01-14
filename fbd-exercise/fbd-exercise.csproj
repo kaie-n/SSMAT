@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="app.css" />
+    <Content Include="assets\arrow-head.gif" />
     <Content Include="assets\loading-bar-empty.gif" />
     <Content Include="assets\loading-bar-fill.gif" />
     <Content Include="assets\questions\1.gif" />

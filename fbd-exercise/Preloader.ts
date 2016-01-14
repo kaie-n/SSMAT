@@ -21,6 +21,7 @@
                 var images = 'assets/questions/' + i + '.gif';
                 this.load.image(pic, images);
             }
+            this.load.image('arrow-head', 'assets/arrow-head.gif');
         }
 
         create() {

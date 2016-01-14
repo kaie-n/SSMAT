@@ -38,7 +38,9 @@ var fbd;
         function Diagram(game, x, y, key) {
             _super.call(this, game, x, y, key);
             game.add.existing(this);
+            // diagram
             this.picture = this.game.add.sprite(0, 0, key);
+            // square box initialize
             var width = 150; // example;
             var height = 100; // example;
             var bmd = this.game.add.bitmapData(width, height);
@@ -50,35 +52,28 @@ var fbd;
             bmd.ctx.stroke();
             this.squareBox = this.game.add.sprite(this.game.world.width, this.picture.height, bmd);
             this.squareBox.anchor.setTo(1, 1);
-            this.clickRegion = new Phaser.Rectangle(184, 66, 200, 200);
-            this.clickRegion.x -= this.clickRegion.halfWidth;
-            this.clickRegion.y -= this.clickRegion.halfHeight;
-            this.game.input.onDown.add(this.drag, this);
             this.vector = [];
-            this.vector[0] = new fbd.Vector(this.game, 0, 0);
+            var circle = game.add.bitmapData(10, 10);
+            circle.circle(5, 5, 5, '#000000');
+            this.circle = game.add.sprite(185, 66, circle);
+            this.circle.anchor.setTo(0.5, 0.5);
+            this.circle.inputEnabled = true;
+            this.circle.events.onInputDown.add(this.addVector, this);
+            this.limit = 3;
+            //this.game.input.onDown.add(this.addVector, this);
         }
-        Diagram.prototype.update = function () {
-            if (this.game.input.mousePointer.isDown) {
-                this.drag(this.game.input);
+        Diagram.prototype.addVector = function () {
+            if (this.vector.length < this.limit) {
+                if (this.vector.length == 0) {
+                    this.vector[0] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, 185, 66);
+                    console.log(this.vector.length);
+                }
+                else {
+                    var i = this.vector.length;
+                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, 185, 66);
+                    console.log(this.vector.length);
+                }
             }
-        };
-        Diagram.prototype.drag = function (pointer) {
-            var inside = this.clickRegion.contains(pointer.x, pointer.y); //do whatever with the result  
-            if (inside) {
-                this.vector[0].bmd.clear();
-                this.vector[0].bmd.ctx.beginPath();
-                this.vector[0].bmd.ctx.beginPath();
-                this.vector[0].bmd.ctx.moveTo(184, 66);
-                this.vector[0].bmd.ctx.lineTo(this.rounder(pointer.x), this.rounder(pointer.y));
-                this.vector[0].bmd.ctx.lineWidth = 2;
-                this.vector[0].bmd.ctx.stroke();
-                this.vector[0].bmd.ctx.closePath();
-                this.vector[0].bmd.render();
-            }
-            console.log(this.rounder(pointer.x), this.rounder(pointer.y));
-        };
-        Diagram.prototype.rounder = function (x) {
-            return Math.ceil(x / 5) * 5;
         };
         return Diagram;
     })(Phaser.Sprite);
@@ -136,6 +131,7 @@ var fbd;
                 var images = 'assets/questions/' + i + '.gif';
                 this.load.image(pic, images);
             }
+            this.load.image('arrow-head', 'assets/arrow-head.gif');
         };
         Preloader.prototype.create = function () {
             var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
@@ -174,12 +170,69 @@ var fbd;
 (function (fbd) {
     var Vector = (function (_super) {
         __extends(Vector, _super);
-        function Vector(game, x, y) {
+        function Vector(game, x, y, regionX, regionY) {
             this.bmd = game.add.bitmapData(game.width, game.height);
-            _super.call(this, game, x, y, this.bmd);
+            this.bmdSprite = game.add.sprite(0, 0, this.bmd);
+            _super.call(this, game, x, y, "arrow-head");
             game.add.existing(this);
             this.bmd.ctx.strokeStyle = "black";
+            this.startingPoint = new Phaser.Point(x, y);
+            // click region initialize
+            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 200, 200);
+            this.clickRegion.centerOn(regionX, regionY);
+            this.startingPoint = new Phaser.Point(regionX, regionY);
+            // arrow head initialize
+            this.anchor.setTo(0, 0.5);
+            this.inputEnabled = true;
+            this.events.onInputDown.add(function () {
+                this.drag();
+                this.target = true;
+            }, this);
+            //this.arrow = game.add.sprite(this.game.input.x, this.game.input.y, "arrow-head");
+            //this.arrow.anchor.setTo(0, 0.5);
+            //this.arrow.inputEnabled = true;
+            //this.arrow.input.enableDrag();
+            //this.arrow.events.onDragUpdate.add(this.drag, this);
+            this.target = true;
+            this.inside = this.clickRegion.contains(this.x, this.y);
         }
+        Vector.prototype.update = function () {
+            if (this.game.input.mousePointer.isDown && this.target) {
+                this.drag();
+            }
+            if (!this.game.input.mousePointer.isDown) {
+                this.target = false;
+            }
+        };
+        Vector.prototype.getAngle = function (x1, y1, x2, y2) {
+            return Phaser.Math.angleBetween(x1, y1, x2, y2);
+        };
+        Vector.prototype.drag = function () {
+            this.inside = this.clickRegion.contains(this.x, this.y);
+            //if user click on the region god damn it
+            if (!this.inside) {
+                this.inside = this.clickRegion.contains(this.game.input.x, this.game.input.y);
+            }
+            console.log(this.inside);
+            if (this.inside) {
+                this.x = this.game.input.x;
+                this.y = this.game.input.y;
+                this.position.setTo(this.rounder(this.x), this.rounder(this.y));
+                this.bmd.clear();
+                this.bmd.ctx.beginPath();
+                this.bmd.ctx.beginPath();
+                this.bmd.ctx.moveTo(this.startingPoint.x, this.startingPoint.y);
+                this.bmd.ctx.lineTo(this.rounder(this.x), this.rounder(this.y));
+                this.bmd.ctx.lineWidth = 2;
+                this.bmd.ctx.stroke();
+                this.bmd.ctx.closePath();
+                this.bmd.render();
+                this.rotation = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y));
+            }
+        };
+        Vector.prototype.rounder = function (x) {
+            return Math.ceil(x / 5) * 5;
+        };
         return Vector;
     })(Phaser.Sprite);
     fbd.Vector = Vector;
