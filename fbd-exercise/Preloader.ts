@@ -16,11 +16,15 @@
             this.load.setPreloadSprite(this.preloadBarFill);
             
             //  Load our actual games assets
+            //  Question diagrams
             for (var i = 1; i < 2; i++) {
                 var pic = 'pic' + i;
                 var images = 'assets/questions/' + i + '.gif';
                 this.load.image(pic, images);
             }
+            //  Buttons
+            this.game.load.spritesheet('btn', 'assets/btn.gif', 120, 33, 2);
+
             this.game.load.image('arrow-head', 'assets/arrow-head.gif');
             this.game.load.json('sheet', 'sheet.json');
         }

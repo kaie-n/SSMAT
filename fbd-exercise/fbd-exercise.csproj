@@ -24,10 +24,10 @@
   <ItemGroup>
     <Content Include="app.css" />
     <Content Include="assets\arrow-head.gif" />
+    <Content Include="assets\btn.gif" />
     <Content Include="assets\loading-bar-empty.gif" />
     <Content Include="assets\loading-bar-fill.gif" />
     <Content Include="assets\questions\1.gif" />
-    <Content Include="assets\submit-btn.gif" />
     <Content Include="index.html" />
     <Content Include="phaser.js" />
     <Content Include="phaser.min.js" />
@@ -35,6 +35,7 @@
   </ItemGroup>
   <ItemGroup>
     <TypeScriptCompile Include="app.ts" />
+    <TypeScriptCompile Include="ButtonLabel.ts" />
     <TypeScriptCompile Include="Diagram.ts" />
     <TypeScriptCompile Include="Game.ts" />
     <TypeScriptCompile Include="Boot.ts" />

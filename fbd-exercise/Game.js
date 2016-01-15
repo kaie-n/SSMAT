@@ -1,4 +1,6 @@
+var _this = this;
 window.onload = function () {
+    global_style = { font: "14px 'Segoe UI', sans-serif", fill: "#000000", wordWrap: false, wordWrapWidth: _this.width, align: "left" };
     var game = new fbd.Game();
 };
 var __extends = (this && this.__extends) || function (d, b) {
@@ -8,28 +10,21 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var fbd;
 (function (fbd) {
-    var Boot = (function (_super) {
-        __extends(Boot, _super);
-        function Boot() {
-            _super.apply(this, arguments);
+    var ButtonLabel = (function (_super) {
+        __extends(ButtonLabel, _super);
+        function ButtonLabel(game, x, y, key, label, callback, callbackContext, overFrame, outFrame, downFrame, upFrame) {
+            _super.call(this, game, x, y, key, callback, callbackContext, overFrame, outFrame, downFrame, upFrame);
+            game.add.existing(this);
+            this.label = game.make.text(0, 0, label, global_style);
+            this.label.anchor.setTo(0.5, 0.5);
+            this.label.position.setTo(this.width / 2, this.height / 2);
+            this.label.y = Math.round(this.label.y);
+            this.label.x = Math.round(this.label.x);
+            this.addChild(this.label);
         }
-        Boot.prototype.preload = function () {
-            this.load.image('loadEmpty', 'assets/loading-bar-empty.gif');
-            this.load.image('loadFill', 'assets/loading-bar-fill.gif');
-        };
-        Boot.prototype.create = function () {
-            Phaser.Canvas.setImageRenderingCrisp(this.game.canvas); //for Canvas, modern approach
-            Phaser.Canvas.setSmoothingEnabled(this.game.context, false); //also for Canvas, legacy approach
-            //PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST; //for WebGL
-            //  Unless you specifically need to support multitouch I would recommend setting this to 1
-            this.input.maxPointers = 1;
-            //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
-            this.stage.disableVisibilityChange = true;
-            this.game.state.start('Preloader', true, false);
-        };
-        return Boot;
-    })(Phaser.State);
-    fbd.Boot = Boot;
+        return ButtonLabel;
+    })(Phaser.Button);
+    fbd.ButtonLabel = ButtonLabel;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
@@ -97,6 +92,70 @@ var fbd;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
+    var Boot = (function (_super) {
+        __extends(Boot, _super);
+        function Boot() {
+            _super.apply(this, arguments);
+        }
+        Boot.prototype.preload = function () {
+            this.load.image('loadEmpty', 'assets/loading-bar-empty.gif');
+            this.load.image('loadFill', 'assets/loading-bar-fill.gif');
+        };
+        Boot.prototype.create = function () {
+            Phaser.Canvas.setImageRenderingCrisp(this.game.canvas); //for Canvas, modern approach
+            Phaser.Canvas.setSmoothingEnabled(this.game.context, false); //also for Canvas, legacy approach
+            //PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST; //for WebGL
+            //  Unless you specifically need to support multitouch I would recommend setting this to 1
+            this.input.maxPointers = 1;
+            //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
+            this.stage.disableVisibilityChange = true;
+            this.game.state.start('Preloader', true, false);
+        };
+        return Boot;
+    })(Phaser.State);
+    fbd.Boot = Boot;
+})(fbd || (fbd = {}));
+var fbd;
+(function (fbd) {
+    var Question = (function (_super) {
+        __extends(Question, _super);
+        function Question() {
+            _super.apply(this, arguments);
+        }
+        Question.prototype.create = function () {
+            //  getting data externally
+            this.sheet = this.game.cache.getJSON('sheet');
+            //  diagram initializing
+            this.diagram = new fbd.Diagram(this.game, 0, 0, "pic1");
+            document.getElementById("instructions").innerHTML = this.sheet.question[_q].part[_p].instruction;
+            //  button initializing
+            this.btn = new fbd.ButtonLabel(this.game, 0, 0, 'btn', "Submit", this.submit, this, 0, 0, 1, 0);
+            this.btn.x = this.game.width - (this.diagram.squareBox.width / 2) - (this.btn.width / 2); // just because I can and you can't
+            //  testing purposes
+            this.input.onDown.add(this.test, this);
+        };
+        Question.prototype.submit = function () {
+            this.checkAnswers();
+        };
+        Question.prototype.checkAnswers = function () {
+            var bool = true;
+            //  check for answers
+            //  if any of the vectors has the same angle range
+            //  return true and show correct
+            //  if wrong
+            //  return false and show wrong check mark
+            return bool;
+        };
+        Question.prototype.test = function () {
+        };
+        Question.prototype.render = function () {
+        };
+        return Question;
+    })(Phaser.State);
+    fbd.Question = Question;
+})(fbd || (fbd = {}));
+var fbd;
+(function (fbd) {
     var MainMenu = (function (_super) {
         __extends(MainMenu, _super);
         function MainMenu() {
@@ -128,11 +187,14 @@ var fbd;
             this.preloadBarFill.y = this.preloadBar.y;
             this.load.setPreloadSprite(this.preloadBarFill);
             //  Load our actual games assets
+            //  Question diagrams
             for (var i = 1; i < 2; i++) {
                 var pic = 'pic' + i;
                 var images = 'assets/questions/' + i + '.gif';
                 this.load.image(pic, images);
             }
+            //  Buttons
+            this.game.load.spritesheet('btn', 'assets/btn.gif', 120, 33, 2);
             this.game.load.image('arrow-head', 'assets/arrow-head.gif');
             this.game.load.json('sheet', 'sheet.json');
         };
@@ -155,32 +217,6 @@ var fbd;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
-    var Question = (function (_super) {
-        __extends(Question, _super);
-        function Question() {
-            _super.apply(this, arguments);
-        }
-        Question.prototype.create = function () {
-            // getting data externally
-            this.sheet = this.game.cache.getJSON('sheet');
-            // diagram initializing
-            this.diagram = [];
-            this.diagram[0] = new fbd.Diagram(this.game, 0, 0, "pic1");
-            document.getElementById("instructions").innerHTML = this.sheet[0].Instruction;
-            this.input.onDown.add(this.test, this);
-        };
-        Question.prototype.test = function () {
-            var rand = this.game.rnd.integerInRange(0, 2);
-            console.log(this.sheet[rand].Question, this.sheet[rand].Part);
-        };
-        Question.prototype.render = function () {
-        };
-        return Question;
-    })(Phaser.State);
-    fbd.Question = Question;
-})(fbd || (fbd = {}));
-var fbd;
-(function (fbd) {
     var SquareBox = (function (_super) {
         __extends(SquareBox, _super);
         function SquareBox(game, x, y, type) {
@@ -194,10 +230,22 @@ var fbd;
             bmd.ctx.fill();
             bmd.ctx.strokeStyle = '#000000';
             bmd.ctx.stroke();
-            _super.call(this, game, x, y, bmd);
             game.make.sprite(x, y, bmd);
-            //game.add.existing(this);
+            _super.call(this, game, x, y, bmd);
             this.anchor.setTo(1, 1);
+            this.result = game.make.text(0, 0, '', { fill: '#00FF00', font: '48px FontAwesome' });
+            this.addChild(this.result);
+            this.result.anchor.setTo(0.5, 0.5);
+            this.result.position.setTo(-this.width / 2, -this.height / 2);
+            this.result.y = Math.round(this.result.y);
+            this.result.x = Math.round(this.result.x);
+            //  textString[0] is correct, textString[1] is wrong;
+            this.textString = [
+                { 'text': '\uf00c ', 'fill': '#00FF00' },
+                { 'text': '\uf00d ', 'fill': '#FF0000' }
+            ];
+            this.result.text = this.textString[1].text;
+            this.result.fill = this.textString[1].fill;
         }
         SquareBox.prototype.update = function () {
         };

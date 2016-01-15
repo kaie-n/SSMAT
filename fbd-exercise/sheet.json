@@ -1,38 +1,50 @@
-﻿[
-  {
-    "Question": 0,
-    "Part": 0,
-    "Instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Assume there is no friction between the object and the inclined surface. Click on the SUBMIT button to check your answer.",
-    "Answer": "Vector[?].rotation = ?",
-    "Correct": "Click on the NEXT button to proceed.",
-    "Type": 1,
-    "Choice": null,
-    "Choice 2": null,
-    "Choice 3": null,
-    "Picture": "pic1"
-  },
-  {
-    "Question": 0,
-    "Part": 1,
-    "Instruction": "Drag the arrows into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
-    "Answer": "",
-    "Correct": "Click on the NEXT button to proceed to the next exercise.",
-    "Type": 2,
-    "Choice": null,
-    "Choice 2": null,
-    "Choice 3": null,
-    "Picture": "pic1"
-  },
-  {
-    "Question": 0,
-    "Part": 2,
-    "Instruction": "From the information given, which formula would you use to find the unknown (?). Select a formula and click on the SUBMIT button to check your answer.",
-    "Answer": "2",
-    "Correct": "Click on the NEXT button to proceed to the next question.",
-    "Type": 3,
-    "Choice": 1,
-    "Choice 2": 2,
-    "Choice 3": 3,
-    "Picture": "pic1"
-  }
-]
+﻿{
+  "question": [
+    {
+      "part": [
+        {
+          "instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Assume there is no friction between the object and the inclined surface. Click on the SUBMIT button to check your answer.",
+          "answer": [ 1.5708, 1, 0.5 ],
+          "correct": "Click on the NEXT button to proceed.",
+          "type": "1"
+        },
+        {
+          "instruction": "Drag the arrows into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
+          "answer": [ 1, 2, 3 ],
+          "correct": "Click on the NEXT button to proceed to the next exercise.",
+          "type": "2"
+        },
+        {
+          "instruction": "From the information given, which formula would you use to find the unknown (?). Select a formula and click on the SUBMIT button to check your answer.",
+          "answer": 1,
+          "correct": "Click on the NEXT button to proceed to the next exercise.",
+          "type": "2"
+        }
+      ],
+      "pic": "pic1"
+    },
+    {
+      "part": [
+        {
+          "instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Assume there is no friction between the object and the inclined surface. Click on the SUBMIT button to check your answer.",
+          "answer": [ -1.5708, 1, 0.5 ],
+          "correct": "Click on the NEXT button to proceed.",
+          "type": "1"
+        },
+        {
+          "instruction": "Drag the arrows into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
+          "answer": [ 1, 2, 3 ],
+          "correct": "Click on the NEXT button to proceed to the next exercise.",
+          "type": "2"
+        },
+        {
+          "instruction": "From the information given, which formula would you use to find the unknown (?). Select a formula and click on the SUBMIT button to check your answer.",
+          "answer": 1,
+          "correct": "Click on the NEXT button to proceed to the next exercise.",
+          "type": "2"
+        }
+      ],
+      "pic": "pic2"
+    }
+  ]
+}

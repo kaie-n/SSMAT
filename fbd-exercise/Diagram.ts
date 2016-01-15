@@ -16,7 +16,6 @@
             this.picture = this.game.make.sprite(0, 0, key);
             this.addChild(this.picture);
             this.squareBox = new SquareBox(game, this.game.world.width, this.picture.height, 1);
-            
 
             this.vector = [];
 
