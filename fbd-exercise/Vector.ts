@@ -23,7 +23,7 @@
             this.startingPoint = new Phaser.Point(x, y);
 
             // click region initialize
-            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 100, 100);
+            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 200, 200);
             this.clickRegion.centerOn(regionX, regionY);
             this.startingPoint = new Phaser.Point(regionX, regionY);
 
@@ -60,6 +60,8 @@
         drag() {
 
             this.inside = this.clickRegion.contains(this.x, this.y)  
+
+            
             if (this.x > 0) {
                 //if user click on the region god damn it
                 if (!this.inside) {
@@ -68,7 +70,11 @@
                 if (this.inside) {
                     this.x = this.game.input.x;
                     this.y = this.game.input.y;
+                  
                     this.position.setTo(this.rounder(this.x), this.rounder(this.y))
+                    if (this.y <= 0 && this.y <= this.width) {
+                        this.y = this.rounder(this.width);
+                    }
                     this.bmd.clear();
                     this.bmd.ctx.beginPath();
                     this.bmd.ctx.moveTo(this.startingPoint.x, this.startingPoint.y);

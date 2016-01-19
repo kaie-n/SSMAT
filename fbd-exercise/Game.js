@@ -307,7 +307,7 @@ var fbd;
             this.bmd.ctx.strokeStyle = "black";
             this.startingPoint = new Phaser.Point(x, y);
             // click region initialize
-            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 100, 100);
+            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 200, 200);
             this.clickRegion.centerOn(regionX, regionY);
             this.startingPoint = new Phaser.Point(regionX, regionY);
             // arrow head initialize
@@ -349,6 +349,9 @@ var fbd;
                     this.x = this.game.input.x;
                     this.y = this.game.input.y;
                     this.position.setTo(this.rounder(this.x), this.rounder(this.y));
+                    if (this.y <= 0 && this.y <= this.width) {
+                        this.y = this.rounder(this.width);
+                    }
                     this.bmd.clear();
                     this.bmd.ctx.beginPath();
                     this.bmd.ctx.moveTo(this.startingPoint.x, this.startingPoint.y);
