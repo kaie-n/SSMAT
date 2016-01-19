@@ -1,7 +1,8 @@
 ﻿{
   "question": [
     {
-      
+      "buttonLabel": [ "Submit", "Next" ],
+      "limit": 4,
       "co": [ 185, 65 ],
       "part": [
         {
@@ -26,6 +27,8 @@
       "pic": "pic1"
     },
     {
+      "buttonLabel": [ "Submit", "Next" ],
+      "limit": 4,
       "co": [ 185, 65 ],
       "part": [
         {

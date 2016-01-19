@@ -45,17 +45,18 @@
                 console.log("vector length  not = to part.answer length");
                 return false;
             }
-            var allCorrect = false;
+            var allCorrect = 0;
             if (this.diagram.vector.length > 0 || this.diagram.vector.length == part.answer.length) {
                 for (var i = 0; i < this.diagram.vector.length; i++) {
                     for (var j = 0; j < part.answer.length; j++) {
                         if (this.diagram.vector[i].angle != part.answer[j]) {
-                            console.log(this.diagram.vector[i].angle,"the vector angle", part.answer[j], "the answer");
+                            //console.log(this.diagram.vector[i].angle,"the vector angle", part.answer[j], "the answer", "answer is wrong");
                             continue;
                             //return false;
                         }
                         if (this.diagram.vector[i].angle == part.answer[j]) {
-                            console.log(this.diagram.vector[i].angle, "the vector angle", part.answer[j], "the answer");
+                            console.log(this.diagram.vector[i].angle, "the vector angle", part.answer[j], "the answer", "answer is correct!");
+                            allCorrect++;
                             break;
                             //return true;
                             // means atleast 1 vector is the same answer
@@ -63,7 +64,13 @@
                     }
                 }
             }
-            return true;
+            if (allCorrect == part.answer.length) {
+                return true;
+            }
+            if (allCorrect < part.answer.length) {
+                return false;
+            }
+            
         }
 
         render() {

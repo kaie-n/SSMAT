@@ -1,14 +1,14 @@
 ﻿module fbd {
 
     export class Diagram extends Phaser.Sprite {
-        picture: Phaser.Sprite;
-        clickRegion: Phaser.Rectangle;
-        squareBox: fbd.SquareBox;
-        vector: Array<fbd.Vector>;
-        circle: Phaser.Sprite;
-        game: Phaser.Game
-        limit: number;
-        co: Phaser.Point;
+        picture: Phaser.Sprite; // diagram picture
+        clickRegion: Phaser.Rectangle; // region
+        squareBox: fbd.SquareBox; // squarebox
+        vector: Array<fbd.Vector>; // the force vectors
+        circle: Phaser.Sprite; // circle sprite
+        game: Phaser.Game // game reference
+        limit: number; // number of force vectors limit
+        co: Phaser.Point; // coordinates of circle dot
         constructor(game: Phaser.Game, x, y, key, startX, startY) {
             super(game, x, y, key);
             this.game = game;
@@ -32,10 +32,9 @@
             this.circle.events.onInputDown.add(this.addVector, this);
             this.addChild(this.circle);
             this.addChild(this.squareBox);
-            this.limit = 4;
+            this.limit = part.limit;
 
             this.co = new Phaser.Point(startX, startY);
-            //this.game.input.onDown.add(this.addVector, this);
             
         }
         destroyAll() {
