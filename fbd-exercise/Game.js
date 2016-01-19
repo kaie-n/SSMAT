@@ -11,6 +11,31 @@ var __extends = (this && this.__extends) || function (d, b) {
 };
 var fbd;
 (function (fbd) {
+    var Boot = (function (_super) {
+        __extends(Boot, _super);
+        function Boot() {
+            _super.apply(this, arguments);
+        }
+        Boot.prototype.preload = function () {
+            this.load.image('loadEmpty', 'assets/loading-bar-empty.gif');
+            this.load.image('loadFill', 'assets/loading-bar-fill.gif');
+        };
+        Boot.prototype.create = function () {
+            Phaser.Canvas.setImageRenderingCrisp(this.game.canvas); //for Canvas, modern approach
+            Phaser.Canvas.setSmoothingEnabled(this.game.context, false); //also for Canvas, legacy approach
+            //PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST; //for WebGL
+            //  Unless you specifically need to support multitouch I would recommend setting this to 1
+            this.input.maxPointers = 1;
+            //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
+            this.stage.disableVisibilityChange = true;
+            this.game.state.start('Preloader', true, false);
+        };
+        return Boot;
+    })(Phaser.State);
+    fbd.Boot = Boot;
+})(fbd || (fbd = {}));
+var fbd;
+(function (fbd) {
     var ButtonLabel = (function (_super) {
         __extends(ButtonLabel, _super);
         function ButtonLabel(game, x, y, key, label, callback, callbackContext, overFrame, outFrame, downFrame, upFrame) {
@@ -49,7 +74,6 @@ var fbd;
             this.circle.events.onInputDown.add(this.addVector, this);
             this.addChild(this.circle);
             this.addChild(this.squareBox);
-            this.limit = part.limit;
             this.co = new Phaser.Point(startX, startY);
         }
         Diagram.prototype.destroyAll = function () {
@@ -89,103 +113,6 @@ var fbd;
         return Game;
     })(Phaser.Game);
     fbd.Game = Game;
-})(fbd || (fbd = {}));
-var fbd;
-(function (fbd) {
-    var Boot = (function (_super) {
-        __extends(Boot, _super);
-        function Boot() {
-            _super.apply(this, arguments);
-        }
-        Boot.prototype.preload = function () {
-            this.load.image('loadEmpty', 'assets/loading-bar-empty.gif');
-            this.load.image('loadFill', 'assets/loading-bar-fill.gif');
-        };
-        Boot.prototype.create = function () {
-            Phaser.Canvas.setImageRenderingCrisp(this.game.canvas); //for Canvas, modern approach
-            Phaser.Canvas.setSmoothingEnabled(this.game.context, false); //also for Canvas, legacy approach
-            //PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST; //for WebGL
-            //  Unless you specifically need to support multitouch I would recommend setting this to 1
-            this.input.maxPointers = 1;
-            //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
-            this.stage.disableVisibilityChange = true;
-            this.game.state.start('Preloader', true, false);
-        };
-        return Boot;
-    })(Phaser.State);
-    fbd.Boot = Boot;
-})(fbd || (fbd = {}));
-var fbd;
-(function (fbd) {
-    var Question = (function (_super) {
-        __extends(Question, _super);
-        function Question() {
-            _super.apply(this, arguments);
-        }
-        Question.prototype.create = function () {
-            //  getting data externally
-            sheet = this.game.cache.getJSON('sheet');
-            question = sheet.question[_q]; //  short-named variable for referencing of which question and part
-            part = sheet.question[_q].part[_p];
-            //  diagram initializing
-            this.diagram = new fbd.Diagram(this.game, 0, 0, question.pic, question.co[0], question.co[1]);
-            divDetails.innerHTML = part.instruction;
-            //  button initializing
-            this.btn = new fbd.ButtonLabel(this.game, 0, 0, 'btn', "Submit", this.submit, this, 0, 0, 1, 0);
-            this.btn.x = this.game.width - (this.diagram.squareBox.width / 2) - (this.btn.width / 2); // just because I can and you can't
-            //  testing purposes
-            //this.input.onDown.add(this.submit, this);
-        };
-        Question.prototype.submit = function () {
-            if (this.checkAnswers()) {
-                this.diagram.squareBox.showAnswer(0, true);
-            }
-            else {
-                this.diagram.squareBox.showAnswer(1, false);
-            }
-        };
-        Question.prototype.checkAnswers = function () {
-            //  check for answers
-            //  if any of the vectors has the same angle range
-            //  return true and show correct
-            //  if wrong
-            //  return false and show wrong check mark
-            if (this.diagram.vector.length <= 0) {
-                console.log("vector length lesser than or = 0");
-                return false;
-            }
-            if (this.diagram.vector.length != part.answer.length) {
-                console.log("vector length  not = to part.answer length");
-                return false;
-            }
-            var allCorrect = 0;
-            if (this.diagram.vector.length > 0 || this.diagram.vector.length == part.answer.length) {
-                for (var i = 0; i < this.diagram.vector.length; i++) {
-                    for (var j = 0; j < part.answer.length; j++) {
-                        if (this.diagram.vector[i].angle != part.answer[j]) {
-                            //console.log(this.diagram.vector[i].angle,"the vector angle", part.answer[j], "the answer", "answer is wrong");
-                            continue;
-                        }
-                        if (this.diagram.vector[i].angle == part.answer[j]) {
-                            console.log(this.diagram.vector[i].angle, "the vector angle", part.answer[j], "the answer", "answer is correct!");
-                            allCorrect++;
-                            break;
-                        }
-                    }
-                }
-            }
-            if (allCorrect == part.answer.length) {
-                return true;
-            }
-            if (allCorrect < part.answer.length) {
-                return false;
-            }
-        };
-        Question.prototype.render = function () {
-        };
-        return Question;
-    })(Phaser.State);
-    fbd.Question = Question;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
@@ -247,6 +174,79 @@ var fbd;
         return Preloader;
     })(Phaser.State);
     fbd.Preloader = Preloader;
+})(fbd || (fbd = {}));
+var fbd;
+(function (fbd) {
+    var Question = (function (_super) {
+        __extends(Question, _super);
+        function Question() {
+            _super.apply(this, arguments);
+        }
+        Question.prototype.create = function () {
+            //  getting data externally
+            sheet = this.game.cache.getJSON('sheet');
+            question = sheet.question[_q]; //  short-named variable for referencing of which question and part
+            part = sheet.question[_q].part[_p];
+            //  diagram initializing
+            this.diagram = new fbd.Diagram(this.game, 0, 0, question.pic, question.co[0], question.co[1]);
+            this.diagram.limit = question.limit;
+            divDetails.innerHTML = part.instruction;
+            //  button initializing
+            this.btn = new fbd.ButtonLabel(this.game, 0, 0, 'btn', "Submit", this.submit, this, 0, 0, 1, 0);
+            this.btn.x = this.game.width - (this.diagram.squareBox.width / 2) - (this.btn.width / 2); // just because I can and you can't
+            //  testing purposes
+            //this.input.onDown.add(this.submit, this);
+        };
+        Question.prototype.submit = function () {
+            if (this.checkAnswers()) {
+                this.diagram.squareBox.showAnswer(0, true);
+            }
+            else {
+                this.diagram.squareBox.showAnswer(1, false);
+            }
+        };
+        Question.prototype.checkAnswers = function () {
+            //  check for answers
+            //  if any of the vectors has the same angle range
+            //  return true and show correct
+            //  if wrong
+            //  return false and show wrong check mark
+            if (this.diagram.vector.length <= 0) {
+                console.log("vector length lesser than or = 0");
+                return false;
+            }
+            if (this.diagram.vector.length != part.answer.length) {
+                console.log("vector length  not = to part.answer length");
+                return false;
+            }
+            var allCorrect = 0;
+            if (this.diagram.vector.length > 0 || this.diagram.vector.length == part.answer.length) {
+                for (var i = 0; i < this.diagram.vector.length; i++) {
+                    for (var j = 0; j < part.answer.length; j++) {
+                        if (this.diagram.vector[i].angle != part.answer[j]) {
+                            //console.log(this.diagram.vector[i].angle,"the vector angle", part.answer[j], "the answer", "answer is wrong");
+                            continue;
+                        }
+                        if (this.diagram.vector[i].angle == part.answer[j]) {
+                            console.log(this.diagram.vector[i].angle, "the vector angle", part.answer[j], "the answer", "answer is correct!");
+                            allCorrect++;
+                            break;
+                        }
+                    }
+                }
+            }
+            if (allCorrect == part.answer.length) {
+                return true;
+            }
+            if (allCorrect < part.answer.length) {
+                return false;
+            }
+        };
+        Question.prototype.render = function () {
+        };
+        return Question;
+    })(Phaser.State);
+    fbd.Question = Question;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {

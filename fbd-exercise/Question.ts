@@ -12,6 +12,7 @@
 
             //  diagram initializing
             this.diagram = new fbd.Diagram(this.game, 0, 0, question.pic, question.co[0], question.co[1]);
+            this.diagram.limit = question.limit;
             divDetails.innerHTML = part.instruction; 
 
             //  button initializing

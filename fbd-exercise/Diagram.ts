@@ -32,8 +32,6 @@
             this.circle.events.onInputDown.add(this.addVector, this);
             this.addChild(this.circle);
             this.addChild(this.squareBox);
-            this.limit = part.limit;
-
             this.co = new Phaser.Point(startX, startY);
             
         }
