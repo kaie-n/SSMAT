@@ -1232,6 +1232,8 @@ var SSMAT;
                     this.sprite[i][j].inputEnabled = true;
                     this.sprite[i][j].main = this;
                     this.spriteGroup.addChild(this.sprite[i][j]);
+                    // # REMOVE THIS IF DEPLOYING //
+                    this.sprite[i][j].events.onInputDown.add(this.testClick, this);
                 }
                 distributeHeight += 126.5;
             }
