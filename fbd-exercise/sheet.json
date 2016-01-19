@@ -1,10 +1,12 @@
 ﻿{
   "question": [
     {
+      
+      "co": [ 185, 65 ],
       "part": [
         {
           "instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Assume there is no friction between the object and the inclined surface. Click on the SUBMIT button to check your answer.",
-          "answer": [ 1.5708, 1, 0.5 ],
+          "answer": [ 0, 90, -180, -90 ],
           "correct": "Click on the NEXT button to proceed.",
           "type": "1"
         },
@@ -24,6 +26,7 @@
       "pic": "pic1"
     },
     {
+      "co": [ 185, 65 ],
       "part": [
         {
           "instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Assume there is no friction between the object and the inclined surface. Click on the SUBMIT button to check your answer.",

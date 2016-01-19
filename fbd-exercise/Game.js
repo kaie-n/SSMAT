@@ -1,5 +1,6 @@
 var _this = this;
 window.onload = function () {
+    divDetails = document.getElementById("instructions");
     global_style = { font: "14px 'Segoe UI', sans-serif", fill: "#000000", wordWrap: false, wordWrapWidth: _this.width, align: "left" };
     var game = new fbd.Game();
 };
@@ -8,88 +9,6 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
-var fbd;
-(function (fbd) {
-    var ButtonLabel = (function (_super) {
-        __extends(ButtonLabel, _super);
-        function ButtonLabel(game, x, y, key, label, callback, callbackContext, overFrame, outFrame, downFrame, upFrame) {
-            _super.call(this, game, x, y, key, callback, callbackContext, overFrame, outFrame, downFrame, upFrame);
-            game.add.existing(this);
-            this.label = game.make.text(0, 0, label, global_style);
-            this.label.anchor.setTo(0.5, 0.5);
-            this.label.position.setTo(this.width / 2, this.height / 2);
-            this.label.y = Math.round(this.label.y);
-            this.label.x = Math.round(this.label.x);
-            this.addChild(this.label);
-        }
-        return ButtonLabel;
-    })(Phaser.Button);
-    fbd.ButtonLabel = ButtonLabel;
-})(fbd || (fbd = {}));
-var fbd;
-(function (fbd) {
-    var Diagram = (function (_super) {
-        __extends(Diagram, _super);
-        function Diagram(game, x, y, key) {
-            _super.call(this, game, x, y, key);
-            this.game = game;
-            this.game.add.existing(this);
-            // diagram
-            this.picture = this.game.make.sprite(0, 0, key);
-            this.addChild(this.picture);
-            this.squareBox = new fbd.SquareBox(game, this.game.world.width, this.picture.height, 1);
-            this.vector = [];
-            var circle = game.add.bitmapData(10, 10);
-            circle.circle(5, 5, 5, '#000000');
-            this.circle = game.make.sprite(185, 66, circle);
-            this.circle.anchor.setTo(0.5, 0.5);
-            this.circle.inputEnabled = true;
-            this.circle.events.onInputDown.add(this.addVector, this);
-            this.addChild(this.circle);
-            this.addChild(this.squareBox);
-            this.limit = 4;
-            //this.game.input.onDown.add(this.addVector, this);
-        }
-        Diagram.prototype.destroyAll = function () {
-            this.destroy();
-            for (var i = 0; i < this.vector.length; i++) {
-                this.vector[i].group.destroy();
-                this.vector[i].destroy();
-            }
-        };
-        Diagram.prototype.addVector = function () {
-            if (this.vector.length < this.limit) {
-                var i = this.vector.length;
-                if (i == 0) {
-                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, 185, 66);
-                    console.log(this.vector.length);
-                }
-                else {
-                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, 185, 66);
-                    console.log(this.vector.length);
-                }
-            }
-        };
-        return Diagram;
-    })(Phaser.Sprite);
-    fbd.Diagram = Diagram;
-})(fbd || (fbd = {}));
-var fbd;
-(function (fbd) {
-    var Game = (function (_super) {
-        __extends(Game, _super);
-        function Game() {
-            _super.call(this, 623, 300, Phaser.CANVAS, 'cannyvas', null, true, false);
-            this.state.add('Boot', fbd.Boot, false);
-            this.state.add('Preloader', fbd.Preloader, false);
-            this.state.add('MainMenu', fbd.MainMenu, false);
-            this.state.add('Question', fbd.Question, false);
-            this.state.start('Boot');
-        }
-        return Game;
-    })(Phaser.Game);
-    fbd.Game = Game;
-})(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
     var Boot = (function (_super) {
@@ -117,42 +36,85 @@ var fbd;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
-    var Question = (function (_super) {
-        __extends(Question, _super);
-        function Question() {
-            _super.apply(this, arguments);
+    var ButtonLabel = (function (_super) {
+        __extends(ButtonLabel, _super);
+        function ButtonLabel(game, x, y, key, label, callback, callbackContext, overFrame, outFrame, downFrame, upFrame) {
+            _super.call(this, game, x, y, key, callback, callbackContext, overFrame, outFrame, downFrame, upFrame);
+            game.add.existing(this);
+            this.label = game.make.text(0, 0, label, global_style);
+            this.label.anchor.setTo(0.5, 0.5);
+            this.label.position.setTo(this.width / 2, this.height / 2);
+            this.label.y = Math.round(this.label.y);
+            this.label.x = Math.round(this.label.x);
+            this.addChild(this.label);
         }
-        Question.prototype.create = function () {
-            //  getting data externally
-            this.sheet = this.game.cache.getJSON('sheet');
-            //  diagram initializing
-            this.diagram = new fbd.Diagram(this.game, 0, 0, "pic1");
-            document.getElementById("instructions").innerHTML = this.sheet.question[_q].part[_p].instruction;
-            //  button initializing
-            this.btn = new fbd.ButtonLabel(this.game, 0, 0, 'btn', "Submit", this.submit, this, 0, 0, 1, 0);
-            this.btn.x = this.game.width - (this.diagram.squareBox.width / 2) - (this.btn.width / 2); // just because I can and you can't
-            //  testing purposes
-            this.input.onDown.add(this.test, this);
+        return ButtonLabel;
+    })(Phaser.Button);
+    fbd.ButtonLabel = ButtonLabel;
+})(fbd || (fbd = {}));
+var fbd;
+(function (fbd) {
+    var Diagram = (function (_super) {
+        __extends(Diagram, _super);
+        function Diagram(game, x, y, key, startX, startY) {
+            _super.call(this, game, x, y, key);
+            this.game = game;
+            this.game.add.existing(this);
+            // diagram
+            this.picture = this.game.make.sprite(0, 0, key);
+            this.addChild(this.picture);
+            // square box
+            this.squareBox = new fbd.SquareBox(game, this.game.world.width, this.picture.height, 1);
+            this.vector = [];
+            var circle = game.add.bitmapData(10, 10);
+            circle.circle(5, 5, 5, '#000000');
+            this.circle = game.make.sprite(startX, startY, circle);
+            this.circle.anchor.setTo(0.5, 0.5);
+            this.circle.inputEnabled = true;
+            this.circle.events.onInputDown.add(this.addVector, this);
+            this.addChild(this.circle);
+            this.addChild(this.squareBox);
+            this.limit = 4;
+            this.co = new Phaser.Point(startX, startY);
+            //this.game.input.onDown.add(this.addVector, this);
+        }
+        Diagram.prototype.destroyAll = function () {
+            this.destroy();
+            for (var i = 0; i < this.vector.length; i++) {
+                this.vector[i].group.destroy();
+                this.vector[i].destroy();
+            }
         };
-        Question.prototype.submit = function () {
-            this.checkAnswers();
+        Diagram.prototype.addVector = function () {
+            if (this.vector.length < this.limit) {
+                var i = this.vector.length;
+                if (i == 0) {
+                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y);
+                }
+                else {
+                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y);
+                }
+            }
         };
-        Question.prototype.checkAnswers = function () {
-            var bool = true;
-            //  check for answers
-            //  if any of the vectors has the same angle range
-            //  return true and show correct
-            //  if wrong
-            //  return false and show wrong check mark
-            return bool;
-        };
-        Question.prototype.test = function () {
-        };
-        Question.prototype.render = function () {
-        };
-        return Question;
-    })(Phaser.State);
-    fbd.Question = Question;
+        return Diagram;
+    })(Phaser.Sprite);
+    fbd.Diagram = Diagram;
+})(fbd || (fbd = {}));
+var fbd;
+(function (fbd) {
+    var Game = (function (_super) {
+        __extends(Game, _super);
+        function Game() {
+            _super.call(this, 623, 300, Phaser.CANVAS, 'cannyvas', null, true, false);
+            this.state.add('Boot', fbd.Boot, false);
+            this.state.add('Preloader', fbd.Preloader, false);
+            this.state.add('MainMenu', fbd.MainMenu, false);
+            this.state.add('Question', fbd.Question, false);
+            this.state.start('Boot');
+        }
+        return Game;
+    })(Phaser.Game);
+    fbd.Game = Game;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
@@ -217,6 +179,72 @@ var fbd;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
+    var Question = (function (_super) {
+        __extends(Question, _super);
+        function Question() {
+            _super.apply(this, arguments);
+        }
+        Question.prototype.create = function () {
+            //  getting data externally
+            sheet = this.game.cache.getJSON('sheet');
+            question = sheet.question[_q]; //  short-named variable for referencing of which question and part
+            part = sheet.question[_q].part[_p];
+            //  diagram initializing
+            this.diagram = new fbd.Diagram(this.game, 0, 0, question.pic, question.co[0], question.co[1]);
+            divDetails.innerHTML = part.instruction;
+            //  button initializing
+            this.btn = new fbd.ButtonLabel(this.game, 0, 0, 'btn', "Submit", this.submit, this, 0, 0, 1, 0);
+            this.btn.x = this.game.width - (this.diagram.squareBox.width / 2) - (this.btn.width / 2); // just because I can and you can't
+            //  testing purposes
+            //this.input.onDown.add(this.submit, this);
+        };
+        Question.prototype.submit = function () {
+            if (this.checkAnswers()) {
+                this.diagram.squareBox.showAnswer(0, true);
+            }
+            else {
+                this.diagram.squareBox.showAnswer(1, false);
+            }
+        };
+        Question.prototype.checkAnswers = function () {
+            //  check for answers
+            //  if any of the vectors has the same angle range
+            //  return true and show correct
+            //  if wrong
+            //  return false and show wrong check mark
+            if (this.diagram.vector.length <= 0) {
+                console.log("vector length lesser than or = 0");
+                return false;
+            }
+            if (this.diagram.vector.length != part.answer.length) {
+                console.log("vector length  not = to part.answer length");
+                return false;
+            }
+            var allCorrect = false;
+            if (this.diagram.vector.length > 0 || this.diagram.vector.length == part.answer.length) {
+                for (var i = 0; i < this.diagram.vector.length; i++) {
+                    for (var j = 0; j < part.answer.length; j++) {
+                        if (this.diagram.vector[i].angle != part.answer[j]) {
+                            console.log(this.diagram.vector[i].angle, "the vector angle", part.answer[j], "the answer");
+                            continue;
+                        }
+                        if (this.diagram.vector[i].angle == part.answer[j]) {
+                            console.log(this.diagram.vector[i].angle, "the vector angle", part.answer[j], "the answer");
+                            break;
+                        }
+                    }
+                }
+            }
+            return true;
+        };
+        Question.prototype.render = function () {
+        };
+        return Question;
+    })(Phaser.State);
+    fbd.Question = Question;
+})(fbd || (fbd = {}));
+var fbd;
+(function (fbd) {
     var SquareBox = (function (_super) {
         __extends(SquareBox, _super);
         function SquareBox(game, x, y, type) {
@@ -233,7 +261,7 @@ var fbd;
             game.make.sprite(x, y, bmd);
             _super.call(this, game, x, y, bmd);
             this.anchor.setTo(1, 1);
-            this.result = game.make.text(0, 0, '', { fill: '#00FF00', font: '48px FontAwesome' });
+            this.result = game.make.text(0, 0, '', { fill: '#00FF00', font: '48px Arial' });
             this.addChild(this.result);
             this.result.anchor.setTo(0.5, 0.5);
             this.result.position.setTo(-this.width / 2, -this.height / 2);
@@ -241,12 +269,19 @@ var fbd;
             this.result.x = Math.round(this.result.x);
             //  textString[0] is correct, textString[1] is wrong;
             this.textString = [
-                { 'text': '\uf00c ', 'fill': '#00FF00' },
-                { 'text': '\uf00d ', 'fill': '#FF0000' }
+                { 'text': "✔", 'fill': '#00FF00' },
+                { 'text': "✖", 'fill': '#FF0000' }
             ];
-            this.result.text = this.textString[1].text;
-            this.result.fill = this.textString[1].fill;
+            this.result.visible = false;
         }
+        SquareBox.prototype.showAnswer = function (i, bool) {
+            if (bool) {
+                divDetails.innerHTML = part.correct;
+            }
+            this.result.visible = true;
+            this.result.text = this.textString[i].text;
+            this.result.fill = this.textString[i].fill;
+        };
         SquareBox.prototype.update = function () {
         };
         return SquareBox;
@@ -292,7 +327,11 @@ var fbd;
             }
         };
         Vector.prototype.getAngle = function (x1, y1, x2, y2) {
-            return Phaser.Math.angleBetween(x1, y1, x2, y2);
+            var rad = Phaser.Math.angleBetween(x1, y1, x2, y2);
+            var deg = Phaser.Math.radToDeg(rad);
+            var round = this.rounder(deg);
+            return round;
+            //return Phaser.Math.angleBetween(x1, y1, x2, y2)
         };
         Vector.prototype.drag = function () {
             this.inside = this.clickRegion.contains(this.x, this.y);
@@ -313,7 +352,7 @@ var fbd;
                     this.bmd.ctx.stroke();
                     this.bmd.ctx.closePath();
                     this.bmd.render();
-                    this.rotation = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y));
+                    this.angle = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y));
                 }
             }
         };

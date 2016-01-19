@@ -27,7 +27,7 @@
             game.make.sprite(x, y, bmd);
             super(game, x, y, bmd);
             this.anchor.setTo(1, 1)
-            this.result = game.make.text(0, 0, '', { fill: '#00FF00', font: '48px FontAwesome' });
+            this.result = game.make.text(0, 0, '', { fill: '#00FF00', font: '48px Arial' });
 
             this.addChild(this.result);
             this.result.anchor.setTo(0.5, 0.5);
@@ -37,11 +37,18 @@
 
             //  textString[0] is correct, textString[1] is wrong;
             this.textString = [
-                { 'text': '\uf00c ', 'fill': '#00FF00' },
-                { 'text': '\uf00d ', 'fill': '#FF0000' }
+                { 'text': "✔", 'fill': '#00FF00' },
+                { 'text': "✖", 'fill': '#FF0000' }
             ];
-            this.result.text = this.textString[1].text;
-            this.result.fill = this.textString[1].fill;
+            this.result.visible = false;
+        }
+        showAnswer(i, bool) {
+            if (bool) {
+                divDetails.innerHTML = part.correct
+            }
+            this.result.visible = true;
+            this.result.text = this.textString[i].text;
+            this.result.fill = this.textString[i].fill;
         }
 
         update() {

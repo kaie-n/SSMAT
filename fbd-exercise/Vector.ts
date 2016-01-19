@@ -50,7 +50,11 @@
             }
         }
         getAngle(x1, y1, x2, y2) {
-            return Phaser.Math.angleBetween(x1, y1, x2, y2)
+            var rad = Phaser.Math.angleBetween(x1, y1, x2, y2);
+            var deg = Phaser.Math.radToDeg(rad);
+            var round = this.rounder(deg);
+            return round;
+            //return Phaser.Math.angleBetween(x1, y1, x2, y2)
         }
 
         drag() {
@@ -73,8 +77,8 @@
                     this.bmd.ctx.stroke();
                     this.bmd.ctx.closePath();
                     this.bmd.render();
-                    this.rotation = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y))
-                    //console.log(this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(pointer.x), this.rounder(pointer.y)));
+                    this.angle = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y))
+                    //console.log(this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y)));
                     //console.log(this.rounder(this.x), this.rounder(this.y));
                     
                 }
