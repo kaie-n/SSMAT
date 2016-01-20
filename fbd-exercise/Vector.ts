@@ -9,16 +9,16 @@
         group: Phaser.Group;
         target: boolean;
         inside: boolean;
-        
+
         constructor(game: Phaser.Game, x, y, regionX, regionY) {
             this.bmd = game.make.bitmapData(game.width, game.height);
             this.bmdSprite = game.make.sprite(0, 0, this.bmd);
-           
+
             super(game, x, y, "arrow-head");
-            //game.add.existing(this);
-            game.make.sprite(x, y, "arrow-head");
-            
-            this.addChild(this.bmdSprite);
+            game.add.existing(this);
+            //game.add.sprite(x, y, "arrow-head");
+
+            //this.addChild(game.make.sprite(0, 0, this.bmd));
             this.bmd.ctx.strokeStyle = "black";
             this.startingPoint = new Phaser.Point(x, y);
 
@@ -28,26 +28,42 @@
             this.startingPoint = new Phaser.Point(regionX, regionY);
 
             // arrow head initialize
-            this.anchor.setTo(0, 0.5)
+            this.anchor.setTo(0.5, 0.5)
             this.inputEnabled = true;
             this.events.onInputDown.add(function () {
-                this.drag();
+
                 this.target = true;
+                if (_p == 0) {
+                    this.drag();
+                }
+
             }, this);
+
             this.target = true;
             this.inside = this.clickRegion.contains(this.x, this.y)
             this.group = game.add.group();
             this.group.add(this.bmdSprite);
             this.group.add(this);
+
         }
 
         update() {
-            if (this.game.input.mousePointer.isDown && this.target) {
+
+            if (this.game.input.mousePointer.isDown && this.target && _p == 0) {
                 this.drag();
             }
             if (!this.game.input.mousePointer.isDown) {
                 this.target = false;
             }
+            if (this.game.input.mousePointer.isDown && this.target && _p == 1) {
+                //this.group.x = this.rounder(this.game.input.x - this.startingPoint.x, 10);
+                //this.group.y = this.rounder(this.game.input.y - this.startingPoint.y, 10);
+                this.x = this.game.input.x;
+                this.y = this.game.input.y;
+                console.log(this.group.x, this.group.y, "group x and y");
+                //this.group.position.clone(this.group.toLocal(this.game.input.position));
+            }
+
         }
         getAngle(x1, y1, x2, y2) {
             var rad = Phaser.Math.angleBetween(x1, y1, x2, y2);
@@ -59,22 +75,21 @@
 
         drag() {
 
-            this.inside = this.clickRegion.contains(this.x, this.y)  
+            this.inside = this.clickRegion.contains(this.x, this.y)
 
-            
+
             if (this.x > 0) {
                 //if user click on the region god damn it
                 if (!this.inside) {
                     this.inside = this.clickRegion.contains(this.game.input.x, this.game.input.y)
                 }
                 if (this.inside) {
-                    this.x = this.game.input.x;
-                    this.y = this.game.input.y;
-                  
-                    this.position.setTo(this.rounder(this.x), this.rounder(this.y))
-                    if (this.y <= 0 && this.y <= this.width) {
-                        this.y = this.rounder(this.width);
+                    this.x = this.rounder(this.game.input.x);
+                    this.y = this.rounder(this.game.input.y);
+                    if (this.y == 5 || this.y <= 0) {
+                        this.y = 10;
                     }
+                    this.position.setTo(this.rounder(this.x), this.rounder(this.y))
                     this.bmd.clear();
                     this.bmd.ctx.beginPath();
                     this.bmd.ctx.moveTo(this.startingPoint.x, this.startingPoint.y);
@@ -91,8 +106,9 @@
             }
         }
 
-        rounder(x) {
-            return Math.ceil(x / 5) * 5;
+        rounder(x, pow = 5) {
+            return Math.ceil(x / pow) * pow;
         }
+
     }
 }
