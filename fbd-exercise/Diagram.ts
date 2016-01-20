@@ -52,9 +52,7 @@
                 }
                 else {
                     this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y);
-                    
                 }
-                
             }
         }
     }

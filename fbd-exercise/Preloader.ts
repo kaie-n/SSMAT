@@ -24,7 +24,7 @@
             }
             //  Buttons
             this.game.load.spritesheet('btn', 'assets/btn.gif', 120, 33, 2);
-
+            this.game.load.image('resolve', 'assets/resolve.gif');
             this.game.load.image('arrow-head', 'assets/arrow-head.gif');
             this.game.load.json('sheet', 'sheet.json');
         }

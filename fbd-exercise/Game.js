@@ -155,6 +155,7 @@ var fbd;
             }
             //  Buttons
             this.game.load.spritesheet('btn', 'assets/btn.gif', 120, 33, 2);
+            this.game.load.image('resolve', 'assets/resolve.gif');
             this.game.load.image('arrow-head', 'assets/arrow-head.gif');
             this.game.load.json('sheet', 'sheet.json');
         };
@@ -197,15 +198,41 @@ var fbd;
             //  testing purposes
             //this.input.onDown.add(this.submit, this);
         };
-        Question.prototype.submit = function () {
-            if (this.checkAnswers()) {
-                this.diagram.squareBox.showAnswer(0, true);
-            }
-            else {
-                this.diagram.squareBox.showAnswer(1, false);
+        Question.prototype.update = function () {
+            switch (_p) {
+                case 0:
+                    this.diagram.squareBox.resolve.visible = false;
+                    break;
+                case 1:
+                    this.diagram.squareBox.resolve.visible = true;
+                    break;
+                case 2:
+                    this.diagram.squareBox.resolve.visible = false;
+                    break;
             }
         };
-        Question.prototype.checkAnswers = function () {
+        Question.prototype.submit = function () {
+            if (this.btn.label.text == "Submit") {
+                if (this.checkAnswers()) {
+                    this.diagram.squareBox.showAnswer(0, true);
+                    this.btn.label.text = "Next";
+                    return;
+                }
+                else {
+                    this.diagram.squareBox.showAnswer(1, false);
+                    return;
+                }
+            }
+            if (this.btn.label.text == "Next") {
+                _p++;
+                part = sheet.question[_q].part[_p];
+                divDetails.innerHTML = part.instruction;
+                this.btn.label.text = "Submit";
+                this.diagram.squareBox.hideAnswer();
+                return;
+            }
+        };
+        Question.prototype.part1 = function () {
             //  check for answers
             //  if any of the vectors has the same angle range
             //  return true and show correct
@@ -215,7 +242,7 @@ var fbd;
                 console.log("vector length lesser than or = 0");
                 return false;
             }
-            if (this.diagram.vector.length != part.answer.length) {
+            if (this.diagram.vector.length != question.limit) {
                 console.log("vector length  not = to part.answer length");
                 return false;
             }
@@ -223,23 +250,42 @@ var fbd;
             if (this.diagram.vector.length > 0 || this.diagram.vector.length == part.answer.length) {
                 for (var i = 0; i < this.diagram.vector.length; i++) {
                     for (var j = 0; j < part.answer.length; j++) {
-                        if (this.diagram.vector[i].angle != part.answer[j]) {
-                            //console.log(this.diagram.vector[i].angle,"the vector angle", part.answer[j], "the answer", "answer is wrong");
-                            continue;
+                        if (part.answer[j].length > 0) {
+                            if (this.diagram.vector[i].angle >= part.answer[j][0] && this.diagram.vector[i].angle <= part.answer[j][1]) {
+                                console.log(this.diagram.vector[i].angle, "the vector angle", "answer is  within range and correct!");
+                                allCorrect++;
+                                break;
+                            }
                         }
-                        if (this.diagram.vector[i].angle == part.answer[j]) {
-                            console.log(this.diagram.vector[i].angle, "the vector angle", part.answer[j], "the answer", "answer is correct!");
-                            allCorrect++;
-                            break;
+                        if (part.answer[j].constructor != Array) {
+                            if (this.diagram.vector[i].angle != part.answer[j]) {
+                                //console.log(this.diagram.vector[i].angle,"the vector angle", part.answer[j], "the answer", "answer is wrong");
+                                continue;
+                            }
+                            if (this.diagram.vector[i].angle == part.answer[j]) {
+                                console.log(this.diagram.vector[i].angle, "the vector angle", part.answer[j], "the answer", "answer is correct!");
+                                allCorrect++;
+                                break;
+                            }
                         }
                     }
                 }
             }
-            if (allCorrect == part.answer.length) {
+            if (allCorrect == question.limit) {
                 return true;
             }
-            if (allCorrect < part.answer.length) {
+            if (allCorrect < question.limit) {
                 return false;
+            }
+        };
+        Question.prototype.checkAnswers = function () {
+            if (_p == 0) {
+                if (this.part1()) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
         };
         Question.prototype.render = function () {
@@ -256,17 +302,28 @@ var fbd;
             // square box initialize
             var width = 200; // example;
             var height = 150; // example;
-            var bmd = game.add.bitmapData(width, height);
+            var bmd = game.make.bitmapData(width, height);
             bmd.ctx.beginPath();
             bmd.ctx.rect(0, 0, width, height);
             bmd.ctx.fillStyle = '#ffffff';
             bmd.ctx.fill();
             bmd.ctx.strokeStyle = '#000000';
             bmd.ctx.stroke();
-            game.make.sprite(x, y, bmd);
             _super.call(this, game, x, y, bmd);
+            //game.add.sprite(x, y, bmd);
             this.anchor.setTo(1, 1);
-            this.result = game.make.text(0, 0, '', { fill: '#00FF00', font: '48px Arial' });
+            // resolve text initialize
+            this.resolve = game.make.sprite(-this.width, -this.height, "resolve");
+            this.addChild(this.resolve);
+            // circle initialize
+            var circle = game.add.bitmapData(10, 10);
+            circle.circle(5, 5, 5, '#000000');
+            this.circle = game.make.sprite(-this.width / 2, (-this.height / 2) + 5, circle);
+            this.circle.anchor.setTo(0.5, 0.5);
+            this.circle.alpha = 0;
+            this.addChild(this.circle);
+            // result text initialize
+            this.result = game.make.text(0, 0, "✖", { fill: '#00FF00', font: '48px Arial' });
             this.addChild(this.result);
             this.result.anchor.setTo(0.5, 0.5);
             this.result.position.setTo(-this.width / 2, -this.height / 2);
@@ -279,15 +336,38 @@ var fbd;
             ];
             this.result.visible = false;
         }
+        SquareBox.prototype.update = function () {
+        };
         SquareBox.prototype.showAnswer = function (i, bool) {
             if (bool) {
                 divDetails.innerHTML = part.correct;
+            }
+            switch (_p) {
+                case 0:
+                    this.result.scale.setTo(1, 1);
+                    this.result.position.setTo(-this.width / 2, -this.height / 2);
+                    this.result.y = Math.round(this.result.y);
+                    this.result.x = Math.round(this.result.x);
+                    break;
+                case 1:
+                    this.result.scale.setTo(0.8, 0.8);
+                    this.result.position.setTo(-this.result.width / 2, -this.height + this.result.height / 2);
+                    this.result.y = Math.round(this.result.y);
+                    this.result.x = Math.round(this.result.x);
+                    break;
+                case 2:
+                    this.result.scale.setTo(0.8, 0.8);
+                    this.result.position.setTo(-this.width / 2, -this.height / 2);
+                    this.result.y = Math.round(this.result.y);
+                    this.result.x = Math.round(this.result.x);
+                    break;
             }
             this.result.visible = true;
             this.result.text = this.textString[i].text;
             this.result.fill = this.textString[i].fill;
         };
-        SquareBox.prototype.update = function () {
+        SquareBox.prototype.hideAnswer = function () {
+            this.result.visible = false;
         };
         return SquareBox;
     })(Phaser.Sprite);
@@ -301,9 +381,9 @@ var fbd;
             this.bmd = game.make.bitmapData(game.width, game.height);
             this.bmdSprite = game.make.sprite(0, 0, this.bmd);
             _super.call(this, game, x, y, "arrow-head");
-            //game.add.existing(this);
-            game.make.sprite(x, y, "arrow-head");
-            this.addChild(this.bmdSprite);
+            game.add.existing(this);
+            //game.add.sprite(x, y, "arrow-head");
+            //this.addChild(game.make.sprite(0, 0, this.bmd));
             this.bmd.ctx.strokeStyle = "black";
             this.startingPoint = new Phaser.Point(x, y);
             // click region initialize
@@ -311,11 +391,13 @@ var fbd;
             this.clickRegion.centerOn(regionX, regionY);
             this.startingPoint = new Phaser.Point(regionX, regionY);
             // arrow head initialize
-            this.anchor.setTo(0, 0.5);
+            this.anchor.setTo(0.5, 0.5);
             this.inputEnabled = true;
             this.events.onInputDown.add(function () {
-                this.drag();
                 this.target = true;
+                if (_p == 0) {
+                    this.drag();
+                }
             }, this);
             this.target = true;
             this.inside = this.clickRegion.contains(this.x, this.y);
@@ -324,11 +406,18 @@ var fbd;
             this.group.add(this);
         }
         Vector.prototype.update = function () {
-            if (this.game.input.mousePointer.isDown && this.target) {
+            if (this.game.input.mousePointer.isDown && this.target && _p == 0) {
                 this.drag();
             }
             if (!this.game.input.mousePointer.isDown) {
                 this.target = false;
+            }
+            if (this.game.input.mousePointer.isDown && this.target && _p == 1) {
+                //this.group.x = this.rounder(this.game.input.x - this.startingPoint.x, 10);
+                //this.group.y = this.rounder(this.game.input.y - this.startingPoint.y, 10);
+                this.x = this.game.input.x;
+                this.y = this.game.input.y;
+                console.log(this.group.x, this.group.y, "group x and y");
             }
         };
         Vector.prototype.getAngle = function (x1, y1, x2, y2) {
@@ -346,12 +435,12 @@ var fbd;
                     this.inside = this.clickRegion.contains(this.game.input.x, this.game.input.y);
                 }
                 if (this.inside) {
-                    this.x = this.game.input.x;
-                    this.y = this.game.input.y;
-                    this.position.setTo(this.rounder(this.x), this.rounder(this.y));
-                    if (this.y <= 0 && this.y <= this.width) {
-                        this.y = this.rounder(this.width);
+                    this.x = this.rounder(this.game.input.x);
+                    this.y = this.rounder(this.game.input.y);
+                    if (this.y == 5 || this.y <= 0) {
+                        this.y = 10;
                     }
+                    this.position.setTo(this.rounder(this.x), this.rounder(this.y));
                     this.bmd.clear();
                     this.bmd.ctx.beginPath();
                     this.bmd.ctx.moveTo(this.startingPoint.x, this.startingPoint.y);
@@ -364,8 +453,9 @@ var fbd;
                 }
             }
         };
-        Vector.prototype.rounder = function (x) {
-            return Math.ceil(x / 5) * 5;
+        Vector.prototype.rounder = function (x, pow) {
+            if (pow === void 0) { pow = 5; }
+            return Math.ceil(x / pow) * pow;
         };
         return Vector;
     })(Phaser.Sprite);
