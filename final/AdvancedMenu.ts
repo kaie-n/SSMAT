@@ -95,8 +95,8 @@ module SSMAT {
                     this.sprite[i][j].inputEnabled = true;
                     this.sprite[i][j].main = this;
                     this.spriteGroup.addChild(this.sprite[i][j]);
-                     // # REMOVE THIS IF DEPLOYING //
-                    //this.sprite[i][j].events.onInputDown.add(this.testClick, this)
+                    // # REMOVE THIS IF DEPLOYING //
+                    this.sprite[i][j].events.onInputDown.add(this.testClick, this)
                 }
                 distributeHeight += 126.5;
             }
@@ -164,22 +164,53 @@ module SSMAT {
 
             this.vector = new SSMAT.ButtonLabel(this.game, this.resetbtn.x + this.button.width + 1, this.button.y, 'vector', "HIDE DETAILS!", this.hide, this, 0, 0, 1, 0);
             this.vector.anchor.setTo(0.5, 0);
-            // calculations to make the system in an equilibrium
 
+
+            // wind
+            this.wind = this.game.rnd.integerInRange(25, 100);
+            //this.wind = 51;
+            var windAni = Math.abs(this.wind);
+            var randomScale = Math.round(Math.random()) * 2 - 1
+
+            console.log(randomScale);
+            this.wind = this.wind * randomScale;
+            this.windText = this.game.add.text(0, 0, "Wind: " + this.wind + "N", global_style);
+            this.windText.setShadow(1, 1, 'rgba(0,0,0,1)', 1, true, true);
+            this.windText.smoothed = false;
+            this.flag = this.add.sprite(0, 0, "flag", 1);
+            this.flag.anchor.setTo(0.5, 1);
+            this.flag.x = 200;
+            this.flag.y = this.world.height - this.tileHeight;
+            this.windText.position.setTo(Math.round(this.flag.x - this.windText.width / 2), this.flag.y - this.flag.height - this.windText.height);
+            this.flag.animations.add('wave');
+            this.flag.animations.play('wave', windAni / 4, true);
+            this.flag.scale.x = randomScale;
+
+
+            // calculations to make the system in an equilibrium
             this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, this.painter.y)
             this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, this.painter.x, this.painter.y)
             this.tons[1].angleA = Math.round(this.tons[1].angleA * 100) / 100
             this.tons[0].angleA = Math.round(this.tons[0].angleA * 100) / 100
             this.tons[0].convertAngle();
             this.tons[1].convertAngle();
-            var temp2 = Math.round((Math.cos(this.tons[0].angleA) / Math.cos(this.tons[1].angleA)) * 1000) / 1000 // Tons1 = Cos(Ton0.angle) / Cos(Ton1.Angle)
-            var temp = Math.round((temp2 * (Math.sin(this.tons[1].angleA)) + Math.sin(this.tons[0].angleA)) * 1000) / 1000
-            this.tons[0].force = Math.round((this.painter.force / temp) * 10) / 10
-            this.tons[1].force = Math.round((this.tons[0].force * temp2) * 10) / 10
+            // equation (1) to find force of Beta
+            var w = Math.round((this.wind / Math.cos(this.tons[0].angleA)) * 1000) / 1000; // (1)
+            var f2 = Math.round((Math.cos(this.tons[1].angleA) / Math.cos(this.tons[0].angleA)) * 1000) / 1000  // (2)
+            var f2force1 = this.painter.force - (w * Math.sin(this.tons[1].angleA))
+            var f2force2 = (f2 * Math.sin(this.tons[0].angleA)) + Math.sin(this.tons[1].angleA);
+            this.tons[1].force = (f2force1 / f2force2) ;
+
+            console.log(w, "wind", f2, "F2", f2force1, "f2force1", f2force2, "f2force2", (f2force1 / f2force2), "f2force1 / f2force2");
+           
+            // equation (2) to find force of alpha
+            this.tons[0].force = Math.round(((f2 * this.tons[1].force) + w) * 10) / 10
             this.tons[0].mass = Math.round((this.tons[0].force / this.gravity) * 10) / 10
             this.tons[1].mass = Math.round((this.tons[1].force / this.gravity) * 10) / 10
             this.tons[0]._dx = this.tons[0].position.clone();
             this.tons[1]._dx = this.tons[1].position.clone();
+
+
             // setting the correct answers for each grid dynamically
             for (var i = 0; i < 2; i++) {
                 for (var j = 0; j < 3; j++) {
@@ -192,7 +223,7 @@ module SSMAT {
 
                     this.sprite[i][j].angleA = Math.round(Phaser.Math.radToDeg(this.sprite[i][j].angleA) * 100) / 100
                     this.sprite[i][j].angleB = Math.round(Phaser.Math.radToDeg(this.sprite[i][j].angleB) * 100) / 100
-                    this.sprite[i][j].setAnswers();
+                    this.sprite[i][j].setAnswers(2);
                     console.log(this.sprite[i][j].answerA, this.sprite[i][j].answerB);
                 }
             }
@@ -222,22 +253,9 @@ module SSMAT {
             this.tons[1].dmass = this.tons[1].mass;
             this.createArrows();
 
-            // wind
-            this.wind = this.game.rnd.integerInRange(25, 100);
-            var randomScale = Math.round(Math.random()) * 2 - 1
-            console.log(randomScale);
-            this.windText = this.game.add.text(0, 0, "Wind: " + this.wind + "N", global_style);
-            this.windText.setShadow(1, 1, 'rgba(0,0,0,1)', 1, true, true);
-            this.windText.smoothed = false;
-            this.flag = this.add.sprite(0, 0, "flag", 1);
-            this.flag.anchor.setTo(0.5, 1);
-            this.flag.x = 200;
-            this.flag.y = this.world.height - this.tileHeight;
-            this.windText.position.setTo(Math.round(this.flag.x - this.windText.width / 2), this.flag.y - this.flag.height - this.windText.height);
-            this.flag.animations.add('wave');
-            this.flag.animations.play('wave', this.wind / 4, true);
-            this.flag.scale.x = randomScale;
-            this.gameTimer = this.game.time.create(false);
+            
+
+            // escape timer
             var ESCAPE = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
             this.escape = new SSMAT.Exit(this.game, this.world.centerX, this.world.centerY);
             this.escape.visible = false;
@@ -254,6 +272,9 @@ module SSMAT {
                 }
 
             }, this);
+
+            // adding of game timer
+            this.gameTimer = this.game.time.create(false);
         }
         hide() {
             for (var i = 0; i < this.arrow.length; i++) {

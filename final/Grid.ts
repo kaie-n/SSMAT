@@ -44,21 +44,36 @@
         }
 
 
-        setAnswers() {
-            this.angleinRad[0] = Phaser.Math.degToRad(this.angleA);
-            this.angleinRad[1] = Phaser.Math.degToRad(this.angleB);
-            var temp2 = (Math.cos(this.angleinRad[0]) / Math.cos(this.angleinRad[1])) // Tons1 = Cos(Ton0.angle) / Cos(Ton1.Angle)
-            var temp = (temp2 * (Math.sin(this.angleinRad[1])) + Math.sin(this.angleinRad[0]))
-            var force0 = Math.round((this.main.painter.force / temp) * 10) / 10
-            var force1 = Math.round((force0 * temp2) * 10) / 10
+        setAnswers(type) {
+            this.angleinRad[0] = Phaser.Math.degToRad(this.angleA); // Angle alpha
+            this.angleinRad[1] = Phaser.Math.degToRad(this.angleB); // Angle beta
+            var force0 = 0;
+            var force1 = 0;
+            if (type == 1) {
+                var temp2 = (Math.cos(this.angleinRad[0]) / Math.cos(this.angleinRad[1])) // Tons1 = Cos(Ton0.angle) / Cos(Ton1.Angle)
+                var temp = (temp2 * (Math.sin(this.angleinRad[1])) + Math.sin(this.angleinRad[0]))
+                force0 = Math.round((this.main.painter.force / temp) * 10) / 10
+                force1 = Math.round((force0 * temp2) * 10) / 10
+            }
+            if (type == 2) {
+                // equation (1) to find force of Beta
+                var w = Math.round((this.main.wind / Math.cos(this.angleinRad[0])) * 1000) / 1000; // (1)
+                var f2 = Math.round((Math.cos(this.angleinRad[1]) / Math.cos(this.angleinRad[0])) * 1000) / 1000  // (2)
+                var f2force1 = this.main.painter.force - (w * Math.sin(this.angleinRad[1]))
+                var f2force2 = (f2 * Math.sin(this.angleinRad[0])) + Math.sin(this.angleinRad[1]);
+                force1 = (f2force1 / f2force2);
+
+                //  console.log(w, "wind", f2, "F2", f2force1, "f2force1", f2force2, "f2force2", (f2force1 / f2force2), "f2force1 / f2force2");
+                // equation (2) to find force of alpha
+                force0 = Math.round(((f2 * force1) + w) * 10) / 10
+            }
             this.answerA = Math.round((force0 / this.main.gravity) * 10) / 10
             this.answerB = Math.round((force1 / this.main.gravity) * 10) / 10
-      
         }
         update() {
             if (this.main.started) {
                 this.text.text = "α: " + String(this.angleA) + " β: " + String(this.angleB)
-            } 
+            }
 
             if (this.hitted == false && this.main.tons[0].angleinDeg == this.angleA && this.main.tons[1].angleinDeg == this.angleB && this.alpha == 1 && this.main.tons[0].mass == this.answerA && this.main.tons[1].mass == this.answerB) {
                 this.hitted = true;

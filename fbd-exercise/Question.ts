@@ -33,6 +33,9 @@
                     break;
                 case 2:
                     this.diagram.squareBox.resolve.visible = false;
+                    this.diagram.vector[0].group.destroy(true, false);
+                    this.diagram.vector[1].group.destroy(true, false);
+                    this.diagram.vector[2].group.destroy(true, false);
                     break;
             }
         }
@@ -55,6 +58,25 @@
                 this.btn.label.text = "Submit";
                 this.diagram.squareBox.hideAnswer();
                 return;
+            }
+        }
+
+        checkAnswers() {
+            if (_p == 0) {
+                if (this.part1()) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            if (_p == 1) {
+                if (this.part2()) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
             }
         }
         part1() {
@@ -107,21 +129,20 @@
             if (allCorrect < question.limit) {
                 return false;
             }
-
         }
-        checkAnswers() {
-            if (_p == 0) {
-                if (this.part1()) {
-                    return true;
-                }
-                else {
-                    return false;
+        part2() {
+            var allCorrect = 0;
+            for (var i = 0; i < this.diagram.vector.length; i++) {
+                if (this.diagram.vector[i].group.x == part.answer[0] && this.diagram.vector[i].group.y == part.answer[1]) {
+                    allCorrect++;
                 }
             }
-        }
-
-        render() {
-
+            if (allCorrect == question.limit) {
+                return true;
+            }
+            if (allCorrect < question.limit) {
+                return false;
+            }
         }
     }
 

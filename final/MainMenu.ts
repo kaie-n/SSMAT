@@ -191,7 +191,7 @@ module SSMAT {
 
                     this.sprite[i][j].angleA = Math.round(Phaser.Math.radToDeg(this.sprite[i][j].angleA) * 100) / 100
                     this.sprite[i][j].angleB = Math.round(Phaser.Math.radToDeg(this.sprite[i][j].angleB) * 100) / 100
-                    this.sprite[i][j].setAnswers();
+                    this.sprite[i][j].setAnswers(1);
                     console.log(this.sprite[i][j].answerA, this.sprite[i][j].answerB);
                 }
             }

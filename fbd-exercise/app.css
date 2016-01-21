@@ -1,11 +1,10 @@
 ﻿@font-face {
     font-family: 'FontAwesome';
-    src: url('font-awesome/fonts/fontawesome-webfont.eot');  /* IE9 Compat Modes */
-    src: local('☺'),
-         url('font-awesome/fonts/fontawesome-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-         url('font-awesome/fonts/fontawesome-webfont.woff') format('woff'), /* Modern Browsers */
-         url('font-awesome/fonts/fontawesome-webfont.ttf') format('truetype'), /* Safari, Android, iOS */
-         url('font-awesome/fonts/fontawesome-webfont.svg') format('svg'); /* Legacy iOS */
+    src: url('font-awesome/fonts/fontawesome-webfont.eot'); /* IE9 Compat Modes */
+    src: local('☺'), url('font-awesome/fonts/fontawesome-webfont.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+    url('font-awesome/fonts/fontawesome-webfont.woff') format('woff'), /* Modern Browsers */
+    url('font-awesome/fonts/fontawesome-webfont.ttf') format('truetype'), /* Safari, Android, iOS */
+    url('font-awesome/fonts/fontawesome-webfont.svg') format('svg'); /* Legacy iOS */
 }
 
 body {
@@ -28,6 +27,7 @@ hr.style-one {
     background: #333;
     background-image: linear-gradient(to right, #ccc, #333, #ccc);
 }
+
 #wrapper {
     display: table;
     position: absolute;
@@ -41,19 +41,32 @@ hr.style-one {
     display: table-cell;
     /*vertical-align: middle;*/
     margin: 0 auto;
-    text-align:center;
-    width:100%;
+    text-align: center;
+    width: 100%;
 }
+
 #questions {
     vertical-align: middle;
     margin: 0 auto;
-    text-align:center;
-    width:50%;
-    height:100%
+    text-align: center;
+    width: 50%;
+    height: 100%;
 }
+
 #cannyvas {
     padding: 30px 30px 30px 30px;
 }
-#cannyvas canvas {
-    cursor: default !important;
+
+    #cannyvas canvas {
+        cursor: default !important;
+    }
+
+.form-float {
+    position: fixed;
+    z-index: 2147483647;
+    font: 14px 'Segoe UI', sans-serif;
+    right: 370px;
+    top: 148px;
+    width: 200px;
+    height: 150px;
 }
