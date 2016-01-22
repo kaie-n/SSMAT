@@ -28,7 +28,7 @@
             //game.add.sprite(x, y, bmd);
             this.anchor.setTo(1, 1)
 
-            // resolve text initialize
+            // resolve initialize
             this.resolve = game.make.sprite(-this.width, -this.height, "resolve");
             this.addChild(this.resolve);
             // circle initialize
@@ -74,8 +74,8 @@
                     this.result.x = Math.round(this.result.x);
                     break;
                 case 2:
-                    this.result.scale.setTo(0.8, 0.8);
-                    this.result.position.setTo(-this.width / 2, -this.height / 2);
+                    this.result.scale.setTo(0,0);
+                    this.result.position.setTo(-this.result.width / 2, 0);
                     this.result.y = Math.round(this.result.y);
                     this.result.x = Math.round(this.result.x);
                     break;

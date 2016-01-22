@@ -7,7 +7,7 @@
         startingPoint: Phaser.Point;
         clickRegion: Phaser.Rectangle;
         group: Phaser.Group;
-        groupStick: Array<Phaser.BitmapData>;
+        groupStick: Phaser.BitmapData
         relative: Phaser.Point;
         target: boolean;
         inside: boolean;
@@ -25,7 +25,7 @@
             this.startingPoint = new Phaser.Point(x, y);
 
             // click region initialize
-            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 200, 200);
+            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 100, 100);
             this.clickRegion.centerOn(regionX, regionY);
             this.startingPoint = new Phaser.Point(regionX, regionY);
 
@@ -43,23 +43,28 @@
 
             this.target = true;
             this.inside = this.clickRegion.contains(this.x, this.y)
-            this.groupStick = [];
-            this.groupStick[0] = game.add.bitmapData(game.width, game.height);
-            this.groupStick[0].addToWorld();
-            this.groupStick[1] = game.add.bitmapData(game.width, game.height);
-            this.groupStick[1].addToWorld();
+            this.groupStick = game.add.bitmapData(game.width, game.height);
+            this.groupStick.addToWorld();
             this.clone = false;
             this.group = game.add.group();
             this.group.add(this.bmdSprite);
             this.group.add(this);
             this.relative = new Phaser.Point(0, 0);
         }
-
+        cloneBmd() {
+            this.groupStick.draw(this.bmdSprite);
+            this.groupStick.draw(this);
+        }
+        cloneBmdOut() {
+            var bmd = this.game.add.bitmapData(this.game.width, this.game.height);
+            bmd.draw(this.bmdSprite);
+            bmd.draw(this);
+            return bmd;
+        }
         update() {
             if (_p == 1 && !this.clone) {
                 this.clone = true;
-                this.groupStick[0].draw(this.bmdSprite);
-                this.groupStick[1].draw(this);
+                this.cloneBmd()
             }
             if (this.game.input.mousePointer.isDown && this.target && _p == 0) {
                 this.drag();
@@ -67,7 +72,7 @@
             if (!this.game.input.mousePointer.isDown) {
                 this.target = false;
             }
-            if (this.game.input.mousePointer.isDown && this.target && _p == 1) {    
+            if (this.game.input.mousePointer.isDown && this.target && _p == 1) {
                 this.group.x = this.rounder(this.game.input.x - this.startingPoint.x - this.relative.x);
                 this.group.y = this.rounder(this.game.input.y - this.startingPoint.y - this.relative.y);
                 //this.x = this.game.input.x;
@@ -116,7 +121,7 @@
                     
                 }
                 console.log("RELATIVE LENGTHS", this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
-                this.relative.setTo(this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y );
+                this.relative.setTo(this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
             }
         }
 

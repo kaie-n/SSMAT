@@ -56,17 +56,26 @@ hr.style-one {
 #cannyvas {
     padding: 30px 30px 30px 30px;
 }
-
     #cannyvas canvas {
         cursor: default !important;
     }
 
 .form-float {
-    position: fixed;
     z-index: 2147483647;
     font: 14px 'Segoe UI', sans-serif;
-    right: 370px;
-    top: 148px;
-    width: 200px;
+    /*right: 370px;
+    top: 178px;*/
+    width: 100%;
     height: 150px;
+    table-layout: fixed;
+    display: inline !important;
 }
+
+    .form-float .row {
+        margin-right: 0px;
+        margin-left: 0px;
+    }
+
+        .form-float .row .col-md-4 {
+            padding-right: 0px;
+        }

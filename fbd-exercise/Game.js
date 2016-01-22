@@ -78,7 +78,7 @@ var fbd;
     var Game = (function (_super) {
         __extends(Game, _super);
         function Game() {
-            _super.call(this, 623, 300, Phaser.CANVAS, 'cannyvas', null, true, false);
+            _super.call(this, 623, 260, Phaser.CANVAS, 'cannyvas', null, true, false);
             this.state.add('Boot', fbd.Boot, false);
             this.state.add('Preloader', fbd.Preloader, false);
             this.state.add('MainMenu', fbd.MainMenu, false);
@@ -133,24 +133,31 @@ var fbd;
             //  button initializing
             this.btn = new fbd.ButtonLabel(this.game, 0, 0, 'btn', "Submit", this.submit, this, 0, 0, 1, 0);
             this.btn.x = this.game.width - (this.diagram.squareBox.width / 2) - (this.btn.width / 2); // just because I can and you can't
-            //  testing purposes
-            //this.input.onDown.add(this.submit, this);
+            this.mcq = document.getElementById("form-float");
+            this.switchParts();
         };
-        Question.prototype.update = function () {
+        Question.prototype.switchParts = function () {
             switch (_p) {
                 case 0:
-                    this.diagram.squareBox.resolve.visible = false;
+                    if (this.diagram.squareBox.resolve.visible) {
+                        this.diagram.squareBox.resolve.visible = false;
+                        this.mcq.style.display = "none";
+                    }
                     break;
                 case 1:
-                    this.diagram.squareBox.resolve.visible = true;
+                    if (!this.diagram.squareBox.resolve.visible) {
+                        this.diagram.squareBox.resolve.visible = true;
+                        this.mcq.style.display = "none";
+                    }
                     break;
                 case 2:
-                    this.diagram.squareBox.resolve.visible = false;
-                    this.diagram.vector[0].group.destroy(true, false);
-                    this.diagram.vector[1].group.destroy(true, false);
-                    this.diagram.vector[2].group.destroy(true, false);
+                    if (this.diagram.squareBox.resolve.visible) {
+                        this.mcq.style.display = "inline";
+                    }
                     break;
             }
+        };
+        Question.prototype.update = function () {
         };
         Question.prototype.submit = function () {
             if (this.btn.label.text == "Submit") {
@@ -170,6 +177,7 @@ var fbd;
                 divDetails.innerHTML = part.instruction;
                 this.btn.label.text = "Submit";
                 this.diagram.squareBox.hideAnswer();
+                this.switchParts();
                 return;
             }
         };
@@ -335,7 +343,7 @@ var fbd;
             _super.call(this, game, x, y, bmd);
             //game.add.sprite(x, y, bmd);
             this.anchor.setTo(1, 1);
-            // resolve text initialize
+            // resolve initialize
             this.resolve = game.make.sprite(-this.width, -this.height, "resolve");
             this.addChild(this.resolve);
             // circle initialize
@@ -379,8 +387,8 @@ var fbd;
                     this.result.x = Math.round(this.result.x);
                     break;
                 case 2:
-                    this.result.scale.setTo(0.8, 0.8);
-                    this.result.position.setTo(-this.width / 2, -this.height / 2);
+                    this.result.scale.setTo(0, 0);
+                    this.result.position.setTo(-this.result.width / 2, 0);
                     this.result.y = Math.round(this.result.y);
                     this.result.x = Math.round(this.result.x);
                     break;
@@ -411,7 +419,7 @@ var fbd;
             this.bmd.ctx.strokeStyle = "black";
             this.startingPoint = new Phaser.Point(x, y);
             // click region initialize
-            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 200, 200);
+            this.clickRegion = new Phaser.Rectangle(regionX, regionY, 100, 100);
             this.clickRegion.centerOn(regionX, regionY);
             this.startingPoint = new Phaser.Point(regionX, regionY);
             // arrow head initialize
@@ -425,22 +433,28 @@ var fbd;
             }, this);
             this.target = true;
             this.inside = this.clickRegion.contains(this.x, this.y);
-            this.groupStick = [];
-            this.groupStick[0] = game.add.bitmapData(game.width, game.height);
-            this.groupStick[0].addToWorld();
-            this.groupStick[1] = game.add.bitmapData(game.width, game.height);
-            this.groupStick[1].addToWorld();
+            this.groupStick = game.add.bitmapData(game.width, game.height);
+            this.groupStick.addToWorld();
             this.clone = false;
             this.group = game.add.group();
             this.group.add(this.bmdSprite);
             this.group.add(this);
             this.relative = new Phaser.Point(0, 0);
         }
+        Vector.prototype.cloneBmd = function () {
+            this.groupStick.draw(this.bmdSprite);
+            this.groupStick.draw(this);
+        };
+        Vector.prototype.cloneBmdOut = function () {
+            var bmd = this.game.add.bitmapData(this.game.width, this.game.height);
+            bmd.draw(this.bmdSprite);
+            bmd.draw(this);
+            return bmd;
+        };
         Vector.prototype.update = function () {
             if (_p == 1 && !this.clone) {
                 this.clone = true;
-                this.groupStick[0].draw(this.bmdSprite);
-                this.groupStick[1].draw(this);
+                this.cloneBmd();
             }
             if (this.game.input.mousePointer.isDown && this.target && _p == 0) {
                 this.drag();

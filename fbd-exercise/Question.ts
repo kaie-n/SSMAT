@@ -4,6 +4,7 @@
 
         diagram: fbd.Diagram
         btn: fbd.ButtonLabel;
+        mcq: HTMLInputElement;
         create() {
             //  getting data externally
             sheet = this.game.cache.getJSON('sheet');
@@ -18,26 +19,33 @@
             //  button initializing
             this.btn = new fbd.ButtonLabel(this.game, 0, 0, 'btn', "Submit", this.submit, this, 0, 0, 1, 0);
             this.btn.x = this.game.width - (this.diagram.squareBox.width / 2) - (this.btn.width / 2); // just because I can and you can't
-           
-            //  testing purposes
-            //this.input.onDown.add(this.submit, this);
-            
+
+            this.mcq = (<HTMLInputElement>document.getElementById("form-float"));
+            this.switchParts();
         }
-        update() {
+        switchParts() {
             switch (_p) {
                 case 0:
-                    this.diagram.squareBox.resolve.visible = false;
+                    if (this.diagram.squareBox.resolve.visible) {
+                        this.diagram.squareBox.resolve.visible = false;
+                        this.mcq.style.display = "none"
+                    }
                     break;
                 case 1:
-                    this.diagram.squareBox.resolve.visible = true;
+                    if (!this.diagram.squareBox.resolve.visible) {
+                        this.diagram.squareBox.resolve.visible = true;
+                        this.mcq.style.display = "none"
+                    }
                     break;
                 case 2:
-                    this.diagram.squareBox.resolve.visible = false;
-                    this.diagram.vector[0].group.destroy(true, false);
-                    this.diagram.vector[1].group.destroy(true, false);
-                    this.diagram.vector[2].group.destroy(true, false);
+                    if (this.diagram.squareBox.resolve.visible) {
+                        this.mcq.style.display = "inline";
+                    }
                     break;
             }
+        }
+        update() {
+           
         }
         submit() {
             if (this.btn.label.text == "Submit") {
@@ -57,6 +65,7 @@
                 divDetails.innerHTML = part.instruction;
                 this.btn.label.text = "Submit";
                 this.diagram.squareBox.hideAnswer();
+                this.switchParts();
                 return;
             }
         }

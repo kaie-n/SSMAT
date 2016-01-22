@@ -22,13 +22,15 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="app.css" />
+    <Content Include="css\app.css" />
     <Content Include="assets\arrow-head.gif" />
     <Content Include="assets\btn.gif" />
     <Content Include="assets\loading-bar-empty.gif" />
     <Content Include="assets\loading-bar-fill.gif" />
     <Content Include="assets\questions\1.gif" />
     <Content Include="assets\resolve.gif" />
+    <Content Include="css\bootstrap.css" />
+    <Content Include="css\bootstrap.min.css" />
     <Content Include="font-awesome\css\font-awesome.css" />
     <Content Include="font-awesome\css\font-awesome.min.css" />
     <Content Include="font-awesome\fonts\fontawesome-webfont.svg" />

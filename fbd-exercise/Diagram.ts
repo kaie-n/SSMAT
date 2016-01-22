@@ -42,7 +42,6 @@
                 this.vector[i].destroy();
             }
         }
-        
         addVector() {
             if (this.vector.length < this.limit) {
                 var i = this.vector.length
