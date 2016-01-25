@@ -4,6 +4,7 @@
       "buttonLabel": [ "Submit", "Next" ],
       "limit": 3,
       "co": [ 185, 65 ],
+      "acw": true,
       "part": [
         {
           "instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Click on the SUBMIT button to check your answer.",
@@ -21,7 +22,7 @@
         },
         {
           "instruction": "From the information given, which formula would you use to find the unknown (?). Select a formula and click on the SUBMIT button to check your answer.",
-          "answer": 1,
+          "answer": "2",
           "correct": "Click on the NEXT button to proceed to the next exercise."
         }
       ],
@@ -29,8 +30,9 @@
     },
     {
       "buttonLabel": [ "Submit", "Next" ],
-      "limit": 4,
+      "limit": 3,
       "co": [ 185, 65 ],
+      "acw": true,
       "part": [
         {
           "instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Click on the SUBMIT button to check your answer.",
@@ -48,11 +50,11 @@
         },
         {
           "instruction": "From the information given, which formula would you use to find the unknown (?). Select a formula and click on the SUBMIT button to check your answer.",
-          "answer": 1,
+          "answer": "1",
           "correct": "Click on the NEXT button to proceed to the next exercise."
         }
       ],
-      "pic": "pic2"
+      "pic": "pic1"
     }
   ]
 }

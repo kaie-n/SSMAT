@@ -1,5 +1,6 @@
 var _this = this;
 window.onload = function () {
+    mcq = document.getElementById("form-float");
     divDetails = document.getElementById("instructions");
     global_style = { font: "14px 'Segoe UI', sans-serif", fill: "#000000", wordWrap: false, wordWrapWidth: _this.width, align: "left" };
     var game = new fbd.Game();
@@ -9,6 +10,31 @@ var __extends = (this && this.__extends) || function (d, b) {
     function __() { this.constructor = d; }
     d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 };
+var fbd;
+(function (fbd) {
+    var Boot = (function (_super) {
+        __extends(Boot, _super);
+        function Boot() {
+            _super.apply(this, arguments);
+        }
+        Boot.prototype.preload = function () {
+            this.load.image('loadEmpty', 'assets/loading-bar-empty.gif');
+            this.load.image('loadFill', 'assets/loading-bar-fill.gif');
+        };
+        Boot.prototype.create = function () {
+            Phaser.Canvas.setImageRenderingCrisp(this.game.canvas); //for Canvas, modern approach
+            Phaser.Canvas.setSmoothingEnabled(this.game.context, false); //also for Canvas, legacy approach
+            //PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST; //for WebGL
+            //  Unless you specifically need to support multitouch I would recommend setting this to 1
+            this.input.maxPointers = 1;
+            //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
+            this.stage.disableVisibilityChange = true;
+            this.game.state.start('Preloader', true, false);
+        };
+        return Boot;
+    })(Phaser.State);
+    fbd.Boot = Boot;
+})(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
     var ButtonLabel = (function (_super) {
@@ -56,7 +82,9 @@ var fbd;
             for (var i = 0; i < this.vector.length; i++) {
                 this.vector[i].group.destroy();
                 this.vector[i].destroy();
+                this.vector[i].groupStick.clear();
             }
+            this.vector = [];
         };
         Diagram.prototype.addVector = function () {
             if (this.vector.length < this.limit) {
@@ -75,14 +103,33 @@ var fbd;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
+    var Finish = (function (_super) {
+        __extends(Finish, _super);
+        function Finish() {
+            _super.apply(this, arguments);
+        }
+        Finish.prototype.create = function () {
+            divDetails.innerHTML = "You have completed this exercise!";
+            this.clear();
+        };
+        Finish.prototype.clear = function () {
+            mcq.style.display = "none";
+        };
+        return Finish;
+    })(Phaser.State);
+    fbd.Finish = Finish;
+})(fbd || (fbd = {}));
+var fbd;
+(function (fbd) {
     var Game = (function (_super) {
         __extends(Game, _super);
         function Game() {
-            _super.call(this, 623, 260, Phaser.CANVAS, 'cannyvas', null, true, false);
+            _super.call(this, 623, 260, Phaser.CANVAS, 'cannyvas', null, true, true);
             this.state.add('Boot', fbd.Boot, false);
             this.state.add('Preloader', fbd.Preloader, false);
             this.state.add('MainMenu', fbd.MainMenu, false);
             this.state.add('Question', fbd.Question, false);
+            this.state.add('Finish', fbd.Finish, false);
             this.state.start('Boot');
         }
         return Game;
@@ -91,28 +138,65 @@ var fbd;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
-    var Boot = (function (_super) {
-        __extends(Boot, _super);
-        function Boot() {
+    var MainMenu = (function (_super) {
+        __extends(MainMenu, _super);
+        function MainMenu() {
             _super.apply(this, arguments);
         }
-        Boot.prototype.preload = function () {
-            this.load.image('loadEmpty', 'assets/loading-bar-empty.gif');
-            this.load.image('loadFill', 'assets/loading-bar-fill.gif');
+        MainMenu.prototype.create = function () {
+            this.game.state.start('Question', true, false);
+            _q = 0;
+            _p = 0;
         };
-        Boot.prototype.create = function () {
-            Phaser.Canvas.setImageRenderingCrisp(this.game.canvas); //for Canvas, modern approach
-            Phaser.Canvas.setSmoothingEnabled(this.game.context, false); //also for Canvas, legacy approach
-            //PIXI.scaleModes.DEFAULT = PIXI.scaleModes.NEAREST; //for WebGL
-            //  Unless you specifically need to support multitouch I would recommend setting this to 1
-            this.input.maxPointers = 1;
-            //  Phaser will automatically pause if the browser tab the game is in loses focus. You can disable that here:
-            this.stage.disableVisibilityChange = true;
-            this.game.state.start('Preloader', true, false);
-        };
-        return Boot;
+        return MainMenu;
     })(Phaser.State);
-    fbd.Boot = Boot;
+    fbd.MainMenu = MainMenu;
+})(fbd || (fbd = {}));
+var fbd;
+(function (fbd) {
+    var Preloader = (function (_super) {
+        __extends(Preloader, _super);
+        function Preloader() {
+            _super.apply(this, arguments);
+        }
+        Preloader.prototype.preload = function () {
+            //  Set-up our preloader sprite
+            this.preloadBar = this.add.sprite(this.game.width / 2, this.game.height / 2, 'loadEmpty');
+            this.preloadBarFill = this.add.sprite(this.game.width / 2, this.game.height / 2, 'loadFill');
+            this.preloadBar.x -= this.preloadBar.width / 2;
+            this.preloadBar.y -= this.preloadBar.height / 2;
+            this.preloadBarFill.x = this.preloadBar.x;
+            this.preloadBarFill.y = this.preloadBar.y;
+            this.load.setPreloadSprite(this.preloadBarFill);
+            //  Load our actual games assets
+            //  Question diagrams
+            for (var i = 1; i < 2; i++) {
+                var pic = 'pic' + i;
+                var images = 'assets/questions/' + i + '.gif';
+                this.load.image(pic, images);
+            }
+            //  Buttons
+            this.game.load.spritesheet('btn', 'assets/btn.gif', 120, 33, 2);
+            this.game.load.image('resolve', 'assets/resolve.gif');
+            this.game.load.image('arrow-head', 'assets/arrow-head.gif');
+            this.game.load.json('sheet', 'sheet.json');
+        };
+        Preloader.prototype.create = function () {
+            var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
+            var tween2 = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
+            tween.onComplete.add(this.startMainMenu, this);
+            var load = new Phaser.Loader(this.game);
+            if (load.hasLoaded) {
+                this.preloadBar.alpha = 0;
+                this.preloadBarFill.alpha = 0;
+            }
+        };
+        Preloader.prototype.startMainMenu = function () {
+            this.game.state.start('MainMenu', true, false);
+        };
+        return Preloader;
+    })(Phaser.State);
+    fbd.Preloader = Preloader;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
@@ -124,6 +208,9 @@ var fbd;
         Question.prototype.create = function () {
             //  getting data externally
             sheet = this.game.cache.getJSON('sheet');
+            this.initialize();
+        };
+        Question.prototype.initialize = function () {
             question = sheet.question[_q]; //  short-named variable for referencing of which question and part
             part = sheet.question[_q].part[_p];
             //  diagram initializing
@@ -133,31 +220,35 @@ var fbd;
             //  button initializing
             this.btn = new fbd.ButtonLabel(this.game, 0, 0, 'btn', "Submit", this.submit, this, 0, 0, 1, 0);
             this.btn.x = this.game.width - (this.diagram.squareBox.width / 2) - (this.btn.width / 2); // just because I can and you can't
-            this.mcq = document.getElementById("form-float");
             this.switchParts();
+            // reinitialize mcq
+            var check = document.getElementsByClassName("check");
+            for (var i = 0; i < check.length; i++) {
+                check[i].innerHTML = "";
+            }
         };
         Question.prototype.switchParts = function () {
             switch (_p) {
                 case 0:
                     if (this.diagram.squareBox.resolve.visible) {
                         this.diagram.squareBox.resolve.visible = false;
-                        this.mcq.style.display = "none";
+                        mcq.style.display = "none";
                     }
                     break;
                 case 1:
                     if (!this.diagram.squareBox.resolve.visible) {
                         this.diagram.squareBox.resolve.visible = true;
-                        this.mcq.style.display = "none";
+                        mcq.style.display = "none";
                     }
                     break;
                 case 2:
                     if (this.diagram.squareBox.resolve.visible) {
-                        this.mcq.style.display = "inline";
+                        this.diagram.vector[0].getRelativeAngle();
+                        this.diagram.vector[0].drawCurve();
+                        mcq.style.display = "inline";
                     }
                     break;
             }
-        };
-        Question.prototype.update = function () {
         };
         Question.prototype.submit = function () {
             if (this.btn.label.text == "Submit") {
@@ -173,6 +264,16 @@ var fbd;
             }
             if (this.btn.label.text == "Next") {
                 _p++;
+                if (_q == (sheet.question.length - 1) && _p > 2) {
+                    this.game.state.start('Finish', true, false);
+                    return;
+                }
+                if (_p > 2) {
+                    _q++;
+                    _p = 0;
+                    this.diagram.destroyAll();
+                    this.initialize();
+                }
                 part = sheet.question[_q].part[_p];
                 divDetails.innerHTML = part.instruction;
                 this.btn.label.text = "Submit";
@@ -192,6 +293,14 @@ var fbd;
             }
             if (_p == 1) {
                 if (this.part2()) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            if (_p == 2) {
+                if (this.part3()) {
                     return true;
                 }
                 else {
@@ -259,71 +368,26 @@ var fbd;
                 return false;
             }
         };
+        Question.prototype.part3 = function () {
+            var selectedAnswer = document.getElementsByName("answer");
+            var check = document.getElementsByClassName("check");
+            var bool = false;
+            for (var i = 0; i < selectedAnswer.length; i++) {
+                if (part.answer == selectedAnswer[i].value) {
+                    bool = true;
+                    check[i].style.color = "#00FF00";
+                    check[i].innerHTML = "✔";
+                }
+                else {
+                    check[i].style.color = "#FF0000";
+                    check[i].innerHTML = "✖";
+                }
+            }
+            return bool;
+        };
         return Question;
     })(Phaser.State);
     fbd.Question = Question;
-})(fbd || (fbd = {}));
-var fbd;
-(function (fbd) {
-    var MainMenu = (function (_super) {
-        __extends(MainMenu, _super);
-        function MainMenu() {
-            _super.apply(this, arguments);
-        }
-        MainMenu.prototype.create = function () {
-            this.game.state.start('Question', true, false);
-            _q = 0;
-            _p = 0;
-        };
-        return MainMenu;
-    })(Phaser.State);
-    fbd.MainMenu = MainMenu;
-})(fbd || (fbd = {}));
-var fbd;
-(function (fbd) {
-    var Preloader = (function (_super) {
-        __extends(Preloader, _super);
-        function Preloader() {
-            _super.apply(this, arguments);
-        }
-        Preloader.prototype.preload = function () {
-            //  Set-up our preloader sprite
-            this.preloadBar = this.add.sprite(this.game.width / 2, this.game.height / 2, 'loadEmpty');
-            this.preloadBarFill = this.add.sprite(this.game.width / 2, this.game.height / 2, 'loadFill');
-            this.preloadBar.x -= this.preloadBar.width / 2;
-            this.preloadBar.y -= this.preloadBar.height / 2;
-            this.preloadBarFill.x = this.preloadBar.x;
-            this.preloadBarFill.y = this.preloadBar.y;
-            this.load.setPreloadSprite(this.preloadBarFill);
-            //  Load our actual games assets
-            //  Question diagrams
-            for (var i = 1; i < 2; i++) {
-                var pic = 'pic' + i;
-                var images = 'assets/questions/' + i + '.gif';
-                this.load.image(pic, images);
-            }
-            //  Buttons
-            this.game.load.spritesheet('btn', 'assets/btn.gif', 120, 33, 2);
-            this.game.load.image('resolve', 'assets/resolve.gif');
-            this.game.load.image('arrow-head', 'assets/arrow-head.gif');
-            this.game.load.json('sheet', 'sheet.json');
-        };
-        Preloader.prototype.create = function () {
-            var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
-            var tween2 = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
-            tween.onComplete.add(this.startMainMenu, this);
-            var load = new Phaser.Loader(this.game);
-            if (load.hasLoaded) {
-                this.preloadBar.alpha = 0;
-                this.preloadBarFill.alpha = 0;
-            }
-        };
-        Preloader.prototype.startMainMenu = function () {
-            this.game.state.start('MainMenu', true, false);
-        };
-        return Preloader;
-    })(Phaser.State);
-    fbd.Preloader = Preloader;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
@@ -431,25 +495,72 @@ var fbd;
                     this.drag();
                 }
             }, this);
+            this.events.onInputUp.add(function () {
+            }, this);
             this.target = true;
             this.inside = this.clickRegion.contains(this.x, this.y);
             this.groupStick = game.add.bitmapData(game.width, game.height);
             this.groupStick.addToWorld();
             this.clone = false;
+            // create Text angle 
+            this.angleRelative = game.make.text(0, 0, "", global_style);
+            this.unknown = game.make.text(0, 0, "?", global_style);
+            this.addChild(this.unknown);
+            this.unknown.visible = false;
+            //this.addChild(this.angleRelative);
             this.group = game.add.group();
             this.group.add(this.bmdSprite);
             this.group.add(this);
+            this.group.add(this.angleRelative);
             this.relative = new Phaser.Point(0, 0);
         }
         Vector.prototype.cloneBmd = function () {
             this.groupStick.draw(this.bmdSprite);
             this.groupStick.draw(this);
         };
-        Vector.prototype.cloneBmdOut = function () {
-            var bmd = this.game.add.bitmapData(this.game.width, this.game.height);
-            bmd.draw(this.bmdSprite);
-            bmd.draw(this);
-            return bmd;
+        Vector.prototype.drawCurve = function () {
+            var graphics = this.game.make.graphics(this.startingPoint.x, this.startingPoint.y);
+            this.group.add(graphics);
+            //  Our first arc will be a line only
+            graphics.lineStyle(1, 0x000000);
+            // graphics.arc(0, 0, 135, game.math.degToRad(0), game.math.degToRad(90), false);
+            graphics.arc(0, 0, 15, 0, this.rotation, true);
+        };
+        Vector.prototype.getRelativeAngle = function () {
+            this.unknown.visible = true;
+            if (this.angle == 0 || this.angle == -180) {
+                this.angleRelative.text = "";
+            }
+            // right top side
+            if ((this.angle < 0 && this.angle >= -90)) {
+                this.angleRelative.text = String(Math.abs(this.angle));
+                this.angleRelative.anchor.setTo(-0.8, 1);
+            }
+            // left top side
+            if ((this.angle > -180 && this.angle < -90)) {
+                var temp = 180 - Math.abs(this.angle);
+                temp = this.rounder(temp);
+                this.angleRelative.text = String(temp);
+                this.angleRelative.anchor.setTo(1.8, 1);
+            }
+            // positive range
+            // bottom right
+            if (this.angle > 0 && this.angle <= 90) {
+                this.angleRelative.text = String(Math.abs(this.angle));
+                this.angleRelative.anchor.setTo(-0.8, 0);
+            }
+            // bottom left
+            if (this.angle < 180 && this.angle > 90) {
+                var temp = 180 - Math.abs(this.angle);
+                temp = this.rounder(temp);
+                this.angleRelative.text = String(temp);
+                this.angleRelative.anchor.setTo(1.8, 0);
+            }
+            var angle = document.getElementsByClassName("angle");
+            for (var i = 0; i < angle.length; i++) {
+                angle[i].innerHTML = this.angleRelative.text;
+            }
+            this.angleRelative.position.setTo(this.startingPoint.x, this.startingPoint.y);
         };
         Vector.prototype.update = function () {
             if (_p == 1 && !this.clone) {
@@ -465,9 +576,6 @@ var fbd;
             if (this.game.input.mousePointer.isDown && this.target && _p == 1) {
                 this.group.x = this.rounder(this.game.input.x - this.startingPoint.x - this.relative.x);
                 this.group.y = this.rounder(this.game.input.y - this.startingPoint.y - this.relative.y);
-                //this.x = this.game.input.x;
-                //this.y = this.game.input.y;
-                console.log(this.group.x, this.group.y, "group x and y");
             }
         };
         Vector.prototype.getAngle = function (x1, y1, x2, y2) {
@@ -501,7 +609,7 @@ var fbd;
                     this.bmd.render();
                     this.angle = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y));
                 }
-                console.log("RELATIVE LENGTHS", this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
+                //console.log("RELATIVE LENGTHS", this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
                 this.relative.setTo(this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
             }
         };

@@ -8,6 +8,9 @@
         create() {
             //  getting data externally
             sheet = this.game.cache.getJSON('sheet');
+            this.initialize();
+        }
+        initialize() {
             question = sheet.question[_q]; //  short-named variable for referencing of which question and part
             part = sheet.question[_q].part[_p];
 
@@ -20,32 +23,38 @@
             this.btn = new fbd.ButtonLabel(this.game, 0, 0, 'btn', "Submit", this.submit, this, 0, 0, 1, 0);
             this.btn.x = this.game.width - (this.diagram.squareBox.width / 2) - (this.btn.width / 2); // just because I can and you can't
 
-            this.mcq = (<HTMLInputElement>document.getElementById("form-float"));
             this.switchParts();
+
+            // reinitialize mcq
+            var check = (<NodeListOf<HTMLInputElement>>document.getElementsByClassName("check"));
+            for (var i = 0; i < check.length; i++) {
+                check[i].innerHTML = ""
+            }
         }
         switchParts() {
             switch (_p) {
                 case 0:
                     if (this.diagram.squareBox.resolve.visible) {
                         this.diagram.squareBox.resolve.visible = false;
-                        this.mcq.style.display = "none"
+                        mcq.style.display = "none"
                     }
                     break;
                 case 1:
                     if (!this.diagram.squareBox.resolve.visible) {
                         this.diagram.squareBox.resolve.visible = true;
-                        this.mcq.style.display = "none"
+                        mcq.style.display = "none"
                     }
                     break;
                 case 2:
                     if (this.diagram.squareBox.resolve.visible) {
-                        this.mcq.style.display = "inline";
+
+
+                        this.diagram.vector[0].getRelativeAngle();
+                        this.diagram.vector[0].drawCurve();
+                        mcq.style.display = "inline";
                     }
                     break;
             }
-        }
-        update() {
-           
         }
         submit() {
             if (this.btn.label.text == "Submit") {
@@ -61,11 +70,22 @@
             }
             if (this.btn.label.text == "Next") {
                 _p++;
+                if (_q == (sheet.question.length - 1) && _p > 2) {
+                    this.game.state.start('Finish', true, false);
+                    return;
+                }
+                if (_p > 2) {
+                    _q++;
+                    _p = 0;
+                    this.diagram.destroyAll();
+                    this.initialize();
+                }
                 part = sheet.question[_q].part[_p];
                 divDetails.innerHTML = part.instruction;
                 this.btn.label.text = "Submit";
                 this.diagram.squareBox.hideAnswer();
                 this.switchParts();
+
                 return;
             }
         }
@@ -81,6 +101,14 @@
             }
             if (_p == 1) {
                 if (this.part2()) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            if (_p == 2) {
+                if (this.part3()) {
                     return true;
                 }
                 else {
@@ -152,6 +180,24 @@
             if (allCorrect < question.limit) {
                 return false;
             }
+        }
+        part3() {
+            var selectedAnswer = (<NodeListOf<HTMLInputElement>>document.getElementsByName("answer"));
+            var check = (<NodeListOf<HTMLInputElement>>document.getElementsByClassName("check"));
+            var bool = false;
+            for (var i = 0; i < selectedAnswer.length; i++) {
+                if (part.answer == selectedAnswer[i].value) {
+                    bool = true;
+                    check[i].style.color = "#00FF00";
+                    check[i].innerHTML = "✔"
+                }
+                else {
+                    check[i].style.color = "#FF0000";
+                    check[i].innerHTML = "✖"
+                }
+            }
+            return bool;
+
         }
     }
 

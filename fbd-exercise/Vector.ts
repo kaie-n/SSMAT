@@ -9,6 +9,8 @@
         group: Phaser.Group;
         groupStick: Phaser.BitmapData
         relative: Phaser.Point;
+        unknown: Phaser.Text;
+        angleRelative: Phaser.Text;
         target: boolean;
         inside: boolean;
         clone: boolean;
@@ -40,26 +42,80 @@
                 }
 
             }, this);
+            this.events.onInputUp.add(function () {
 
+            }, this);
             this.target = true;
             this.inside = this.clickRegion.contains(this.x, this.y)
             this.groupStick = game.add.bitmapData(game.width, game.height);
             this.groupStick.addToWorld();
             this.clone = false;
+
+
+            // create Text angle 
+            this.angleRelative = game.make.text(0, 0, "", global_style);
+            this.unknown = game.make.text(0, 0, "?", global_style);
+            this.addChild(this.unknown);
+            this.unknown.visible = false;
+            //this.addChild(this.angleRelative);
+
             this.group = game.add.group();
             this.group.add(this.bmdSprite);
             this.group.add(this);
+            this.group.add(this.angleRelative);
             this.relative = new Phaser.Point(0, 0);
+
         }
         cloneBmd() {
+            
             this.groupStick.draw(this.bmdSprite);
             this.groupStick.draw(this);
         }
-        cloneBmdOut() {
-            var bmd = this.game.add.bitmapData(this.game.width, this.game.height);
-            bmd.draw(this.bmdSprite);
-            bmd.draw(this);
-            return bmd;
+        drawCurve() {
+            var graphics = this.game.make.graphics(this.startingPoint.x, this.startingPoint.y);
+            this.group.add(graphics);
+            //  Our first arc will be a line only
+            graphics.lineStyle(1, 0x000000);
+
+            // graphics.arc(0, 0, 135, game.math.degToRad(0), game.math.degToRad(90), false);
+            graphics.arc(0, 0, 15, 0, this.rotation, true);
+        }
+
+        getRelativeAngle() {
+            this.unknown.visible = true;
+            if (this.angle == 0 || this.angle == -180) {
+                this.angleRelative.text = "";
+            }
+            // right top side
+            if ((this.angle < 0 && this.angle >= -90)) {
+                this.angleRelative.text = String(Math.abs(this.angle));
+                this.angleRelative.anchor.setTo(-0.8, 1);
+            }
+            // left top side
+            if ((this.angle > -180 && this.angle < -90)) {
+                var temp: number = 180 - Math.abs(this.angle);
+                temp = this.rounder(temp);
+                this.angleRelative.text = String(temp);
+                this.angleRelative.anchor.setTo(1.8, 1);
+            }
+            // positive range
+            // bottom right
+            if (this.angle > 0 && this.angle <= 90) {
+                this.angleRelative.text = String(Math.abs(this.angle));
+                this.angleRelative.anchor.setTo(-0.8, 0);
+            }
+            // bottom left
+            if (this.angle < 180 && this.angle > 90) {
+                var temp: number = 180 - Math.abs(this.angle);
+                temp = this.rounder(temp);
+                this.angleRelative.text = String(temp);
+                this.angleRelative.anchor.setTo(1.8, 0);
+            }
+            var angle = (<NodeListOf<HTMLInputElement>>document.getElementsByClassName("angle"));
+            for (var i = 0; i < angle.length; i++) {
+                angle[i].innerHTML = this.angleRelative.text;
+            }
+            this.angleRelative.position.setTo(this.startingPoint.x, this.startingPoint.y);
         }
         update() {
             if (_p == 1 && !this.clone) {
@@ -75,10 +131,6 @@
             if (this.game.input.mousePointer.isDown && this.target && _p == 1) {
                 this.group.x = this.rounder(this.game.input.x - this.startingPoint.x - this.relative.x);
                 this.group.y = this.rounder(this.game.input.y - this.startingPoint.y - this.relative.y);
-                //this.x = this.game.input.x;
-                //this.y = this.game.input.y;
-                console.log(this.group.x, this.group.y, "group x and y");
-                //this.group.position.clone(this.group.toLocal(this.game.input.position));
             }
 
         }
@@ -116,11 +168,9 @@
                     this.bmd.ctx.closePath();
                     this.bmd.render();
                     this.angle = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y))
-                    //console.log(this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y)));
-                    //console.log(this.rounder(this.x), this.rounder(this.y));
-                    
+                   
                 }
-                console.log("RELATIVE LENGTHS", this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
+                //console.log("RELATIVE LENGTHS", this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
                 this.relative.setTo(this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
             }
         }

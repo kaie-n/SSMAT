@@ -40,7 +40,9 @@
             for (var i = 0; i < this.vector.length; i++) {
                 this.vector[i].group.destroy();
                 this.vector[i].destroy();
+                this.vector[i].groupStick.clear();
             }
+            this.vector = [];
         }
         addVector() {
             if (this.vector.length < this.limit) {
