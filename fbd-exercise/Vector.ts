@@ -57,6 +57,7 @@
             this.unknown = game.make.text(0, 0, "?", global_style);
             this.addChild(this.unknown);
             this.unknown.visible = false;
+            this.unknown.scale.setTo(1.5, 1.5);
             //this.addChild(this.angleRelative);
 
             this.group = game.add.group();
@@ -78,38 +79,56 @@
             graphics.lineStyle(1, 0x000000);
 
             // graphics.arc(0, 0, 135, game.math.degToRad(0), game.math.degToRad(90), false);
-            graphics.arc(0, 0, 15, 0, this.rotation, true);
+            // this is from 0 to -90;
+            if (this.angle <= 0 && this.angle >= -90) {
+                graphics.arc(0, 0, 20, 0, this.rotation, true);
+                return;
+            }
+            if (this.angle >= -180 && this.angle < -90) {
+                graphics.arc(0, 0, 20, this.rotation, -3.14, true);
+                return;
+            }
+            if (this.angle >= 0 && this.angle <= 90) {
+                graphics.arc(0, 0, 20, 0, this.rotation, false);
+                return;
+            }
+            if (this.angle < 180 && this.angle > 90) {
+                graphics.arc(0, 0, 20, this.rotation, -3.14, false);
+                return;
+            }
         }
 
         getRelativeAngle() {
             this.unknown.visible = true;
+            this.unknown.angle -= this.angle;
+            this.unknown.x += this.width;
             if (this.angle == 0 || this.angle == -180) {
                 this.angleRelative.text = "";
             }
             // right top side
             if ((this.angle < 0 && this.angle >= -90)) {
                 this.angleRelative.text = String(Math.abs(this.angle));
-                this.angleRelative.anchor.setTo(-0.8, 1);
+                this.angleRelative.anchor.setTo(-2, 0.75);
             }
             // left top side
             if ((this.angle > -180 && this.angle < -90)) {
                 var temp: number = 180 - Math.abs(this.angle);
                 temp = this.rounder(temp);
                 this.angleRelative.text = String(temp);
-                this.angleRelative.anchor.setTo(1.8, 1);
+                this.angleRelative.anchor.setTo(3, 0.75);
             }
             // positive range
             // bottom right
             if (this.angle > 0 && this.angle <= 90) {
                 this.angleRelative.text = String(Math.abs(this.angle));
-                this.angleRelative.anchor.setTo(-0.8, 0);
+                this.angleRelative.anchor.setTo(-3, -0.75);
             }
             // bottom left
             if (this.angle < 180 && this.angle > 90) {
                 var temp: number = 180 - Math.abs(this.angle);
                 temp = this.rounder(temp);
                 this.angleRelative.text = String(temp);
-                this.angleRelative.anchor.setTo(1.8, 0);
+                this.angleRelative.anchor.setTo(3, -0.75);
             }
             var angle = (<NodeListOf<HTMLInputElement>>document.getElementsByClassName("angle"));
             for (var i = 0; i < angle.length; i++) {
