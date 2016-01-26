@@ -18,9 +18,7 @@
             this.text.anchor.set(0, 0.5);
             this.smoothed = false;
             this.animations.add("paint");
-            this.text.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
-            this.text.stroke = '#000000';
-            this.text.strokeThickness = 0;
+            this.text.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
             this.text.align = "left";
         }
         update() {

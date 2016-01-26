@@ -46,7 +46,7 @@
             this.game.load.spritesheet('button', 'assets/button.gif', 24, 19, 2);
             this.game.load.spritesheet('reset', 'assets/reset.gif', 24, 19, 2);
             this.game.load.spritesheet('vector', 'assets/vector.gif', 24, 19, 2);
-            this.game.load.spritesheet('flag', 'assets/flag.gif', 40, 90, 8);
+            this.game.load.spritesheet('flag', 'assets/flag.gif', 40, 180, 8);
             this.game.load.spritesheet('ok-btn', 'assets/ok-btn.gif', 71, 30, 2);
             this.game.load.spritesheet('cancel-btn', 'assets/cancel-btn.gif', 71, 30, 2);
         }
@@ -113,7 +113,8 @@
             this.levels[1].input.useHandCursor = true;
             this.levels[1].events.onInputUp.addOnce(function () {
                 level_choice = "LeaderBoard2";
-                this.game.state.start('AdvancedMenu', true, false)
+                //  uncomment this if advanced level is accepted
+                //this.game.state.start('AdvancedMenu', true, false)
             }, this);
             this.levels[1].events.onInputOver.add(function () {
               
