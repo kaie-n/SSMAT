@@ -175,7 +175,7 @@ module SSMAT {
             console.log(randomScale);
             this.wind = this.wind * randomScale;
             this.windText = this.game.add.text(0, 0, "Wind: " + this.wind + "N", global_style);
-            this.windText.setShadow(1, 1, 'rgba(0,0,0,1)', 1, true, true);
+            this.windText.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1, true, true);
             this.windText.smoothed = false;
             this.flag = this.add.sprite(0, 0, "flag", 1);
             this.flag.anchor.setTo(0.5, 1);
@@ -232,7 +232,7 @@ module SSMAT {
             this.timer = this.game.add.text(this.world.centerX, 20, "TIME\n00:00:00", global_style);
             this.timer.align = "center";
 
-            this.timer.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
+            this.timer.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
             this.timer.anchor.setTo(0.5, 0);
             this.timer.x = Math.round(this.timer.x);
             this.timer.y = Math.round(this.timer.y);

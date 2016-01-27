@@ -13,7 +13,7 @@
             this.label.y = this.label.y - this.label.height /2 ;
             this.label.visible = false;
 
-            this.label.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
+            this.label.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
             this.label.y = Math.round(this.label.y);
             this.label.x = Math.round(this.label.x);
             this.events.onInputOver.add(function () { this.label.visible = true }, this);

@@ -127,7 +127,7 @@ var SSMAT;
             console.log(randomScale);
             this.wind = this.wind * randomScale;
             this.windText = this.game.add.text(0, 0, "Wind: " + this.wind + "N", global_style);
-            this.windText.setShadow(1, 1, 'rgba(0,0,0,1)', 1, true, true);
+            this.windText.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1, true, true);
             this.windText.smoothed = false;
             this.flag = this.add.sprite(0, 0, "flag", 1);
             this.flag.anchor.setTo(0.5, 1);
@@ -174,7 +174,7 @@ var SSMAT;
             // Timer for scoring purposes
             this.timer = this.game.add.text(this.world.centerX, 20, "TIME\n00:00:00", global_style);
             this.timer.align = "center";
-            this.timer.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
+            this.timer.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
             this.timer.anchor.setTo(0.5, 0);
             this.timer.x = Math.round(this.timer.x);
             this.timer.y = Math.round(this.timer.y);
@@ -664,7 +664,7 @@ var SSMAT;
 */
 var _this = this;
 window.onload = function () {
-    global_style = { font: "14px Courier Bold", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: _this.width, align: "left" };
+    global_style = { font: "24px Verdana Bold", fill: "#FFFFFF", stroke: 'black', strokeThickness: 2, shadowStroke: true, wordWrap: false, wordWrapWidth: _this.width, align: "left" };
     global_game = new SSMAT.Game();
     admin_no = document.getElementById("admin_no").value;
     restartFromLeaderboard = false;
@@ -749,7 +749,7 @@ var SSMAT;
             this.label.anchor.set(0.5, 0.5);
             this.label.y = this.label.y - this.label.height / 2;
             this.label.visible = false;
-            this.label.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
+            this.label.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
             this.label.y = Math.round(this.label.y);
             this.label.x = Math.round(this.label.x);
             this.events.onInputOver.add(function () { this.label.visible = true; }, this);
@@ -789,24 +789,6 @@ var SSMAT;
         return Exit;
     })(Phaser.Sprite);
     SSMAT.Exit = Exit;
-})(SSMAT || (SSMAT = {}));
-var SSMAT;
-(function (SSMAT) {
-    var Game = (function (_super) {
-        __extends(Game, _super);
-        function Game() {
-            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
-            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
-            this.state.add('Boot', SSMAT.Boot, false);
-            this.state.add('Preloader', SSMAT.Preloader, false);
-            this.state.add('MainMenu', SSMAT.MainMenu, false);
-            this.state.add('AdvancedMenu', SSMAT.AdvancedMenu, false);
-            this.state.add('GameOver', SSMAT.GameOver, false);
-            this.state.start('Boot');
-        }
-        return Game;
-    })(Phaser.Game);
-    SSMAT.Game = Game;
 })(SSMAT || (SSMAT = {}));
 var SSMAT;
 (function (SSMAT) {
@@ -1349,7 +1331,7 @@ var SSMAT;
             // Timer for scoring purposes
             this.timer = this.game.add.text(this.world.centerX, 20, "TIME\n00:00:00", global_style);
             this.timer.align = "center";
-            this.timer.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
+            this.timer.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
             this.timer.anchor.setTo(0.5, 0);
             this.timer.x = Math.round(this.timer.x);
             this.timer.y = Math.round(this.timer.y);
@@ -1836,6 +1818,24 @@ var SSMAT;
 */
 var SSMAT;
 (function (SSMAT) {
+    var Game = (function (_super) {
+        __extends(Game, _super);
+        function Game() {
+            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
+            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
+            this.state.add('Boot', SSMAT.Boot, false);
+            this.state.add('Preloader', SSMAT.Preloader, false);
+            this.state.add('MainMenu', SSMAT.MainMenu, false);
+            this.state.add('AdvancedMenu', SSMAT.AdvancedMenu, false);
+            this.state.add('GameOver', SSMAT.GameOver, false);
+            this.state.start('Boot');
+        }
+        return Game;
+    })(Phaser.Game);
+    SSMAT.Game = Game;
+})(SSMAT || (SSMAT = {}));
+var SSMAT;
+(function (SSMAT) {
     var Painter = (function (_super) {
         __extends(Painter, _super);
         function Painter(game, x, y, mass, gravity) {
@@ -1849,9 +1849,7 @@ var SSMAT;
             this.text.anchor.set(0, 0.5);
             this.smoothed = false;
             this.animations.add("paint");
-            this.text.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
-            this.text.stroke = '#000000';
-            this.text.strokeThickness = 0;
+            this.text.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
             this.text.align = "left";
         }
         Painter.prototype.update = function () {
@@ -1908,7 +1906,7 @@ var SSMAT;
             this.game.load.spritesheet('button', 'assets/button.gif', 24, 19, 2);
             this.game.load.spritesheet('reset', 'assets/reset.gif', 24, 19, 2);
             this.game.load.spritesheet('vector', 'assets/vector.gif', 24, 19, 2);
-            this.game.load.spritesheet('flag', 'assets/flag.gif', 40, 90, 8);
+            this.game.load.spritesheet('flag', 'assets/flag.gif', 40, 180, 8);
             this.game.load.spritesheet('ok-btn', 'assets/ok-btn.gif', 71, 30, 2);
             this.game.load.spritesheet('cancel-btn', 'assets/cancel-btn.gif', 71, 30, 2);
         };
@@ -1964,7 +1962,8 @@ var SSMAT;
             this.levels[1].input.useHandCursor = true;
             this.levels[1].events.onInputUp.addOnce(function () {
                 level_choice = "LeaderBoard2";
-                this.game.state.start('AdvancedMenu', true, false);
+                //  uncomment this if advanced level is accepted
+                //this.game.state.start('AdvancedMenu', true, false)
             }, this);
             this.levels[1].events.onInputOver.add(function () {
                 this.add.tween(this.levels[1]).to({ alpha: 0.5 }, 250, Phaser.Easing.Linear.None, true, -1, true);
@@ -1998,10 +1997,10 @@ var SSMAT;
                 this.text = game.add.text(0, 0, "", global_style);
                 this.text.smoothed = false;
                 this.text.anchor.set(0, 0.5);
-                this.text.setShadow(1, 1, 'rgba(0,0,0,0.5)', 1);
+                this.text.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
                 this.text.align = "center";
                 this.textAngle = game.add.text(0, 0, "", global_style);
-                this.textAngle.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
+                this.textAngle.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
                 this.textAngle.smoothed = false;
                 this.textAngle.align = "center";
                 this.text.x = Math.round(this.text.x);
