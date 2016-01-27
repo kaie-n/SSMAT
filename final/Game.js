@@ -1932,8 +1932,8 @@ var SSMAT;
             this.logo["start"] = this.add.tween(this.logo).to({ alpha: 1 }, 500, Phaser.Easing.Linear.None, true, 0);
             this.click["start"] = this.add.tween(this.click).to({ alpha: 1 }, 400, Phaser.Easing.Linear.None, true, 2000, -1, true);
             this.input.onDown.addOnce(function () {
-                this.chooseLevel();
-                //this.game.state.start('MainMenu', true, false)
+                //this.chooseLevel()
+                this.game.state.start('MainMenu', true, false);
             }, this);
         };
         Preloader.prototype.chooseLevel = function () {
@@ -1955,6 +1955,7 @@ var SSMAT;
                 this.game.state.start('MainMenu', true, false);
             }, this);
             this.levels[1] = this.add.sprite(this.world.centerX, this.world.centerY, 'level1');
+            this.levels[1].visible = false;
             this.levels[1].anchor.setTo(0.5, 0.5);
             this.levels[1].position.setTo(this.world.centerX, this.world.centerY + this.levels[0].height);
             this.levels[1].inputEnabled = true;

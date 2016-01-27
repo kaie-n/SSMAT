@@ -78,8 +78,8 @@
             
 
             this.input.onDown.addOnce(function () {
-                this.chooseLevel()
-                //this.game.state.start('MainMenu', true, false)
+                //this.chooseLevel()
+                this.game.state.start('MainMenu', true, false)
             }, this);
         }
 
@@ -107,6 +107,7 @@
                 this.game.state.start('MainMenu', true, false)
             }, this);
             this.levels[1] = this.add.sprite(this.world.centerX, this.world.centerY, 'level1');
+            this.levels[1].visible = false;
             this.levels[1].anchor.setTo(0.5, 0.5);
             this.levels[1].position.setTo(this.world.centerX, this.world.centerY + this.levels[0].height);
             this.levels[1].inputEnabled = true;
