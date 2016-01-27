@@ -5,7 +5,7 @@ declare var global_game: SSMAT.Game;
 declare var global_style;
 declare var level_choice: string; // level selector for leaderboard
 window.onload = () => {
-    global_style = { font: "24px Verdana Bold", fill: "#FFFFFF", stroke: 'black', strokeThickness: 2, shadowStroke: true,wordWrap: false, wordWrapWidth: this.width, align: "left" };
+    global_style = { font: "14px Courier Bold", fill: "#FFFFFF", wordWrap: false, wordWrapWidth: this.width, align: "left" };
  
     global_game = new SSMAT.Game();
     admin_no = (<HTMLInputElement>document.getElementById("admin_no")).value;

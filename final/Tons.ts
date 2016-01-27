@@ -41,11 +41,10 @@
                 this.text = game.add.text(0, 0, "", global_style);
                 this.text.smoothed = false;
                 this.text.anchor.set(0, 0.5);
-                this.text.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
+                this.text.setShadow(1, 1, 'rgba(0,0,0,0.5)', 1);
                 this.text.align = "center";
                 this.textAngle = game.add.text(0, 0, "", global_style);
-                
-                this.textAngle.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
+                this.textAngle.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
                 this.textAngle.smoothed = false;
                 this.textAngle.align = "center";
                 this.text.x = Math.round(this.text.x);

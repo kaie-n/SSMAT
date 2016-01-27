@@ -206,7 +206,7 @@ module SSMAT {
             this.timer = this.game.add.text(this.world.centerX, 20, "TIME\n00:00:00", global_style);
             this.timer.align = "center";
 
-            this.timer.setShadow(1, 1, 'rgba(0,0,0,1)', 0.1);
+            this.timer.setShadow(1, 1, 'rgba(0,0,0,1)', 1);
             this.timer.anchor.setTo(0.5, 0);
             this.timer.x = Math.round(this.timer.x);
             this.timer.y = Math.round(this.timer.y);
