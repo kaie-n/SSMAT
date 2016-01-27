@@ -7,7 +7,7 @@ module SSMAT {
         grad: Phaser.Sprite;
         tiler: Phaser.TileSprite;
         wheelGroup: Phaser.Group;
-        graphics: Phaser.BitmapData;
+        graphics: Phaser.Graphics;
         button: Phaser.Button;
         help: Phaser.Button;
         resetbtn: Phaser.Button;
@@ -122,8 +122,7 @@ module SSMAT {
             // adding the tons for the pulley (0 for left, 1 for right)
             // tons2 is the weights that we are going to add from the button
 
-            this.graphics = this.add.bitmapData(this.game.width, this.game.height);
-            this.graphics.addToWorld(0, 0);
+            this.graphics = this.add.graphics(0, 0);
             this.tons = [];
             this.tons2 = [];
             this.tons[0] = new Tons(this.game, this.wheelGroup.getChildAt(0).x, this.wheelGroup.getChildAt(0).y + this.wheel.height, 10, this.gravity, "left");
@@ -137,24 +136,19 @@ module SSMAT {
             this.tons[1].body.allowGravity = false;
 
             // the pulley "strings"
+            this.graphics.lineStyle(1, 0x111111);
 
-            this.graphics.ctx.lineWidth = 1;
-            this.graphics.ctx.strokeStyle = "#111111";
-            this.graphics.ctx.stroke();
-            this.graphics.ctx.beginPath()
-            this.graphics.ctx.beginPath()
-            this.graphics.ctx.moveTo(Math.round(this.tons[0].x), Math.round(this.tons[0].y));
-            this.graphics.ctx.lineTo(Math.round(this.tons[0].x), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
-            this.graphics.ctx.moveTo(Math.round((this.tons[0].x) + this.wheel.width), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
-            this.graphics.ctx.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
-            this.graphics.ctx.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
-            this.graphics.ctx.lineTo(Math.round((this.tons[1].x) - this.wheel.width), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
-            this.graphics.ctx.moveTo(Math.round(this.tons[1].x), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
-            this.graphics.ctx.lineTo(Math.round(this.tons[1].x), Math.round(this.tons[1].y));
-            this.graphics.ctx.lineWidth = 2;
-            this.graphics.ctx.stroke();
-            this.graphics.ctx.closePath();
-            this.graphics.render();
+            this.graphics.moveTo(Math.round(this.tons[0].x), Math.round(this.tons[0].y));
+            this.graphics.lineTo(Math.round(this.tons[0].x), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
+            this.graphics.lineStyle(1, 0x111111);
+            this.graphics.moveTo(Math.round((this.tons[0].x) + this.wheel.width), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
+            this.graphics.lineStyle(1, 0x111111);
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
+            this.graphics.lineTo(Math.round((this.tons[1].x) - this.wheel.width), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
+            this.graphics.lineStyle(1, 0x111111);
+            this.graphics.moveTo(Math.round(this.tons[1].x), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.tons[1].x), Math.round(this.tons[1].y));
             // tweening the main intro screen
            
             this.button = new SSMAT.ButtonLabel(this.game, this.game.world.width - 82 - 100, this.game.world.height - this.tileHeight, 'button', "ADD WEIGHT", this.addWeight, this, 0, 0, 1, 0);
@@ -271,8 +265,6 @@ module SSMAT {
             this.hide();
         }
         resetArrows() {
-
-            this.graphics.clear();
             var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
             var point2 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
             var arrow0Point = new Phaser.Point((point1.x + this.painter.x) / 2, (point1.y + this.painter.y) / 2);
@@ -286,7 +278,6 @@ module SSMAT {
             //
             this.arrow[2].position.copyFrom(this.painter.position);
             this.arrow[2].y += this.painter.height;
-            this.drawtheRopes();
         }
         moveArrows() {
             var point1 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
@@ -378,28 +369,22 @@ module SSMAT {
             this.score = hours1 + ":" + minutes1 + ":" + seconds1;
             this.timer.text = "TIME\n" + hours1 + ":" + minutes1 + ":" + seconds1 // timer height is 40;
         }
-        drawtheRopes() {
-            this.graphics.clear();
-            this.graphics.ctx.beginPath();
-            this.graphics.ctx.beginPath();
-            this.graphics.ctx.moveTo(Math.round(this.tons[0].x), Math.round(this.tons[0].y));
-            this.graphics.ctx.lineTo(Math.round(this.tons[0].x), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
-            this.graphics.ctx.moveTo(Math.round((this.tons[0].x) + this.wheel.width), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
-            this.graphics.ctx.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
-            this.graphics.ctx.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
-            this.graphics.ctx.lineTo(Math.round((this.tons[1].x) - this.wheel.width), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
-            this.graphics.ctx.moveTo(Math.round(this.tons[1].x), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
-            this.graphics.ctx.lineTo(Math.round(this.tons[1].x), Math.round(this.tons[1].y));
-            this.graphics.ctx.lineWidth = 2;
-            this.graphics.ctx.stroke();
-            this.graphics.ctx.closePath();
-            this.graphics.render();
-        }
         paintTheLines(p1, t) {
             this.moveArrows();
             var ktemp: number = 0;
-            this.drawtheRopes();
-            this.graphics.render();
+            this.graphics.clear();
+            this.graphics.lineStyle(1, 0x111111);
+            this.graphics.moveTo(Math.round(this.tons[0].x), Math.round(this.tons[0].y));
+            this.graphics.lineTo(Math.round(this.tons[0].x), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
+            this.graphics.lineStyle(1, 0x111111);
+            this.graphics.moveTo(Math.round((this.tons[0].x) + this.wheel.width), Math.round(this.wheelGroup.getChildAt(0).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
+            this.graphics.lineStyle(1, 0x111111);
+            this.graphics.lineTo(Math.round(this.painter.x), Math.round(this.painter.y));
+            this.graphics.lineTo(Math.round((this.tons[1].x) - this.wheel.width), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
+            this.graphics.lineStyle(1, 0x111111);
+            this.graphics.moveTo(Math.round(this.tons[1].x), Math.round(this.wheelGroup.getChildAt(1).y + this.wheel.height / 2));
+            this.graphics.lineTo(Math.round(this.tons[1].x), Math.round(this.tons[1].y));
             if (t == 0) {
                 ktemp = 1;
             }
@@ -508,13 +493,7 @@ module SSMAT {
         }
         // Green button function
         reset() {
-            if (this.painter.tween != undefined) {
-                this.painter.tween.stop();
-                this.tons[0].tween.stop();
-                this.tons[1].tween.stop();
-            }
-            this.graphics.destroy();
-            this.graphics.clear();
+
             this.painter.x = this.world.centerX;
             this.painter.y = 509.1707368654838
 
@@ -533,8 +512,19 @@ module SSMAT {
             this.tons[0].mass = Math.round((this.tons[0].force / this.gravity) * 10) / 10
             this.tons[1].mass = Math.round((this.tons[1].force / this.gravity) * 10) / 10
             this.calcAll()
-           
-           
+            this.graphics.clear();
+            this.graphics.lineStyle(1, 0x111111);
+            this.graphics.moveTo(this.tons[0].x, this.tons[0].y);
+            this.graphics.lineTo(this.tons[0].x, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            this.graphics.lineStyle(1, 0x111111);
+            this.graphics.moveTo((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            this.graphics.lineTo(this.painter.x, this.painter.y);
+            this.graphics.lineStyle(1, 0x111111);
+            this.graphics.moveTo(this.painter.x, this.painter.y);
+            this.graphics.lineTo((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            this.graphics.lineStyle(1, 0x111111);
+            this.graphics.moveTo(this.tons[1].x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
+            this.graphics.lineTo(this.tons[1].x, this.tons[1].y);
             this.tons[0].clearTon();
             this.tons[1].clearTon();
             this.resetArrows()
