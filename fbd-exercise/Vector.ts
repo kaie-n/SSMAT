@@ -11,6 +11,7 @@
         relative: Phaser.Point;
         unknown: Phaser.Text;
         angleRelative: Phaser.Text;
+        findPart3: number;
         target: boolean;
         inside: boolean;
         clone: boolean;
