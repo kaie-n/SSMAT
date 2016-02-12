@@ -11,19 +11,23 @@
         relative: Phaser.Point;
         unknown: Phaser.Text;
         angleRelative: Phaser.Text;
+        label: Phaser.Text;
         findPart3: number;
         target: boolean;
         inside: boolean;
         clone: boolean;
-        constructor(game: Phaser.Game, x, y, regionX, regionY) {
+        id: number;
+        constructor(game: Phaser.Game, x, y, regionX, regionY, id) {
+            // initialize the vectors and respective booleans yeah
+            this.target = true;
+            this.clone = false;
+            this.id = id;
             this.bmd = game.make.bitmapData(game.width, game.height);
             this.bmdSprite = game.make.sprite(0, 0, this.bmd);
             this.bmdSprite.addChild(this);
             super(game, x, y, "arrow-head");
             game.add.existing(this);
-            //game.add.sprite(x, y, "arrow-head");
 
-            //this.addChild(game.make.sprite(0, 0, this.bmd));
             this.bmd.ctx.strokeStyle = "black";
             this.startingPoint = new Phaser.Point(x, y);
 
@@ -36,21 +40,18 @@
             this.anchor.setTo(0.5, 0.5)
             this.inputEnabled = true;
             this.events.onInputDown.add(function () {
-
                 this.target = true;
                 if (_p == 0) {
                     this.drag();
                 }
-
             }, this);
             this.events.onInputUp.add(function () {
-
             }, this);
-            this.target = true;
+ 
+
             this.inside = this.clickRegion.contains(this.x, this.y)
             this.groupStick = game.add.bitmapData(game.width, game.height);
             this.groupStick.addToWorld();
-            this.clone = false;
 
 
             // create Text angle 
@@ -59,8 +60,8 @@
             this.addChild(this.unknown);
             this.unknown.visible = false;
             this.unknown.scale.setTo(1.5, 1.5);
-            //this.addChild(this.angleRelative);
 
+            // Group them up baby
             this.group = game.add.group();
             this.group.add(this.bmdSprite);
             this.group.add(this);
@@ -137,6 +138,14 @@
             }
             this.angleRelative.position.setTo(this.startingPoint.x, this.startingPoint.y);
         }
+        checkLeft() {
+            if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
+                vectorOffset = 100;
+            }
+            else {
+                vectorOffset = 0;
+            }
+        }
         update() {
             if (_p == 1 && !this.clone) {
                 this.clone = true;
@@ -163,10 +172,7 @@
         }
 
         drag() {
-
             this.inside = this.clickRegion.contains(this.x, this.y)
-
-
             if (this.x > 0) {
                 //if user click on the region god damn it
                 if (!this.inside) {
@@ -190,7 +196,9 @@
                     this.angle = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y))
                    
                 }
+                this.checkLeft();
                 //console.log("RELATIVE LENGTHS", this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
+                inputBox = "force" + this.id;
                 this.relative.setTo(this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
             }
         }

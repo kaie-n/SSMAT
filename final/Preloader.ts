@@ -79,6 +79,7 @@
 
             this.input.onDown.addOnce(function () {
                 //this.chooseLevel()
+                level_choice = "LeaderBoard";
                 this.game.state.start('MainMenu', true, false)
             }, this);
         }

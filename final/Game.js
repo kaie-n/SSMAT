@@ -792,6 +792,24 @@ var SSMAT;
 })(SSMAT || (SSMAT = {}));
 var SSMAT;
 (function (SSMAT) {
+    var Game = (function (_super) {
+        __extends(Game, _super);
+        function Game() {
+            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
+            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
+            this.state.add('Boot', SSMAT.Boot, false);
+            this.state.add('Preloader', SSMAT.Preloader, false);
+            this.state.add('MainMenu', SSMAT.MainMenu, false);
+            this.state.add('AdvancedMenu', SSMAT.AdvancedMenu, false);
+            this.state.add('GameOver', SSMAT.GameOver, false);
+            this.state.start('Boot');
+        }
+        return Game;
+    })(Phaser.Game);
+    SSMAT.Game = Game;
+})(SSMAT || (SSMAT = {}));
+var SSMAT;
+(function (SSMAT) {
     var GameOver = (function (_super) {
         __extends(GameOver, _super);
         function GameOver() {
@@ -1818,24 +1836,6 @@ var SSMAT;
 */
 var SSMAT;
 (function (SSMAT) {
-    var Game = (function (_super) {
-        __extends(Game, _super);
-        function Game() {
-            //console.log(window.innerHeight, document.body.offsetHeight, "Window Height");
-            _super.call(this, window.innerWidth, window.innerHeight, Phaser.CANVAS, 'content', null, true, false);
-            this.state.add('Boot', SSMAT.Boot, false);
-            this.state.add('Preloader', SSMAT.Preloader, false);
-            this.state.add('MainMenu', SSMAT.MainMenu, false);
-            this.state.add('AdvancedMenu', SSMAT.AdvancedMenu, false);
-            this.state.add('GameOver', SSMAT.GameOver, false);
-            this.state.start('Boot');
-        }
-        return Game;
-    })(Phaser.Game);
-    SSMAT.Game = Game;
-})(SSMAT || (SSMAT = {}));
-var SSMAT;
-(function (SSMAT) {
     var Painter = (function (_super) {
         __extends(Painter, _super);
         function Painter(game, x, y, mass, gravity) {
@@ -1933,6 +1933,7 @@ var SSMAT;
             this.click["start"] = this.add.tween(this.click).to({ alpha: 1 }, 400, Phaser.Easing.Linear.None, true, 2000, -1, true);
             this.input.onDown.addOnce(function () {
                 //this.chooseLevel()
+                level_choice = "LeaderBoard";
                 this.game.state.start('MainMenu', true, false);
             }, this);
         };

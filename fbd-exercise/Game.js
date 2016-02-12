@@ -4,6 +4,7 @@ window.onload = function () {
     divDetails = document.getElementById("instructions");
     global_style = { font: "14px 'Segoe UI', sans-serif", fill: "#000000", wordWrap: false, wordWrapWidth: _this.width, align: "left" };
     var game = new fbd.Game();
+    inputBox = "";
 };
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
@@ -90,10 +91,10 @@ var fbd;
             if (this.vector.length < this.limit) {
                 var i = this.vector.length;
                 if (i == 0) {
-                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y);
+                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y, i);
                 }
                 else {
-                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y);
+                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y, i);
                 }
             }
         };
@@ -472,14 +473,16 @@ var fbd;
 (function (fbd) {
     var Vector = (function (_super) {
         __extends(Vector, _super);
-        function Vector(game, x, y, regionX, regionY) {
+        function Vector(game, x, y, regionX, regionY, id) {
+            // initialize the vectors and respective booleans yeah
+            this.target = true;
+            this.clone = false;
+            this.id = id;
             this.bmd = game.make.bitmapData(game.width, game.height);
             this.bmdSprite = game.make.sprite(0, 0, this.bmd);
             this.bmdSprite.addChild(this);
             _super.call(this, game, x, y, "arrow-head");
             game.add.existing(this);
-            //game.add.sprite(x, y, "arrow-head");
-            //this.addChild(game.make.sprite(0, 0, this.bmd));
             this.bmd.ctx.strokeStyle = "black";
             this.startingPoint = new Phaser.Point(x, y);
             // click region initialize
@@ -497,18 +500,16 @@ var fbd;
             }, this);
             this.events.onInputUp.add(function () {
             }, this);
-            this.target = true;
             this.inside = this.clickRegion.contains(this.x, this.y);
             this.groupStick = game.add.bitmapData(game.width, game.height);
             this.groupStick.addToWorld();
-            this.clone = false;
             // create Text angle 
             this.angleRelative = game.make.text(0, 0, "", global_style);
             this.unknown = game.make.text(0, 0, "?", global_style);
             this.addChild(this.unknown);
             this.unknown.visible = false;
             this.unknown.scale.setTo(1.5, 1.5);
-            //this.addChild(this.angleRelative);
+            // Group them up baby
             this.group = game.add.group();
             this.group.add(this.bmdSprite);
             this.group.add(this);
@@ -581,6 +582,14 @@ var fbd;
             }
             this.angleRelative.position.setTo(this.startingPoint.x, this.startingPoint.y);
         };
+        Vector.prototype.checkLeft = function () {
+            if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
+                vectorOffset = 100;
+            }
+            else {
+                vectorOffset = 0;
+            }
+        };
         Vector.prototype.update = function () {
             if (_p == 1 && !this.clone) {
                 this.clone = true;
@@ -628,7 +637,9 @@ var fbd;
                     this.bmd.render();
                     this.angle = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y));
                 }
+                this.checkLeft();
                 //console.log("RELATIVE LENGTHS", this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
+                inputBox = "force" + this.id;
                 this.relative.setTo(this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
             }
         };

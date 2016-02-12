@@ -11,8 +11,36 @@
     <link rel="stylesheet" href="css/app.css" type="text/css" />
     <script src="phaser.js"></script>
     <script src="Game.js"></script>
+    <script>
+
+        function moves(e) {
+            if (inputBox !== "" && document.getElementById(inputBox).style.display != "") {
+
+                var cordx = 0;
+                var cordy = 0;
+                if (!e) {
+                    var e = window.event;
+                }
+                if (e.pageX || e.pageY) {
+                    cordx = e.pageX;
+                    cordy = e.pageY;
+                }
+                else if (e.clientX || e.clientY) {
+                    cordx = e.clientX;
+                    cordy = e.clientY;
+                }
+                cordx = cordx - vectorOffset;
+                document.getElementById(inputBox).style.left = String(cordx) + "px";
+                document.getElementById(inputBox).style.top = String(cordy) + "px";
+                document.getElementById(inputBox).style.display = ""
+            }
+        }
+    </script>
 </head>
-<body>
+<body onClick="moves(event)">
+    <div id="force0" class="box" style="display:none;"><input type="text" placeholder="Force Label:" class="form-control box" required></div>
+    <div id="force1" class="box" style="display:none;"><input type="text" placeholder="Force Label:" class="form-control box" required></div>
+    <div id="force2" class="box" style="display:none;"><input type="text" placeholder="Force Label:" class="form-control box" required></div>
     <div id="wrapper">
         <div id="content">
             <div id="questions">
@@ -45,7 +73,9 @@
                 </div>
             </div>
         </div>
+
     </div>
 
 </body>
+
 </html>

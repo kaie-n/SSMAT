@@ -48,11 +48,11 @@
             if (this.vector.length < this.limit) {
                 var i = this.vector.length
                 if (i == 0) {
-                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y);
+                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y, i);
                    
                 }
                 else {
-                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y);
+                    this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y, i);
                 }
             }
         }
