@@ -31,6 +31,7 @@
                 check[i].innerHTML = ""
             }
         }
+
         switchParts() {
             switch (_p) {
                 case 0:

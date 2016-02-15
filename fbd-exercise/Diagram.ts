@@ -10,6 +10,8 @@
         limit: number; // number of force vectors limit
         co: Phaser.Point; // coordinates of circle dot
         constructor(game: Phaser.Game, x, y, key, startX, startY) {
+            inputBox = { input: [] };
+            inputBox["id"] = 0;
             super(game, x, y, key);
             this.game = game;
             this.game.add.existing(this);
@@ -44,16 +46,33 @@
             }
             this.vector = [];
         }
+
+        createInputBoxes(i) {
+            var id = "force" + i;
+
+            inputBox.input.push({
+                name: id,
+                dragged: false,
+                inputValues: ""
+            })
+
+            var body: HTMLElement = (<HTMLElement>document.getElementById("body"));
+            body.innerHTML += "<div id='" + id + "' class='box' style='display: none;'  onclick='getId(this.id)'><input type='text' onkeyup='enterInput(event)' placeholder='Force Label: ' class='form-control box' required></div>"
+        }
+        
         addVector() {
             if (this.vector.length < this.limit) {
                 var i = this.vector.length
                 if (i == 0) {
                     this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y, i);
-                   
+                    this.createInputBoxes(i);
                 }
                 else {
                     this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y, i);
+                    this.createInputBoxes(i);
                 }
+                // initialize input boxes
+
             }
         }
     }

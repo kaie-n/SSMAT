@@ -12,10 +12,23 @@
     <script src="phaser.js"></script>
     <script src="Game.js"></script>
     <script>
+        function enterInput(e) {
+            var charCode = (typeof e.which === "number") ? e.which : e.keyCode;
+            if (charCode == 13 && e.target.value != "") {
+                inputBox.input[inputBox.id].inputValues = e.target.value;
+                inputBox.input[inputBox.id].dragged = true;
+                document.getElementById(inputBox.input[inputBox.id].name).style.display = "none";
+            }
+
+        }
+
+        function getId(t) {
+            inputBox.id = t.replace(/[^\d]/g, '')
+        }
 
         function moves(e) {
-            if (inputBox !== "" && document.getElementById(inputBox).style.display != "") {
-
+            if (inputBox.input[inputBox.id] !== undefined && !inputBox.input[inputBox.id].dragged && document.getElementById(inputBox.input[inputBox.id].name).style.display != "") {
+                var target = inputBox.input[inputBox.id].name;
                 var cordx = 0;
                 var cordy = 0;
                 if (!e) {
@@ -30,17 +43,15 @@
                     cordy = e.clientY;
                 }
                 cordx = cordx - vectorOffset;
-                document.getElementById(inputBox).style.left = String(cordx) + "px";
-                document.getElementById(inputBox).style.top = String(cordy) + "px";
-                document.getElementById(inputBox).style.display = ""
+                document.getElementById(target).style.left = String(cordx) + "px";
+                document.getElementById(target).style.top = String(cordy) + "px";
+                document.getElementById(target).style.display = ""
             }
         }
     </script>
 </head>
 <body onClick="moves(event)">
-    <div id="force0" class="box" style="display:none;"><input type="text" placeholder="Force Label:" class="form-control box" required></div>
-    <div id="force1" class="box" style="display:none;"><input type="text" placeholder="Force Label:" class="form-control box" required></div>
-    <div id="force2" class="box" style="display:none;"><input type="text" placeholder="Force Label:" class="form-control box" required></div>
+    <div id="body"></div>
     <div id="wrapper">
         <div id="content">
             <div id="questions">

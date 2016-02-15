@@ -1,5 +1,6 @@
 var _this = this;
 window.onload = function () {
+    vectorOffset = 0;
     mcq = document.getElementById("form-float");
     divDetails = document.getElementById("instructions");
     global_style = { font: "14px 'Segoe UI', sans-serif", fill: "#000000", wordWrap: false, wordWrapWidth: _this.width, align: "left" };
@@ -59,6 +60,8 @@ var fbd;
     var Diagram = (function (_super) {
         __extends(Diagram, _super);
         function Diagram(game, x, y, key, startX, startY) {
+            inputBox = { input: [] };
+            inputBox["id"] = 0;
             _super.call(this, game, x, y, key);
             this.game = game;
             this.game.add.existing(this);
@@ -87,14 +90,26 @@ var fbd;
             }
             this.vector = [];
         };
+        Diagram.prototype.createInputBoxes = function (i) {
+            var id = "force" + i;
+            inputBox.input.push({
+                name: id,
+                dragged: false,
+                inputValues: ""
+            });
+            var body = document.getElementById("body");
+            body.innerHTML += "<div id='" + id + "' class='box' style='display: none;'  onclick='getId(this.id)'><input type='text' onkeyup='enterInput(event)' placeholder='Force Label: ' class='form-control box' required></div>";
+        };
         Diagram.prototype.addVector = function () {
             if (this.vector.length < this.limit) {
                 var i = this.vector.length;
                 if (i == 0) {
                     this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y, i);
+                    this.createInputBoxes(i);
                 }
                 else {
                     this.vector[i] = new fbd.Vector(this.game, this.game.input.x, this.game.input.y, this.co.x, this.co.y, i);
+                    this.createInputBoxes(i);
                 }
             }
         };
@@ -503,6 +518,14 @@ var fbd;
             this.inside = this.clickRegion.contains(this.x, this.y);
             this.groupStick = game.add.bitmapData(game.width, game.height);
             this.groupStick.addToWorld();
+            // create force labels
+            this.label = game.make.text(0, 0, "", global_style);
+            this.label.text = "";
+            this.label.inputEnabled = true;
+            this.label.events.onInputDown.add(function () {
+                document.getElementById(inputBox.input[inputBox.id].name).style.display = "";
+                inputBox.input[inputBox.id].dragged = false;
+            }, this);
             // create Text angle 
             this.angleRelative = game.make.text(0, 0, "", global_style);
             this.unknown = game.make.text(0, 0, "?", global_style);
@@ -514,6 +537,7 @@ var fbd;
             this.group.add(this.bmdSprite);
             this.group.add(this);
             this.group.add(this.angleRelative);
+            this.group.add(this.label);
             this.relative = new Phaser.Point(0, 0);
         }
         Vector.prototype.cloneBmd = function () {
@@ -582,12 +606,25 @@ var fbd;
             }
             this.angleRelative.position.setTo(this.startingPoint.x, this.startingPoint.y);
         };
+        // check if inputs are at the left side so can push it to the left
         Vector.prototype.checkLeft = function () {
             if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
-                vectorOffset = 100;
+                vectorOffset = 110;
             }
             else {
-                vectorOffset = 0;
+                vectorOffset = -10;
+            }
+        };
+        Vector.prototype.checkInputForce = function () {
+            if (this.id == inputBox.id) {
+                this.label.text = String(inputBox.input[inputBox.id].inputValues);
+                this.label.y = this.y;
+            }
+            if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
+                this.label.x = this.x - this.label.width - 10;
+            }
+            else {
+                this.label.x = this.x + 10;
             }
         };
         Vector.prototype.update = function () {
@@ -605,17 +642,20 @@ var fbd;
                 this.group.x = this.rounder(this.game.input.x - this.startingPoint.x - this.relative.x);
                 this.group.y = this.rounder(this.game.input.y - this.startingPoint.y - this.relative.y);
             }
+            this.checkInputForce();
         };
         Vector.prototype.getAngle = function (x1, y1, x2, y2) {
             var rad = Phaser.Math.angleBetween(x1, y1, x2, y2);
             var deg = Phaser.Math.radToDeg(rad);
             var round = this.rounder(deg);
             return round;
-            //return Phaser.Math.angleBetween(x1, y1, x2, y2)
         };
         Vector.prototype.drag = function () {
             this.inside = this.clickRegion.contains(this.x, this.y);
             if (this.x > 0) {
+                inputBox.name = this.id;
+                this.inputBox = this.id;
+                inputBox.id = this.id;
                 //if user click on the region god damn it
                 if (!this.inside) {
                     this.inside = this.clickRegion.contains(this.game.input.x, this.game.input.y);
@@ -636,10 +676,10 @@ var fbd;
                     this.bmd.ctx.closePath();
                     this.bmd.render();
                     this.angle = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y));
+                    document.getElementById(inputBox.input[inputBox.id].name).style.display = "none";
                 }
                 this.checkLeft();
                 //console.log("RELATIVE LENGTHS", this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
-                inputBox = "force" + this.id;
                 this.relative.setTo(this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
             }
         };
