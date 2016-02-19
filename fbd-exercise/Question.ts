@@ -22,7 +22,7 @@
             //  button initializing
             this.btn = new fbd.ButtonLabel(this.game, 0, 0, 'btn', "Submit", this.submit, this, 0, 0, 1, 0);
             this.btn.x = this.game.width - (this.diagram.squareBox.width / 2) - (this.btn.width / 2); // just because I can and you can't
-
+            this.btn.y = this.game.height - this.btn.height;
             this.switchParts();
 
             // reinitialize mcq
@@ -30,8 +30,9 @@
             for (var i = 0; i < check.length; i++) {
                 check[i].innerHTML = ""
             }
+            var body: HTMLElement = (<HTMLElement>document.getElementById("body"));
+            body.innerHTML = "";
         }
-
         switchParts() {
             switch (_p) {
                 case 0:
@@ -90,7 +91,6 @@
                 return;
             }
         }
-
         checkAnswers() {
             if (_p == 0) {
                 if (this.part1()) {
@@ -117,6 +117,7 @@
                 }
             }
         }
+  
         part1() {
             //  check for answers
             //  if any of the vectors has the same angle range
@@ -124,45 +125,52 @@
             //  if wrong
             //  return false and show wrong check mark
             if (this.diagram.vector.length <= 0) {
-                console.log("vector length lesser than or = 0");
                 return false;
             }
             if (this.diagram.vector.length != question.limit) {
-                console.log("vector length  not = to part.answer length");
                 return false;
             }
             var allCorrect = 0;
+
             if (this.diagram.vector.length > 0 || this.diagram.vector.length == part.answer.length) {
                 for (var i = 0; i < this.diagram.vector.length; i++) {
                     for (var j = 0; j < part.answer.length; j++) {
-                        if (part.answer[j].length > 0) {
-                            if (this.diagram.vector[i].angle >= part.answer[j][0] && this.diagram.vector[i].angle <= part.answer[j][1]) {
-                                console.log(this.diagram.vector[i].angle, "the vector angle", "answer is  within range and correct!");
+                        if (part.answer[j].angle.length > 0) {
+                            if (this.diagram.vector[i].angle >= part.answer[j].angle[0] && this.diagram.vector[i].angle <= part.answer[j].angle[1] && this.diagram.vector[i].labelGrouped == part.answer[j].forceLabels) {
                                 allCorrect++;
+                                console.log(part.answer[j], "PART 1 angle range");
                                 break;
-                                //return true;
-                                // means atleast 1 vector is the same answer
                             }
                         }
-                        if (part.answer[j].constructor != Array) {
-                            if (this.diagram.vector[i].angle != part.answer[j]) {
-                                //console.log(this.diagram.vector[i].angle,"the vector angle", part.answer[j], "the answer", "answer is wrong");
-                                continue;
-                                //return false;
-                            }
-                            if (this.diagram.vector[i].angle == part.answer[j]) {
-                                console.log(this.diagram.vector[i].angle, "the vector angle", part.answer[j], "the answer", "answer is correct!");
+                        if (part.answer[j].angle.constructor != Array) {
+                            if (this.diagram.vector[i].angle == part.answer[j].angle && this.diagram.vector[i].labelGrouped == part.answer[j].forceLabels) {
                                 allCorrect++;
+                                console.log(part.answer[j], "PART 2 Normal angle range");
                                 break;
-                                //return true;
-                                // means atleast 1 vector is the same answer
                             }
                         }
+                        //if (part.answer[j].length > 0) {
+                        //    // check whether angle is in range or not.
+                        //    if (this.diagram.vector[i].angle >= part.answer[j][0] && this.diagram.vector[i].angle <= part.answer[j][1]) {
+                        //        allCorrect++;
+                        //        break;
+                        //        //return true;
+                        //        // means atleast 1 vector is the same answer
+                        //    }
+                        //}
+                        //if (part.answer[j].constructor != Array) {
+                        //    if (this.diagram.vector[i].angle == part.answer[j]) {
+                        //        allCorrect++;
+                        //        break;
+                        //        //return true;
+                        //        // means atleast 1 vector is the same answer
+                        //    }
+                        //}
                     }
                 }
             }
             if (allCorrect == question.limit) {
-                return true;
+                    return true;
             }
             if (allCorrect < question.limit) {
                 return false;
@@ -171,6 +179,7 @@
         part2() {
             var allCorrect = 0;
             for (var i = 0; i < this.diagram.vector.length; i++) {
+                console.log(this.diagram.vector[i].group.x, this.diagram.vector[i].group.y)
                 if (this.diagram.vector[i].group.x == part.answer[0] && this.diagram.vector[i].group.y == part.answer[1]) {
                     allCorrect++;
                 }
@@ -198,7 +207,6 @@
                 }
             }
             return bool;
-
         }
     }
 

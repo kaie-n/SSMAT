@@ -3,25 +3,35 @@
     {
       "buttonLabel": [ "Submit", "Next" ],
       "limit": 3,
-      "co": [ 185, 65 ],
+      "co": [ 139, 47 ],
       "acw": true,
       "part": [
         {
           "instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Click on the SUBMIT button to check your answer.",
           "answer": [
-            [ -150, -125 ],
-            90,
-            [ -70, -40 ]
+            {
+              "angle": [ -150, -125 ],
+              "forceLabels": "FF"
+            },
+            {
+              "angle": 90,
+              "forceLabels": "W"
+            },
+            {
+              "angle": [ -70, -40 ],
+              "forceLabels": "N"
+            }
+           
           ],
           "correct": "Click on the NEXT button to proceed."
         },
         {
           "instruction": "Drag the arrows into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
-          "answer": [ 340, 90 ],
+          "answer": [ 335, 30 ],
           "correct": "Click on the NEXT button to proceed to the next exercise."
         },
         {
-          "instruction": "From the information given, which formula would you use to find the unknown (?). Select a formula and click on the SUBMIT button to check your answer.",
+          "instruction": "From the information given, which formula would you use to find the unknown component (?). Select a formula and click on the SUBMIT button to check your answer.",
           "answer": "2",
           "correct": "Click on the NEXT button to proceed to the next exercise."
         }
@@ -31,26 +41,36 @@
     {
       "buttonLabel": [ "Submit", "Next" ],
       "limit": 3,
-      "co": [ 185, 65 ],
+      "co": [ 139, 47 ],
       "acw": true,
       "part": [
         {
           "instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Click on the SUBMIT button to check your answer.",
           "answer": [
-            [ -150, -125 ],
-            90,
-            [ -70, -40 ]
+            {
+              "angle": [ -150, -125 ],
+              "forceLabels": "FF"
+            },
+            {
+              "angle": 90,
+              "forceLabels": "W"
+            },
+            {
+              "angle": [ -70, -40 ],
+              "forceLabels": "N"
+            }
+           
           ],
           "correct": "Click on the NEXT button to proceed."
         },
         {
           "instruction": "Drag the arrows into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
-          "answer": [ 340, 90 ],
+          "answer": [ 335, 30 ],
           "correct": "Click on the NEXT button to proceed to the next exercise."
         },
         {
           "instruction": "From the information given, which formula would you use to find the unknown (?). Select a formula and click on the SUBMIT button to check your answer.",
-          "answer": "1",
+          "answer": "2",
           "correct": "Click on the NEXT button to proceed to the next exercise."
         }
       ],

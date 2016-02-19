@@ -14,8 +14,8 @@
         constructor(game: Phaser.Game, x, y, type: number) {
 
             // square box initialize
-            var width = 200 // example;
-            var height = 150 // example;
+            var width = 300 // example;
+            var height = 200 // example;
             var bmd = game.make.bitmapData(width, height);
             bmd.ctx.beginPath();
             bmd.ctx.rect(0, 0, width, height);
@@ -26,10 +26,10 @@
 
             super(game, x, y, bmd);
             //game.add.sprite(x, y, bmd);
-            this.anchor.setTo(1, 1)
+            this.anchor.setTo(1, 0)
 
             // resolve initialize
-            this.resolve = game.make.sprite(-this.width, -this.height, "resolve");
+            this.resolve = game.make.sprite(-this.width, 0, "resolve");
             this.addChild(this.resolve);
             // circle initialize
             var circle = game.add.bitmapData(10, 10);
@@ -63,19 +63,19 @@
             switch (_p) {
                 case 0:
                     this.result.scale.setTo(1, 1);
-                    this.result.position.setTo(-this.width / 2, -this.height / 2);
+                    this.result.position.setTo(-this.width / 2, this.height / 2);
                     this.result.y = Math.round(this.result.y);
                     this.result.x = Math.round(this.result.x);
                     break;
                 case 1:
                     this.result.scale.setTo(0.8, 0.8);
-                    this.result.position.setTo(-this.result.width / 2, -this.height + this.result.height / 2);
+                    this.result.position.setTo((-this.result.width / 2) - 15, this.result.height / 2);
                     this.result.y = Math.round(this.result.y);
                     this.result.x = Math.round(this.result.x);
                     break;
                 case 2:
                     this.result.scale.setTo(0,0);
-                    this.result.position.setTo(-this.result.width / 2, 0);
+                    this.result.position.setTo(-this.result.width / 2, -999);
                     this.result.y = Math.round(this.result.y);
                     this.result.x = Math.round(this.result.x);
                     break;

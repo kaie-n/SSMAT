@@ -4,6 +4,7 @@
         bmd: Phaser.BitmapData;
         bmdSprite: Phaser.Sprite;
         arrow: Phaser.Sprite;
+        components: Array<Phaser.Sprite>;
         startingPoint: Phaser.Point;
         clickRegion: Phaser.Rectangle;
         group: Phaser.Group;
@@ -12,6 +13,8 @@
         unknown: Phaser.Text;
         angleRelative: Phaser.Text;
         label: Phaser.Text;
+        labelSub: Phaser.Text;
+        labelGrouped: string;
         findPart3: number;
         target: boolean;
         inside: boolean;
@@ -43,6 +46,8 @@
             this.events.onInputDown.add(function () {
                 this.target = true;
                 if (_p == 0) {
+                    //setting to current click
+                   
                     this.drag();
                 }
             }, this);
@@ -59,16 +64,38 @@
             this.label.text = "";
             this.label.inputEnabled = true;
             this.label.events.onInputDown.add(function () {
-                document.getElementById(inputBox.input[inputBox.id].name).style.display = "";
-                inputBox.input[inputBox.id].dragged = false;
+                if (_p == 0) {
+                    document.getElementById(inputBox.input[this.id].name).style.display = "";
+                    inputBox.input[this.id].dragged = false;
+                    //setting to current click
+                    inputBox.name = this.id;
+                    this.inputBox = this.id;
+                    inputBox.id = this.id;
+                }
             }, this);
-            
+            this.label.cssFont = "14px 'Segoe UI', sans-serif"
+            // create force labels
+            this.labelSub = game.make.text(0, 0, "", global_style);
+            this.labelSub.text = "";
+            this.labelSub.inputEnabled = true;
+            this.labelSub.events.onInputDown.add(function () {
+                if (_p == 0) {
+                    (<HTMLInputElement>document.getElementById(inputBox.input[this.id].name)).style.display = "";
+                    (<HTMLInputElement>document.getElementById(inputBox.input[this.id].name)).focus();
+                    inputBox.input[this.id].dragged = false;
+                    //setting to current click
+                    inputBox.name = this.id;
+                    this.inputBox = this.id;
+                    inputBox.id = this.id;
+                }
+            }, this);
+            this.labelSub.cssFont = "14px 'Segoe UI', sans-serif"
             // create Text angle 
             this.angleRelative = game.make.text(0, 0, "", global_style);
             this.unknown = game.make.text(0, 0, "?", global_style);
             this.addChild(this.unknown);
             this.unknown.visible = false;
-            this.unknown.scale.setTo(1.5, 1.5);
+            //this.unknown.scale.setTo(1, 1.5);
 
             // Group them up baby
             this.group = game.add.group();
@@ -76,6 +103,7 @@
             this.group.add(this);
             this.group.add(this.angleRelative);
             this.group.add(this.label);
+            this.group.add(this.labelSub);
             this.relative = new Phaser.Point(0, 0);
         }
         cloneBmd() {
@@ -91,19 +119,19 @@
             // graphics.arc(0, 0, 135, game.math.degToRad(0), game.math.degToRad(90), false);
             // this is from 0 to -90;
             if (this.angle <= 0 && this.angle >= -90) {
-                graphics.arc(0, 0, 20, 0, this.rotation, true);
+                graphics.arc(0, 0, 10, 0, this.rotation, true);
                 return;
             }
             if (this.angle >= -180 && this.angle < -90) {
-                graphics.arc(0, 0, 20, this.rotation, -3.14, true);
+                graphics.arc(0, 0, 10, this.rotation, -3.14, true);
                 return;
             }
             if (this.angle >= 0 && this.angle <= 90) {
-                graphics.arc(0, 0, 20, 0, this.rotation, false);
+                graphics.arc(0, 0, 10, 0, this.rotation, false);
                 return;
             }
             if (this.angle < 180 && this.angle > 90) {
-                graphics.arc(0, 0, 20, this.rotation, -3.14, false);
+                graphics.arc(0, 0, 10, this.rotation, -3.14, false);
                 return;
             }
         }
@@ -112,39 +140,50 @@
             this.unknown.visible = true;
             this.unknown.angle -= this.angle;
             this.unknown.x += this.width;
+            var offsetX = 0;
+            var offsetY = 0;
+            this.angleRelative.scale.setTo(0.8, 0.8);
             if (this.angle == 0 || this.angle == -180) {
                 this.angleRelative.text = "";
             }
             // right top side
             if ((this.angle < 0 && this.angle >= -90)) {
                 this.angleRelative.text = String(Math.abs(this.angle));
-                this.angleRelative.anchor.setTo(-2, 0.75);
+                //this.angleRelative.anchor.setTo(-2, 0.75);
+                offsetX = 12;
+                offsetY = -(this.angleRelative.height);
             }
             // left top side
             if ((this.angle > -180 && this.angle < -90)) {
                 var temp: number = 180 - Math.abs(this.angle);
                 temp = this.rounder(temp);
                 this.angleRelative.text = String(temp);
-                this.angleRelative.anchor.setTo(3, 0.75);
+                //this.angleRelative.anchor.setTo(3, 0.75);
+                offsetX = -12 - this.angleRelative.width;
+                offsetY = -(this.angleRelative.height);
             }
             // positive range
             // bottom right
             if (this.angle > 0 && this.angle <= 90) {
                 this.angleRelative.text = String(Math.abs(this.angle));
-                this.angleRelative.anchor.setTo(-3, -0.75);
+                //this.angleRelative.anchor.setTo(-3, -0.75);
+                offsetX = 12;
+                offsetY = 0;
             }
             // bottom left
             if (this.angle < 180 && this.angle > 90) {
                 var temp: number = 180 - Math.abs(this.angle);
                 temp = this.rounder(temp);
                 this.angleRelative.text = String(temp);
-                this.angleRelative.anchor.setTo(3, -0.75);
+                offsetX = -12 - this.angleRelative.width;
+                offsetY = 0;
+                //this.angleRelative.anchor.setTo(3, -0.75);
             }
             var angle = (<NodeListOf<HTMLInputElement>>document.getElementsByClassName("angle"));
             for (var i = 0; i < angle.length; i++) {
                 angle[i].innerHTML = this.angleRelative.text;
             }
-            this.angleRelative.position.setTo(this.startingPoint.x, this.startingPoint.y);
+            this.angleRelative.position.setTo(this.startingPoint.x + offsetX, this.startingPoint.y + offsetY);
         }
 
         // check if inputs are at the left side so can push it to the left
@@ -159,15 +198,31 @@
 
         checkInputForce() {
             if (this.id == inputBox.id) {
-               
-                this.label.text = String(inputBox.input[inputBox.id].inputValues);
-                this.label.y = this.y;
+                this.labelGrouped = String(inputBox.input[inputBox.id].inputValues[2]);
+                this.label.text = String(inputBox.input[inputBox.id].inputValues[0]);
+                if (String(inputBox.input[inputBox.id].inputValues[0]) != "" && String(inputBox.input[inputBox.id].inputValues[0]) != undefined) {
+                    this.labelSub.text = String(inputBox.input[inputBox.id].inputValues[1]);
+                }
+                if ((this.angle > -180 && this.angle < 0)) {
+                    this.label.y = this.y - this.label.height;
+                    this.labelSub.y = this.label.y + 5;
+                }
+                if ((this.angle < 180 && this.angle > 0)) {
+                    this.label.y = this.y + this.label.height / 2 ;
+                    this.labelSub.y = this.label.y + 5;
+                }
             }
             if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
-                this.label.x = this.x - this.label.width - 10;
+                this.label.x = this.x - this.label.width - 10 - this.labelSub.width;
+                this.labelSub.x = this.label.x + this.labelSub.width;
             }
             else {
                 this.label.x = this.x + 10;
+                this.labelSub.x = this.label.x + this.labelSub.width - 2;
+            }
+            if ((this.angle < 180 && this.angle > 0)) {
+                this.label.x = this.x - this.label.width / 2;
+                this.labelSub.x = this.label.x + 5;
             }
         }
 
@@ -198,7 +253,7 @@
         drag() {
             this.inside = this.clickRegion.contains(this.x, this.y)
             if (this.x > 0) {
-
+                //setting to current click
                 inputBox.name = this.id;
                 this.inputBox = this.id;
                 inputBox.id = this.id;
@@ -224,6 +279,7 @@
                     this.bmd.render();
                     this.angle = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y))
                     document.getElementById(inputBox.input[inputBox.id].name).style.display = "none";
+                    inputBox.input[inputBox.id].dragged = false;
                 }
                 this.checkLeft();
                 //console.log("RELATIVE LENGTHS", this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);

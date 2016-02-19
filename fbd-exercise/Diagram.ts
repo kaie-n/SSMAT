@@ -1,7 +1,7 @@
 ﻿module fbd {
 
     export class Diagram extends Phaser.Sprite {
-        picture: Phaser.Sprite; // diagram picture
+        picture: Phaser.Sprite;
         clickRegion: Phaser.Rectangle; // region
         squareBox: fbd.SquareBox; // squarebox
         vector: Array<fbd.Vector>; // the force vectors
@@ -10,18 +10,19 @@
         limit: number; // number of force vectors limit
         co: Phaser.Point; // coordinates of circle dot
         constructor(game: Phaser.Game, x, y, key, startX, startY) {
+            var bmd = game.make.bitmapData(game.width, game.height);
             inputBox = { input: [] };
             inputBox["id"] = 0;
-            super(game, x, y, key);
+            super(game, x, y, bmd);
             this.game = game;
-            this.game.add.existing(this);
-
-            // diagram
-            this.picture = this.game.make.sprite(0, 0, key);
+        
+            this.picture = game.make.sprite(0, 0, key);
             this.addChild(this.picture);
-
+            this.picture.y += 30;
+            startY += 30;
+            // diagram
             // square box
-            this.squareBox = new SquareBox(game, this.game.world.width, this.picture.height, 1);
+            this.squareBox = new SquareBox(game, this.game.world.width, 0, 1);
 
             this.vector = [];
 
@@ -32,10 +33,11 @@
             this.circle.anchor.setTo(0.5, 0.5);
             this.circle.inputEnabled = true;
             this.circle.events.onInputDown.add(this.addVector, this);
-            this.addChild(this.circle);
+            this.circle.y -= 30;
+            this.picture.addChild(this.circle);
             this.addChild(this.squareBox);
             this.co = new Phaser.Point(startX, startY);
-            
+            this.game.add.existing(this);
         }
         destroyAll() {
             this.destroy();
@@ -53,11 +55,11 @@
             inputBox.input.push({
                 name: id,
                 dragged: false,
-                inputValues: ""
+                inputValues: ["", "", ""]
             })
 
             var body: HTMLElement = (<HTMLElement>document.getElementById("body"));
-            body.innerHTML += "<div id='" + id + "' class='box' style='display: none;'  onclick='getId(this.id)'><input type='text' onkeyup='enterInput(event)' placeholder='Force Label: ' class='form-control box' required></div>"
+            body.innerHTML += "<div id='" + id + "' class='form-control box' style='display: none;' onkeyup='makeSub(event,this)' onkeypress='enterInput(event, this); return (this.innerText.length < 2)' onclick='getId(this.id)' contentEditable='true'></div>"
         }
         
         addVector() {

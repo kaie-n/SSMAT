@@ -12,20 +12,63 @@
     <script src="phaser.js"></script>
     <script src="Game.js"></script>
     <script>
-        function enterInput(e) {
+       
+        function preventMore(e, t) {
+            if (t.innerText.length > 2) {
+                e.preventDefault();
+                return;
+            }
+        }
+        function setEndOfContenteditable(contentEditableElement) {
+            var range, selection;
+            if (document.createRange)//Firefox, Chrome, Opera, Safari, IE 9+
+            {
+                range = document.createRange();//Create a range (a range is a like the selection but invisible)
+                range.selectNodeContents(contentEditableElement);//Select the entire contents of the element with the range
+                range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+                selection = window.getSelection();//get the selection object (allows you to change selection)
+                selection.removeAllRanges();//remove any selections already made
+                selection.addRange(range);//make the range you have just created the visible selection
+            }
+            else if (document.selection)//IE 8 and lower
+            {
+                range = document.body.createTextRange();//Create a range (a range is a like the selection but invisible)
+                range.moveToElementText(contentEditableElement);//Select the entire contents of the element with the range
+                range.collapse(false);//collapse the range to the end point. false means collapse to end rather than the start
+                range.select();//Select the range (make it the visible selection
+            }
+        }
+
+        function makeSub(e, t) {
             var charCode = (typeof e.which === "number") ? e.which : e.keyCode;
-            if (charCode == 13 && e.target.value != "") {
-                inputBox.input[inputBox.id].inputValues = e.target.value;
+            if (charCode != '37' && charCode != '38' && charCode != '39' && charCode != '40' && charCode != '8') {
+ 
+                if (t.innerText.length == 2) {
+                    var subscript = t.innerText.charAt(1);
+                    subscript = subscript.sub();
+                    var normal = t.innerText.charAt(0);
+                    t.selectionStart = t.selectionEnd = t.innerText.length;
+                    t.innerHTML = normal + subscript;
+                    t.innerHTML = t.innerHTML;
+                    var elem = t;
+                    setEndOfContenteditable(elem);
+                    return
+                }
+            }
+        }
+        function enterInput(e, t) {
+            var charCode = (typeof e.which === "number") ? e.which : e.keyCode;
+            if (charCode == 13 && t.innerText != "") {
+                inputBox.input[inputBox.id].inputValues[0] = t.innerText.charAt(0);
+                inputBox.input[inputBox.id].inputValues[1] = t.innerText.charAt(1);
+                inputBox.input[inputBox.id].inputValues[2] = t.innerText;
                 inputBox.input[inputBox.id].dragged = true;
                 document.getElementById(inputBox.input[inputBox.id].name).style.display = "none";
             }
-
         }
-
         function getId(t) {
             inputBox.id = t.replace(/[^\d]/g, '')
         }
-
         function moves(e) {
             if (inputBox.input[inputBox.id] !== undefined && !inputBox.input[inputBox.id].dragged && document.getElementById(inputBox.input[inputBox.id].name).style.display != "") {
                 var target = inputBox.input[inputBox.id].name;
@@ -46,12 +89,14 @@
                 document.getElementById(target).style.left = String(cordx) + "px";
                 document.getElementById(target).style.top = String(cordy) + "px";
                 document.getElementById(target).style.display = ""
+                document.getElementById(target).focus();
+                setEndOfContenteditable(document.getElementById(target));
             }
         }
     </script>
 </head>
 <body onClick="moves(event)">
-    <div id="body"></div>
+    <div id="body" class="text-uppercase"></div>
     <div id="wrapper">
         <div id="content">
             <div id="questions">
@@ -61,22 +106,19 @@
                 <span id="instructions"></span>
                 <div class="form-float" id="form-float">
                     <form>
-                        <div class="col-md-1"></div>
-                        <div class="col-md-10">
+                        <div class="col-md-1></div>
+                        <div class="col-md-10" id="form-answers">
                             <div class="row">
-                                <div class="col-md-4 text-right"><input type="radio" name="answer" value="0" checked><span class="check"></span></div>
-                                <div class="col-md-2 text-center" id="option-0-0">Cos <span class="angle">30</span>:</div>
-                                <div class="col-md-4 text-left" id="option-0-1">Adjacent <br />Hypotenuse</div>
+                                <div class="col-md-6 text-right"><input type="radio" name="answer" value="0" checked><span class="check"></span></div>
+                                <div class="col-md-6 text-left" id="option-0-0"><span class="force-label">N<sub class="x-or-y">x</sub></span> = <span class="force-label">Ncos</span><span class="angle">30</span></div>
                             </div><br />
                             <div class="row">
-                                <div class="col-md-4 text-right"><input type="radio" name="answer" value="1"><span class="check"></span></div>
-                                <div class="col-md-2 text-center" id="option-1-0">Sin <span class="angle">30</span>:</div>
-                                <div class="col-md-4 text-left" id="option-1-1">Opposite <br />Hypotenuse</div>
+                                <div class="col-md-6 text-right"><input type="radio" name="answer" value="1" checked><span class="check"></span></div>
+                                <div class="col-md-6 text-left" id="option-0-0"><span class="force-label">N<sub class="x-or-y">x</sub></span> = <span class="force-label">Nsin</span><span class="angle">30</span></div>
                             </div><br />
                             <div class="row">
-                                <div class="col-md-4 text-right"><input type="radio" name="answer" value="2"><span class="check"></span></div>
-                                <div class="col-md-2 text-center" id="option-2-0">Tan <span class="angle">30</span>:</div>
-                                <div class="col-md-4 text-left" id="option-2-1">Opposite <br />Adjacent</div>
+                                <div class="col-md-6 text-right"><input type="radio" name="answer" value="2" checked><span class="check"></span></div>
+                                <div class="col-md-6 text-left" id="option-0-0"><span class="force-label">N<sub class="x-or-y">x</sub></span> = <span class="force-label">Ntan</span><span class="angle">30</span></div>
                             </div>
                         </div>
                         <div class="col-md-1"></div>
