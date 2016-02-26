@@ -28,6 +28,7 @@
     <Content Include="assets\arrow-green.gif" />
     <Content Include="assets\arrow-red.gif" />
     <Content Include="assets\background-menu.gif" />
+    <Content Include="assets\background.gif" />
     <Content Include="assets\building.gif" />
     <Content Include="assets\button.gif" />
     <Content Include="assets\cancel-btn.gif" />

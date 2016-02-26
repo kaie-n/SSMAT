@@ -21,5 +21,13 @@
             this.events.onInputDown.add(function () { this.label.visible = false }, this);
            
         }
+        updatePosition() {
+            this.label.y = this.game.height - 30 - this.height;
+            this.label.x = this.x;
+            this.label.y = this.label.y - this.label.height / 2;
+            this.label.y = Math.round(this.label.y);
+            this.label.x = Math.round(this.label.x);
+        }
+
     }
 }

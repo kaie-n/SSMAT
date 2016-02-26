@@ -69,6 +69,8 @@
             }
             this.answerA = Math.round((force0 / this.main.gravity) * 10) / 10
             this.answerB = Math.round((force1 / this.main.gravity) * 10) / 10
+            this.text.x = Math.floor(this.x + this.width / 2);
+            this.text.y = Math.floor(this.y + this.height / 2);
         }
         update() {
             if (this.main.started) {

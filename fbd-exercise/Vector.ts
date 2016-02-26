@@ -4,7 +4,8 @@
         bmd: Phaser.BitmapData;
         bmdSprite: Phaser.Sprite;
         arrow: Phaser.Sprite;
-        components: Array<Phaser.Sprite>;
+        components: Phaser.Sprite;
+        componentLabels: Array<LabelSub>;
         startingPoint: Phaser.Point;
         clickRegion: Phaser.Rectangle;
         group: Phaser.Group;
@@ -73,7 +74,7 @@
                     inputBox.id = this.id;
                 }
             }, this);
-            this.label.cssFont = "14px 'Segoe UI', sans-serif"
+
             // create force labels
             this.labelSub = game.make.text(0, 0, "", global_style);
             this.labelSub.text = "";
@@ -89,14 +90,13 @@
                     inputBox.id = this.id;
                 }
             }, this);
-            this.labelSub.cssFont = "14px 'Segoe UI', sans-serif"
+
             // create Text angle 
             this.angleRelative = game.make.text(0, 0, "", global_style);
-            this.unknown = game.make.text(0, 0, "?", global_style);
-            this.addChild(this.unknown);
-            this.unknown.visible = false;
-            //this.unknown.scale.setTo(1, 1.5);
 
+            // initialize components and its labels
+            this.componentLabels = [];
+            
             // Group them up baby
             this.group = game.add.group();
             this.group.add(this.bmdSprite);
@@ -106,6 +106,7 @@
             this.group.add(this.labelSub);
             this.relative = new Phaser.Point(0, 0);
         }
+        // cloning the vector arrows
         cloneBmd() {
             this.groupStick.draw(this.bmdSprite);
             this.groupStick.draw(this);
@@ -116,7 +117,6 @@
             //  Our first arc will be a line only
             graphics.lineStyle(1, 0x000000);
 
-            // graphics.arc(0, 0, 135, game.math.degToRad(0), game.math.degToRad(90), false);
             // this is from 0 to -90;
             if (this.angle <= 0 && this.angle >= -90) {
                 graphics.arc(0, 0, 10, 0, this.rotation, true);
@@ -135,14 +135,43 @@
                 return;
             }
         }
+        makeComponents(colour) {
+            var bmd = this.game.make.bitmapData(this.game.width, this.game.height);
+            bmd.ctx.beginPath();
+            bmd.ctx.lineWidth = 1;
+            bmd.ctx.strokeStyle = colour;
+            bmd.ctx.setLineDash([5, 3]);
+            bmd.ctx.moveTo(this.startingPoint.x, this.startingPoint.y);
+            bmd.ctx.lineTo(this.x, this.startingPoint.y);
+            bmd.ctx.lineTo(this.x, this.y);
+            bmd.ctx.stroke();
+            bmd.ctx.closePath();
+            this.components = this.game.add.sprite(0, 0, bmd);
+            this.group.add(this.components);
+            // labeling
+            this.componentLabels[0] = new LabelSub(this.label.text, "Y", this.game, "sin");
+            this.componentLabels[1] = new LabelSub(this.label.text, "X", this.game, "cos");
 
+            // if left side
+            if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
+                this.componentLabels[0].updatePosition(this.label.world.x, this.label.world.y + (Math.abs(this.relative.y) / 2) + this.componentLabels[0].halfHeight);
+                this.componentLabels[1].updatePosition(this.label.world.x + (Math.abs(this.relative.x) / 2) + this.componentLabels[1].halfWidth, this.componentLabels[1].totalHeight + this.label.world.y + Math.abs(this.relative.y));
+
+            }
+            else {
+                this.componentLabels[0].updatePosition(this.label.world.x, this.label.world.y + (Math.abs(this.relative.y) / 2) + this.componentLabels[0].halfHeight);
+                this.componentLabels[1].updatePosition(this.label.world.x - (Math.abs(this.relative.x) / 2) - this.componentLabels[1].halfWidth, this.componentLabels[1].totalHeight + this.label.world.y + Math.abs(this.relative.y));
+            }
+            var rnd = this.game.rnd.integerInRange(0, 1);
+            this.componentLabels[rnd].unknown.visible = true;
+            this.setHTMLtexts("x-or-y", this.componentLabels[rnd].sub.text);
+            inputBox.answer = this.componentLabels[rnd].answer;
+        }
         getRelativeAngle() {
-            this.unknown.visible = true;
-            this.unknown.angle -= this.angle;
-            this.unknown.x += this.width;
             var offsetX = 0;
             var offsetY = 0;
-            this.angleRelative.scale.setTo(0.8, 0.8);
+            this.angleRelative.scale.setTo(0.6, 0.6);
+            this.makeComponents("red");
             if (this.angle == 0 || this.angle == -180) {
                 this.angleRelative.text = "";
             }
@@ -151,7 +180,8 @@
                 this.angleRelative.text = String(Math.abs(this.angle));
                 //this.angleRelative.anchor.setTo(-2, 0.75);
                 offsetX = 12;
-                offsetY = -(this.angleRelative.height);
+                offsetY = -(this.angleRelative.height) + 4;
+
             }
             // left top side
             if ((this.angle > -180 && this.angle < -90)) {
@@ -160,7 +190,8 @@
                 this.angleRelative.text = String(temp);
                 //this.angleRelative.anchor.setTo(3, 0.75);
                 offsetX = -12 - this.angleRelative.width;
-                offsetY = -(this.angleRelative.height);
+                offsetY = -(this.angleRelative.height) + 4;
+
             }
             // positive range
             // bottom right
@@ -169,6 +200,7 @@
                 //this.angleRelative.anchor.setTo(-3, -0.75);
                 offsetX = 12;
                 offsetY = 0;
+
             }
             // bottom left
             if (this.angle < 180 && this.angle > 90) {
@@ -178,14 +210,49 @@
                 offsetX = -12 - this.angleRelative.width;
                 offsetY = 0;
                 //this.angleRelative.anchor.setTo(3, -0.75);
+
             }
-            var angle = (<NodeListOf<HTMLInputElement>>document.getElementsByClassName("angle"));
-            for (var i = 0; i < angle.length; i++) {
-                angle[i].innerHTML = this.angleRelative.text;
+ 
+            this.setHTMLtexts("angle", this.angleRelative.text);
+            this.setHTMLtexts("force-label", this.label.text);
+            this.setHTMLtexts("force-label-sub", this.labelSub.text);
+
+            var array = [];
+            // text for the answers
+            var answer = (<NodeListOf<HTMLInputElement>>document.getElementsByClassName("answer"));
+            // radio button as well
+            var answerInput = (<NodeListOf<HTMLInputElement>>document.getElementsByName("answer"));
+            for (var i = 0; i < answer.length; i++) {
+                // assigning the previous answer to an array
+                array[i] = answer[i].innerText;
             }
+            // shuffle the array accordingly
+            shuffle(array);
+            // set back the text yo
+            this.setHTMLtexts("answer", array);
+            for (var i = 0; i < answer.length; i++) {
+                answerInput[i].value = answer[i].innerText;
+            }
+            // set position for the angle number text
             this.angleRelative.position.setTo(this.startingPoint.x + offsetX, this.startingPoint.y + offsetY);
         }
+        // set html text dynamically lah, easier mah rather than setting it one by one :(
+        setHTMLtexts(c, t) {
+            var temp = (<NodeListOf<HTMLInputElement>>document.getElementsByClassName(c));
+            for (var i = 0; i < temp.length; i++) {
+                if (t.constructor !== Array) {
+                    temp[i].innerText = t;
+                    if (i == 0) {
+                        var selectedAnswer = (<NodeListOf<HTMLInputElement>>document.getElementsByName("answer"));
+                        selectedAnswer[i].checked = true;
+                    }
 
+                } else {
+                    temp[i].innerText = t[i];
+                }
+            }
+            
+        }
         // check if inputs are at the left side so can push it to the left
         checkLeft() {
             if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
@@ -208,10 +275,11 @@
                     this.labelSub.y = this.label.y + 5;
                 }
                 if ((this.angle < 180 && this.angle > 0)) {
-                    this.label.y = this.y + this.label.height / 2 ;
+                    this.label.y = this.y + this.label.height / 2;
                     this.labelSub.y = this.label.y + 5;
                 }
             }
+            // if left side
             if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
                 this.label.x = this.x - this.label.width - 10 - this.labelSub.width;
                 this.labelSub.x = this.label.x + this.labelSub.width;

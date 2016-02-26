@@ -179,7 +179,7 @@
         part2() {
             var allCorrect = 0;
             for (var i = 0; i < this.diagram.vector.length; i++) {
-                console.log(this.diagram.vector[i].group.x, this.diagram.vector[i].group.y)
+                console.log(this.diagram.vector[i].group.worldPosition.x, this.diagram.vector[i].group.worldPosition.y)
                 if (this.diagram.vector[i].group.x == part.answer[0] && this.diagram.vector[i].group.y == part.answer[1]) {
                     allCorrect++;
                 }
@@ -196,7 +196,7 @@
             var check = (<NodeListOf<HTMLInputElement>>document.getElementsByClassName("check"));
             var bool = false;
             for (var i = 0; i < selectedAnswer.length; i++) {
-                if (part.answer == selectedAnswer[i].value) {
+                if (inputBox.answer == selectedAnswer[i].value) {
                     bool = true;
                     check[i].style.color = "#00FF00";
                     check[i].innerHTML = "✔"

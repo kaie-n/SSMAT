@@ -7,6 +7,19 @@ window.onload = function () {
     global_style = { font: "14px 'Segoe UI', sans-serif", fill: "#000000", wordWrap: false, wordWrapWidth: _this.width, align: "left" };
     var game = new fbd.Game();
 };
+function shuffle(array) {
+    var m = array.length, t, i;
+    // While there remain elements to shuffle…
+    while (m) {
+        // Pick a remaining element…
+        i = Math.floor(Math.random() * m--);
+        // And swap it with the current element.
+        t = array[m];
+        array[m] = array[i];
+        array[i] = t;
+    }
+    return array;
+}
 var __extends = (this && this.__extends) || function (d, b) {
     for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
     function __() { this.constructor = d; }
@@ -61,8 +74,7 @@ var fbd;
         __extends(Diagram, _super);
         function Diagram(game, x, y, key, startX, startY) {
             var bmd = game.make.bitmapData(game.width, game.height);
-            inputBox = { input: [] };
-            inputBox["id"] = 0;
+            inputBox = { input: [], id: 0, name: 0, answer: "" };
             _super.call(this, game, x, y, bmd);
             this.game = game;
             this.picture = game.make.sprite(0, 0, key);
@@ -155,6 +167,36 @@ var fbd;
         return Game;
     })(Phaser.Game);
     fbd.Game = Game;
+})(fbd || (fbd = {}));
+var fbd;
+(function (fbd) {
+    var LabelSub = (function (_super) {
+        __extends(LabelSub, _super);
+        function LabelSub(t1, t2, game, answer) {
+            _super.call(this, game, 0, 0, t1, global_style);
+            this.game.add.existing(this);
+            this.sub = this.game.add.text(0, 0, t2, global_style);
+            this.answer = answer;
+            this.sub.y += this.sub.height / 4;
+            this.sub.x = this.x + this.width;
+            this.totalWidth = this.width + this.sub.width;
+            this.totalHeight = this.height + (this.sub.height / 4);
+            this.halfHeight = this.totalHeight / 2;
+            this.halfWidth = this.totalWidth / 2;
+            this.scale.setTo(0.8, 0.8);
+            this.sub.scale.setTo(0.8, 0.8);
+            this.unknown = this.game.add.text(0, 0, "?", global_style);
+            this.unknown.visible = false;
+            this.unknown.position.setTo(this.x + this.totalWidth, this.y);
+        }
+        LabelSub.prototype.updatePosition = function (x, y) {
+            this.position.setTo(x, y);
+            this.sub.position.setTo(this.x + this.width, this.y + this.sub.height / 4);
+            this.unknown.position.setTo(this.x + this.totalWidth, this.y);
+        };
+        return LabelSub;
+    })(Phaser.Text);
+    fbd.LabelSub = LabelSub;
 })(fbd || (fbd = {}));
 var fbd;
 (function (fbd) {
@@ -374,7 +416,7 @@ var fbd;
         Question.prototype.part2 = function () {
             var allCorrect = 0;
             for (var i = 0; i < this.diagram.vector.length; i++) {
-                console.log(this.diagram.vector[i].group.x, this.diagram.vector[i].group.y);
+                console.log(this.diagram.vector[i].group.worldPosition.x, this.diagram.vector[i].group.worldPosition.y);
                 if (this.diagram.vector[i].group.x == part.answer[0] && this.diagram.vector[i].group.y == part.answer[1]) {
                     allCorrect++;
                 }
@@ -391,7 +433,7 @@ var fbd;
             var check = document.getElementsByClassName("check");
             var bool = false;
             for (var i = 0; i < selectedAnswer.length; i++) {
-                if (part.answer == selectedAnswer[i].value) {
+                if (inputBox.answer == selectedAnswer[i].value) {
                     bool = true;
                     check[i].style.color = "#00FF00";
                     check[i].innerHTML = "✔";
@@ -535,7 +577,6 @@ var fbd;
                     inputBox.id = this.id;
                 }
             }, this);
-            this.label.cssFont = "14px 'Segoe UI', sans-serif";
             // create force labels
             this.labelSub = game.make.text(0, 0, "", global_style);
             this.labelSub.text = "";
@@ -551,13 +592,10 @@ var fbd;
                     inputBox.id = this.id;
                 }
             }, this);
-            this.labelSub.cssFont = "14px 'Segoe UI', sans-serif";
             // create Text angle 
             this.angleRelative = game.make.text(0, 0, "", global_style);
-            this.unknown = game.make.text(0, 0, "?", global_style);
-            this.addChild(this.unknown);
-            this.unknown.visible = false;
-            //this.unknown.scale.setTo(1, 1.5);
+            // initialize components and its labels
+            this.componentLabels = [];
             // Group them up baby
             this.group = game.add.group();
             this.group.add(this.bmdSprite);
@@ -567,6 +605,7 @@ var fbd;
             this.group.add(this.labelSub);
             this.relative = new Phaser.Point(0, 0);
         }
+        // cloning the vector arrows
         Vector.prototype.cloneBmd = function () {
             this.groupStick.draw(this.bmdSprite);
             this.groupStick.draw(this);
@@ -576,7 +615,6 @@ var fbd;
             this.group.add(graphics);
             //  Our first arc will be a line only
             graphics.lineStyle(1, 0x000000);
-            // graphics.arc(0, 0, 135, game.math.degToRad(0), game.math.degToRad(90), false);
             // this is from 0 to -90;
             if (this.angle <= 0 && this.angle >= -90) {
                 graphics.arc(0, 0, 10, 0, this.rotation, true);
@@ -595,13 +633,41 @@ var fbd;
                 return;
             }
         };
+        Vector.prototype.makeComponents = function (colour) {
+            var bmd = this.game.make.bitmapData(this.game.width, this.game.height);
+            bmd.ctx.beginPath();
+            bmd.ctx.lineWidth = 1;
+            bmd.ctx.strokeStyle = colour;
+            bmd.ctx.setLineDash([5, 3]);
+            bmd.ctx.moveTo(this.startingPoint.x, this.startingPoint.y);
+            bmd.ctx.lineTo(this.x, this.startingPoint.y);
+            bmd.ctx.lineTo(this.x, this.y);
+            bmd.ctx.stroke();
+            bmd.ctx.closePath();
+            this.components = this.game.add.sprite(0, 0, bmd);
+            this.group.add(this.components);
+            // labeling
+            this.componentLabels[0] = new fbd.LabelSub(this.label.text, "Y", this.game, "sin");
+            this.componentLabels[1] = new fbd.LabelSub(this.label.text, "X", this.game, "cos");
+            // if left side
+            if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
+                this.componentLabels[0].updatePosition(this.label.world.x, this.label.world.y + (Math.abs(this.relative.y) / 2) + this.componentLabels[0].halfHeight);
+                this.componentLabels[1].updatePosition(this.label.world.x + (Math.abs(this.relative.x) / 2) + this.componentLabels[1].halfWidth, this.componentLabels[1].totalHeight + this.label.world.y + Math.abs(this.relative.y));
+            }
+            else {
+                this.componentLabels[0].updatePosition(this.label.world.x, this.label.world.y + (Math.abs(this.relative.y) / 2) + this.componentLabels[0].halfHeight);
+                this.componentLabels[1].updatePosition(this.label.world.x - (Math.abs(this.relative.x) / 2) - this.componentLabels[1].halfWidth, this.componentLabels[1].totalHeight + this.label.world.y + Math.abs(this.relative.y));
+            }
+            var rnd = this.game.rnd.integerInRange(0, 1);
+            this.componentLabels[rnd].unknown.visible = true;
+            this.setHTMLtexts("x-or-y", this.componentLabels[rnd].sub.text);
+            inputBox.answer = this.componentLabels[rnd].answer;
+        };
         Vector.prototype.getRelativeAngle = function () {
-            this.unknown.visible = true;
-            this.unknown.angle -= this.angle;
-            this.unknown.x += this.width;
             var offsetX = 0;
             var offsetY = 0;
-            this.angleRelative.scale.setTo(0.8, 0.8);
+            this.angleRelative.scale.setTo(0.6, 0.6);
+            this.makeComponents("red");
             if (this.angle == 0 || this.angle == -180) {
                 this.angleRelative.text = "";
             }
@@ -610,7 +676,7 @@ var fbd;
                 this.angleRelative.text = String(Math.abs(this.angle));
                 //this.angleRelative.anchor.setTo(-2, 0.75);
                 offsetX = 12;
-                offsetY = -(this.angleRelative.height);
+                offsetY = -(this.angleRelative.height) + 4;
             }
             // left top side
             if ((this.angle > -180 && this.angle < -90)) {
@@ -619,7 +685,7 @@ var fbd;
                 this.angleRelative.text = String(temp);
                 //this.angleRelative.anchor.setTo(3, 0.75);
                 offsetX = -12 - this.angleRelative.width;
-                offsetY = -(this.angleRelative.height);
+                offsetY = -(this.angleRelative.height) + 4;
             }
             // positive range
             // bottom right
@@ -637,11 +703,43 @@ var fbd;
                 offsetX = -12 - this.angleRelative.width;
                 offsetY = 0;
             }
-            var angle = document.getElementsByClassName("angle");
-            for (var i = 0; i < angle.length; i++) {
-                angle[i].innerHTML = this.angleRelative.text;
+            this.setHTMLtexts("angle", this.angleRelative.text);
+            this.setHTMLtexts("force-label", this.label.text);
+            this.setHTMLtexts("force-label-sub", this.labelSub.text);
+            var array = [];
+            // text for the answers
+            var answer = document.getElementsByClassName("answer");
+            // radio button as well
+            var answerInput = document.getElementsByName("answer");
+            for (var i = 0; i < answer.length; i++) {
+                // assigning the previous answer to an array
+                array[i] = answer[i].innerText;
             }
+            // shuffle the array accordingly
+            shuffle(array);
+            // set back the text yo
+            this.setHTMLtexts("answer", array);
+            for (var i = 0; i < answer.length; i++) {
+                answerInput[i].value = answer[i].innerText;
+            }
+            // set position for the angle number text
             this.angleRelative.position.setTo(this.startingPoint.x + offsetX, this.startingPoint.y + offsetY);
+        };
+        // set html text dynamically lah, easier mah rather than setting it one by one :(
+        Vector.prototype.setHTMLtexts = function (c, t) {
+            var temp = document.getElementsByClassName(c);
+            for (var i = 0; i < temp.length; i++) {
+                if (t.constructor !== Array) {
+                    temp[i].innerText = t;
+                    if (i == 0) {
+                        var selectedAnswer = document.getElementsByName("answer");
+                        selectedAnswer[i].checked = true;
+                    }
+                }
+                else {
+                    temp[i].innerText = t[i];
+                }
+            }
         };
         // check if inputs are at the left side so can push it to the left
         Vector.prototype.checkLeft = function () {
@@ -668,6 +766,7 @@ var fbd;
                     this.labelSub.y = this.label.y + 5;
                 }
             }
+            // if left side
             if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
                 this.label.x = this.x - this.label.width - 10 - this.labelSub.width;
                 this.labelSub.x = this.label.x + this.labelSub.width;

@@ -11,8 +11,7 @@
         co: Phaser.Point; // coordinates of circle dot
         constructor(game: Phaser.Game, x, y, key, startX, startY) {
             var bmd = game.make.bitmapData(game.width, game.height);
-            inputBox = { input: [] };
-            inputBox["id"] = 0;
+            inputBox = { input: [], id: 0, name: 0, answer: "" };
             super(game, x, y, bmd);
             this.game = game;
         
@@ -56,6 +55,7 @@
                 name: id,
                 dragged: false,
                 inputValues: ["", "", ""]
+                
             })
 
             var body: HTMLElement = (<HTMLElement>document.getElementById("body"));

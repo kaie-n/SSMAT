@@ -15,15 +15,16 @@ window.onload = () => {
     
 };
 
-
-//function adjust() {
-//    var divgame = document.getElementById("content");
-//    divgame.style.width = window.innerWidth + "px";
-//    divgame.style.height = window.innerHeight + "px";
-//    if (global_game != undefined) {
-//    }
-//}
-
-//window.addEventListener('resize', function () {
-//    adjust();
-//});
+function resizeGame() {
+    var size = { width: window.innerWidth, height: window.innerHeight };
+    console.log('resizing to ', size.width, size.height);
+    global_game.width = size.width;
+    global_game.height = size.height;
+    global_game.canvas.width = size.width;
+    global_game.canvas.height = size.height;
+    global_game.scale.width = size.width;
+    global_game.scale.height = size.height;
+    global_game.world.width = size.width;
+    global_game.world.height = size.height;
+    global_game.renderer.resize(size.width, size.height);
+}

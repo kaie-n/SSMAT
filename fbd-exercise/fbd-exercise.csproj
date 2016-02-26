@@ -46,6 +46,7 @@
     <TypeScriptCompile Include="Game.ts" />
     <TypeScriptCompile Include="Boot.ts" />
     <TypeScriptCompile Include="Finish.ts" />
+    <TypeScriptCompile Include="LabelSub.ts" />
     <TypeScriptCompile Include="Question.ts" />
     <TypeScriptCompile Include="MainMenu.ts" />
     <TypeScriptCompile Include="Preloader.ts" />
