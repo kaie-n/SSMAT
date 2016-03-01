@@ -29,6 +29,8 @@
     <Content Include="assets\arrow-red.gif" />
     <Content Include="assets\background-menu.gif" />
     <Content Include="assets\background.gif" />
+    <Content Include="assets\background.jpg" />
+    <Content Include="assets\background2.gif" />
     <Content Include="assets\building.gif" />
     <Content Include="assets\button.gif" />
     <Content Include="assets\cancel-btn.gif" />
@@ -60,6 +62,7 @@
     <Content Include="assets\pictures\5.jpg" />
     <Content Include="assets\reset.gif" />
     <Content Include="assets\stone-tile.gif" />
+    <Content Include="assets\suntec_original.gif" />
     <Content Include="assets\vector.gif" />
     <Content Include="assets\weight.gif" />
     <Content Include="assets\wheel.gif" />

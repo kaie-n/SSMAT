@@ -73,14 +73,15 @@
             this.click = this.add.sprite(this.world.centerX, this.world.centerY + this.logo.height, 'click');
             this.click.anchor.setTo(0.5, 0.5);
             this.click.alpha = 0;
+            
             this.logo["start"] = this.add.tween(this.logo).to({ alpha: 1 }, 500, Phaser.Easing.Linear.None, true, 0);
             this.click["start"] = this.add.tween(this.click).to({ alpha: 1 }, 400, Phaser.Easing.Linear.None, true, 2000, -1, true);
             
 
             this.input.onDown.addOnce(function () {
-                //this.chooseLevel()
-                level_choice = "LeaderBoard";
-                this.game.state.start('MainMenu', true, false)
+                this.chooseLevel()
+                //level_choice = "LeaderBoard";
+                //this.game.state.start('MainMenu', true, false)
             }, this);
         }
 
@@ -93,14 +94,16 @@
             this.levels[0].position.setTo(this.world.centerX, this.world.centerY - this.levels[0].height);
             this.levels[0].inputEnabled = true;
             this.levels[0].input.useHandCursor = true;
+            this.levels[0].alpha = 1;
             this.levels[0].events.onInputOver.add(function () {
+                this.tweens.removeAll();
             
-                this.add.tween(this.levels[0]).to({ alpha: 0.5 }, 250, Phaser.Easing.Linear.None, true, -1, true);
-            
+                this.levels[0]["tween"] = this.add.tween(this.levels[0]).to({ alpha: 0.1 }, 250, Phaser.Easing.Linear.None, true,0, -1, true);
+                
             }, this);
             this.levels[0].events.onInputOut.add(function () {
-               
-                this.add.tween(this.levels[0]).to({ alpha: 1 }, 250, Phaser.Easing.Linear.None, true);
+                this.tweens.removeAll();
+                this.levels[0]["tween"] = this.add.tween(this.levels[0]).to({ alpha: 1 }, 250, Phaser.Easing.Linear.None, true, 0, 0, false);
               
             }, this);
             this.levels[0].events.onInputUp.addOnce(function () {
@@ -108,7 +111,7 @@
                 this.game.state.start('MainMenu', true, false)
             }, this);
             this.levels[1] = this.add.sprite(this.world.centerX, this.world.centerY, 'level1');
-            this.levels[1].visible = false;
+            this.levels[1].visible = true;
             this.levels[1].anchor.setTo(0.5, 0.5);
             this.levels[1].position.setTo(this.world.centerX, this.world.centerY + this.levels[0].height);
             this.levels[1].inputEnabled = true;
@@ -116,16 +119,16 @@
             this.levels[1].events.onInputUp.addOnce(function () {
                 level_choice = "LeaderBoard2";
                 //  uncomment this if advanced level is accepted
-                //this.game.state.start('AdvancedMenu', true, false)
+               this.game.state.start('AdvancedMenu', true, false)
             }, this);
             this.levels[1].events.onInputOver.add(function () {
-              
-               this.add.tween(this.levels[1]).to({ alpha: 0.5 }, 250, Phaser.Easing.Linear.None, true, -1, true);
+                this.tweens.removeAll();
+               this.add.tween(this.levels[1]).to({ alpha: 0.1 }, 250, Phaser.Easing.Linear.None, true,0, -1, true);
                
             }, this);
             this.levels[1].events.onInputOut.add(function () {
-                
-                this.add.tween(this.levels[1]).to({ alpha: 1 }, 250, Phaser.Easing.Linear.None, true);
+                this.tweens.removeAll();
+                this.add.tween(this.levels[1]).to({ alpha: 1 }, 250, Phaser.Easing.Linear.None, true, 0, 0, false);
                
             }, this);
         }

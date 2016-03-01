@@ -601,9 +601,10 @@ module SSMAT {
                 //this.tons[p1.nT].dmass = this.tons[p1.nT].mass
                 this.tons[p1.nT].mass -= p1.mass;
                 this.tons[p1.nT].calcForce();
-                this.movePainter(p1.nT, false, p1);
+
                 this.tons[p1.nT].ton.pop();
                 p1.destroy();
+                this.movePainter(p1.nT, false, p1);
                 return;
             }
         }
@@ -635,75 +636,166 @@ module SSMAT {
                 }
             }
         }
+        checkAnswers() {
+            var array = [];
+            array[0] = false;
+
+            for (var i = 0; i < 2; i++) {
+                for (var j = 0; j < 3; j++) {
+                    if (this.sprite[i][j].answerA == this.tons[0].mass && this.sprite[i][j].answerB == this.tons[1].mass) {
+                        array[0] = true;
+                        array[1] = this.sprite[i][j];
+                        console.log(array);
+                        return array;
+                        break;
+                    }
+                }
+            }
+            return array;
+        }
+
         // move the painter!
         movePainter(t, dir, p1) {
+            this.tons[0].calcForce()
+            this.tons[1].calcForce()
+            var array = this.checkAnswers();
             var point1 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
             var point2 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
+            console.log(this.tons[1].ton.length, "LENGTH TON")
+            if (array[0]) {
 
-            var equationA1 = (this.tons[0].calcForce() * 2)
-            var equationA2a = this.tons[1].calcPow() - this.tons[0].calcPow();
-            var equationA2b = this.painter.force - (equationA2a / this.painter.force)
-            var equationA3 = Math.asin(equationA2b / equationA1);
+                this.tons[0].angleA = array[1].angleinRad[0];
+                this.tons[1].angleA = array[1].angleinRad[1];
+                var velo2 = array[1].painterPos;
+                var ton0Y = this.tons[0].body.y;
+                var ton1Y = this.tons[1].body.y;
 
-            this.tons[0].angleA = Math.round(equationA3 * 100) / 100; // angle A from the new equib position
-            var equationB1 = (this.tons[0].calcForce() / this.tons[1].calcForce()) * Math.cos(this.tons[0].angleA);
 
-            this.tons[1].angleA = Math.round(Math.acos(equationB1) * 100) / 100; // angle B from the new equib position
+                this.tons[0].dlengtha = Phaser.Math.distance(point2.x, point2.y, this.painter.x, this.painter.y)
+                this.tons[0].dlengthb = Phaser.Math.distance(point2.x, point2.y, velo2.x, velo2.y)
+                this.tons[0].dlength = this.tons[0].dlengtha - this.tons[0].dlengthb;
 
-            this.tons[0].convertAngle();
-            this.tons[1].convertAngle();
-            if (isNaN(this.tons[0].angleA) && isNaN(this.tons[1].angleA)) {
-                if (this.tons[0].mass > this.tons[1].mass) {
-                    this.tons[0].angleA = 1.06;
-                    this.tons[1].angleA = 0;
+                this.tons[0].dlength = this.tons[0].dlength / 2;
+                this.tons[1].dlengtha = Phaser.Math.distance(point1.x, point1.y, this.painter.x, this.painter.y)
+                this.tons[1].dlengthb = Phaser.Math.distance(point1.x, point1.y, velo2.x, velo2.y)
+                this.tons[1].dlength = this.tons[1].dlengtha - this.tons[1].dlengthb;
+
+                this.tons[1].dlength = this.tons[1].dlength / 2;
+
+                ton0Y = ton0Y + this.tons[0].dlength
+                ton1Y = ton1Y + this.tons[1].dlength
+                this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: ton1Y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: ton0Y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.add.tween(this.arrow[1]).to({ rotation: -this.tons[1].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.add.tween(this.arrow[0]).to({ rotation: this.tons[0].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.painter.tween = this.add.tween(this.painter).to({ x: velo2.x, y: velo2.y }, 2000, Phaser.Easing.Exponential.Out, true);
+
+                this.painter.tween.onUpdateCallback(function () {
+                    this.paintTheLines(this.tons[t], t);
+
+                }, this);
+                this.painter.tween.onComplete.add(function () {
+                    this.paintTheLines(this.tons[t], t);
+                }, this);
+                return;
+            }
+            if (!array[0] && this.tons[0].ton.length == 0 && this.tons[1].ton.length == 0) {
+
+                var velo3 = new Phaser.Point(this.game.world.centerX, this.game.height - (this.painter.height + this.tileHeight));
+
+                this.tons[1].angleA = Phaser.Math.angleBetween(velo3.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, velo3.y)
+                this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, velo3.x, velo3.y)
+                this.tons[1].angleA = Math.round(this.tons[1].angleA * 100) / 100
+                this.tons[0].angleA = Math.round(this.tons[0].angleA * 100) / 100
+                this.tons[1].convertAngle();
+                this.tons[0].convertAngle();
+
+                this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: this.tons[1]._dx.y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: this.tons[0]._dx.y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.add.tween(this.arrow[1]).to({ rotation: -this.tons[1].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.add.tween(this.arrow[0]).to({ rotation: this.tons[0].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.painter.tween = this.add.tween(this.painter).to({ x: velo3.x, y: velo3.y }, 2000, Phaser.Easing.Exponential.Out, true);
+
+                this.painter.tween.onUpdateCallback(function () {
+                    this.paintTheLines(this.tons[t], t);
+                }, this);
+                this.painter.tween.onComplete.add(function () {
+                    this.paintTheLines(this.tons[t], t);
+                }, this);
+                return;
+            }
+
+            if (!array[0] && (this.tons[0].ton.length > 0 || this.tons[1].ton.length > 0)) {
+
+
+                var equationA1 = (this.tons[0].calcForce() * 2)
+                var equationA2a = this.tons[1].calcPow() - this.tons[0].calcPow();
+                var equationA2b = this.painter.force - (equationA2a / this.painter.force)
+                var equationA3 = Math.asin(equationA2b / equationA1);
+
+                this.tons[0].angleA = Math.round(equationA3 * 100) / 100; // angle A from the new equib position
+                var equationB1 = (this.tons[0].calcForce() / this.tons[1].calcForce()) * Math.cos(this.tons[0].angleA);
+
+                this.tons[1].angleA = Math.round(Math.acos(equationB1) * 100) / 100; // angle B from the new equib position
+
+                this.tons[0].convertAngle();
+                this.tons[1].convertAngle();
+                if (isNaN(this.tons[0].angleA) && isNaN(this.tons[1].angleA)) {
+                    if (this.tons[0].mass > this.tons[1].mass) {
+                        this.tons[0].angleA = 1.06;
+                        this.tons[1].angleA = 0;
+                    }
+                    if (this.tons[1].mass > this.tons[0].mass) {
+                        this.tons[1].angleA = 1.06;
+                        this.tons[0].angleA = 0;
+                    }
+                    this.dropped = true;
                 }
-                if (this.tons[1].mass > this.tons[0].mass) {
-                    this.tons[1].angleA = 1.06;
+                if (isNaN(this.tons[0].angleA) || this.tons[0].angleA < 0) {
                     this.tons[0].angleA = 0;
                 }
-                this.dropped = true;
-            }
-            if (isNaN(this.tons[0].angleA) || this.tons[0].angleA < 0) {
-                this.tons[0].angleA = 0;
-            }
-            if (isNaN(this.tons[1].angleA) || this.tons[1].angleA < 0) {
-                this.tons[1].angleA = 0;
-            }
-            this.sumFx = this.tons[1].calcFx() - this.tons[0].calcFx(); // formula to find Sum of X components
-            this.sumFy = (this.tons[1].calcFy() + this.tons[0].calcFy()) - this.painter.force  // formula to find Sum of Y components
+                if (isNaN(this.tons[1].angleA) || this.tons[1].angleA < 0) {
+                    this.tons[1].angleA = 0;
+                }
+                //this.tons[0].angleinDeg = Math.round(Phaser.Math.radToDeg(this.tons[0].angleA) * 100) / 100;
+                //this.tons[1].angleinDeg = Math.round(Phaser.Math.radToDeg(this.tons[1].angleA) * 100) / 100;
+                this.sumFx = this.tons[1].calcFx() - this.tons[0].calcFx(); // formula to find Sum of X components
+                this.sumFy = (this.tons[1].calcFy() + this.tons[0].calcFy()) - this.painter.force  // formula to find Sum of Y components
             
-            var velo = this.calcAll();
-            var ton0Y = this.tons[0].body.y;
-            var ton1Y = this.tons[1].body.y;
+                var velo = this.calcAll();
+                var ton0Y = this.tons[0].body.y;
+                var ton1Y = this.tons[1].body.y;
 
-            this.tons[0].dlengtha = Phaser.Math.distance(point2.x, point2.y, this.painter.x, this.painter.y)
-            this.tons[0].dlengthb = Phaser.Math.distance(point2.x, point2.y, velo.x, velo.y)
-            this.tons[0].dlength = this.tons[0].dlengtha - this.tons[0].dlengthb;
 
-            this.tons[0].dlength = this.tons[0].dlength / 2;
-            this.tons[1].dlengtha = Phaser.Math.distance(point1.x, point1.y, this.painter.x, this.painter.y)
-            this.tons[1].dlengthb = Phaser.Math.distance(point1.x, point1.y, velo.x, velo.y)
-            this.tons[1].dlength = this.tons[1].dlengtha - this.tons[1].dlengthb;
+                this.tons[0].dlengtha = Phaser.Math.distance(point2.x, point2.y, this.painter.x, this.painter.y)
+                this.tons[0].dlengthb = Phaser.Math.distance(point2.x, point2.y, velo.x, velo.y)
+                this.tons[0].dlength = this.tons[0].dlengtha - this.tons[0].dlengthb;
 
-            this.tons[1].dlength = this.tons[1].dlength / 2;
+                this.tons[0].dlength = this.tons[0].dlength / 2;
+                this.tons[1].dlengtha = Phaser.Math.distance(point1.x, point1.y, this.painter.x, this.painter.y)
+                this.tons[1].dlengthb = Phaser.Math.distance(point1.x, point1.y, velo.x, velo.y)
+                this.tons[1].dlength = this.tons[1].dlengtha - this.tons[1].dlengthb;
 
-            ton0Y = ton0Y + this.tons[0].dlength
-            ton1Y = ton1Y + this.tons[1].dlength
-            this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: ton1Y }, 2000, Phaser.Easing.Exponential.Out, true);
-            this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: ton0Y }, 2000, Phaser.Easing.Exponential.Out, true);
-            this.add.tween(this.arrow[1]).to({ rotation: -this.tons[1].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
-            this.add.tween(this.arrow[0]).to({ rotation: this.tons[0].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
-            this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.tons[1].dlength = this.tons[1].dlength / 2;
 
-            this.painter.tween.onUpdateCallback(function () {
-                this.paintTheLines(this.tons[t], t);
-                this.calcAll()
+                ton0Y = ton0Y + this.tons[0].dlength
+                ton1Y = ton1Y + this.tons[1].dlength
+                this.tons[1].tween = this.add.tween(this.tons[1]).to({ y: ton1Y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.tons[0].tween = this.add.tween(this.tons[0]).to({ y: ton0Y }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.add.tween(this.arrow[1]).to({ rotation: -this.tons[1].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.add.tween(this.arrow[0]).to({ rotation: this.tons[0].angleA }, 2000, Phaser.Easing.Exponential.Out, true);
+                this.painter.tween = this.add.tween(this.painter).to({ x: velo.x, y: velo.y }, 2000, Phaser.Easing.Exponential.Out, true);
 
-            }, this);
-            this.painter.tween.onComplete.add(function () {
-                this.paintTheLines(this.tons[t], t);
-                this.calcAll();
-            }, this);
+                this.painter.tween.onUpdateCallback(function () {
+                    this.paintTheLines(this.tons[t], t);
+                    this.calcAll()
+
+                }, this);
+                this.painter.tween.onComplete.add(function () {
+                    this.paintTheLines(this.tons[t], t);
+                    this.calcAll();
+                }, this);
+            }
         }
         // calculate the vector points, most probably going to be useless if i make it crash after a wrong answer.
         calcAll() {
@@ -729,9 +821,9 @@ module SSMAT {
             returnX += point0.x;
 
             var returnY = t4 + point0.y;
-            //if (returnY > 512) {
-            //    returnY = 512;
-            //}
+            if (returnY > (this.game.height - (this.painter.height + this.tileHeight))) {
+                returnY = this.game.height - (this.painter.height + this.tileHeight);
+            }
             var distancePoint = new Phaser.Point(returnX, returnY)
             return distancePoint;
         }

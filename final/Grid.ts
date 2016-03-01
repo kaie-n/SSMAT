@@ -7,9 +7,11 @@
         angleB: number;
         answerA: number;
         answerB: number;
+        painterPos: Phaser.Point;
         angleinRad: Array<number>;
         hitted: boolean;
         constructor(game: Phaser.Game, x: number, y: number) {
+            this.painterPos = new Phaser.Point(0, 0);
             // create a new bitmap data object
             // var bmd = this.game.add.bitmapData(150, 126.5);
             var bmd = new Phaser.Graphics(game, 0, 0);
