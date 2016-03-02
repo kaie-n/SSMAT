@@ -16,6 +16,13 @@
             this.xbutton = game.add.button(0, 0, "close", this.close, this, 0, 0, 0, 0);
             this.xbutton.position.setTo((this.x + this.width) - this.xbutton.width - 5,this.y + 5);
         }
+        resize() {
+            this.position.setTo(this.game.world.centerX, this.game.world.centerY);
+            this.position.setTo(this.x - (this.width / 2), this.y - (this.height / 2));
+            this.arrow[0].position.setTo(this.x, (this.y + this.height) - this.arrow[0].height);
+            this.arrow[1].position.setTo((this.x + this.width) - this.arrow[1].width, (this.y + this.height) - this.arrow[1].height); 
+            this.xbutton.position.setTo((this.x + this.width) - this.xbutton.width - 5, this.y + 5);
+        }
         close() {
             this.visible = false;
             this.arrow[0].visible = false;

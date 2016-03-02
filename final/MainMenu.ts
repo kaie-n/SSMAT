@@ -265,7 +265,8 @@ module SSMAT {
         }
         // finally finished on create() constructor. put all the other nonsense functions below
         setResize() {
-            
+            this.escape.resize();
+            this.instruction.resize();
             var randomMin = (this.game.height / 2) - (this.image.height / 2) - 100;
             var randomMax = (this.game.height) - this.image.height - 200;
             this.image.position.x = (this.game.width / 2) - (this.image.width / 2);

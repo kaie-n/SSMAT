@@ -217,6 +217,8 @@ var SSMAT;
             this.gameTimer = this.game.time.create(false);
         };
         AdvancedMenu.prototype.setResize = function () {
+            this.escape.resize();
+            this.instruction.resize();
             var randomMin = (this.game.height / 2) - (this.image.height / 2) - 100;
             var randomMax = (this.game.height) - this.image.height - 200;
             this.image.position.x = (this.game.width / 2) - (this.image.width / 2);
@@ -936,18 +938,25 @@ var SSMAT;
         __extends(Exit, _super);
         function Exit(game, x, y) {
             _super.call(this, game, x, y, "exit");
-            this.anchor.setTo(0.5, 0.5);
+            this.position.setTo(this.x - (this.width / 2), this.y - (this.height / 2));
+            this.position.setTo(Math.ceil(this.x), Math.ceil(this.y));
             game.add.existing(this);
             this.ok = this.game.add.button(0, 0, "ok-btn", this.exit, this, 1, 0, 1, 0);
-            this.ok.anchor.setTo(0.5, 0.5);
             this.cancel = this.game.add.button(0, 0, "cancel-btn", this.cancelled, this, 1, 0, 1, 0);
-            this.cancel.anchor.setTo(0.5, 0.5);
-            this.ok.position.setTo(this.x - (this.ok.width / 2) - 10, this.y + this.height);
-            this.cancel.position.setTo(this.ok.x + this.ok.width + 10, this.y + this.height);
+            var totalWidth = this.ok.width + this.cancel.width + 10;
+            this.ok.position.setTo(this.x + 5, this.y + this.height - this.ok.height - 5);
+            this.cancel.position.setTo((this.x + this.width) - this.cancel.width - 5, this.y + this.height - this.cancel.height - 5);
         }
         Exit.prototype.toggleVisibility = function () {
             this.cancel.visible = this.visible;
             this.ok.visible = this.visible;
+        };
+        Exit.prototype.resize = function () {
+            this.position.setTo(this.game.world.centerX, this.game.world.centerY);
+            this.position.setTo(this.x - (this.width / 2), this.y - (this.height / 2));
+            this.position.setTo(Math.ceil(this.x), Math.ceil(this.y));
+            this.ok.position.setTo(this.x + 5, this.y + this.height - this.ok.height - 5);
+            this.cancel.position.setTo((this.x + this.width) - this.cancel.width - 5, this.y + this.height - this.cancel.height - 5);
         };
         Exit.prototype.exit = function () {
             this.game.state.start('Preloader', true, false);
@@ -1299,6 +1308,13 @@ var SSMAT;
             this.xbutton = game.add.button(0, 0, "close", this.close, this, 0, 0, 0, 0);
             this.xbutton.position.setTo((this.x + this.width) - this.xbutton.width - 5, this.y + 5);
         }
+        Instruction.prototype.resize = function () {
+            this.position.setTo(this.game.world.centerX, this.game.world.centerY);
+            this.position.setTo(this.x - (this.width / 2), this.y - (this.height / 2));
+            this.arrow[0].position.setTo(this.x, (this.y + this.height) - this.arrow[0].height);
+            this.arrow[1].position.setTo((this.x + this.width) - this.arrow[1].width, (this.y + this.height) - this.arrow[1].height);
+            this.xbutton.position.setTo((this.x + this.width) - this.xbutton.width - 5, this.y + 5);
+        };
         Instruction.prototype.close = function () {
             this.visible = false;
             this.arrow[0].visible = false;
@@ -1609,6 +1625,8 @@ var SSMAT;
         };
         // finally finished on create() constructor. put all the other nonsense functions below
         MainMenu.prototype.setResize = function () {
+            this.escape.resize();
+            this.instruction.resize();
             var randomMin = (this.game.height / 2) - (this.image.height / 2) - 100;
             var randomMax = (this.game.height) - this.image.height - 200;
             this.image.position.x = (this.game.width / 2) - (this.image.width / 2);
