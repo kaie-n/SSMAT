@@ -148,7 +148,7 @@ var SSMAT;
             this.tons[1].convertAngle();
             // equation (1) to find force of Beta
             var w = Math.round((this.wind / Math.cos(this.tons[0].angleA)) * 1000) / 1000; // (1)
-            var f2 = Math.round((Math.cos(this.tons[1].angleA) / Math.cos(this.tons[0].angleA)) * 1000) / 1000; // (2)
+            var f2 = Math.round(((Math.cos(this.tons[1].angleA) + this.wind) / Math.cos(this.tons[0].angleA)) * 1000) / 1000; // (2)
             var f2force1 = this.painter.force - (w * Math.sin(this.tons[1].angleA));
             var f2force2 = (f2 * Math.sin(this.tons[0].angleA)) + Math.sin(this.tons[1].angleA);
             this.tons[1].force = (f2force1 / f2force2);
@@ -225,7 +225,8 @@ var SSMAT;
             this.wheelGroup.getChildAt(0).x = this.grad.x - this.wheel.width;
             this.wheelGroup.getChildAt(1).x = this.grad.x + this.grad.width;
             this.flag.position.setTo(200, this.world.height - this.tileHeight);
-            console.log(this.spriteGroup.getChildAt(0).x);
+            this.windText.position.setTo(Math.round(this.flag.x - this.windText.width / 2), this.flag.y - this.flag.height - this.windText.height);
+            this.timer.position.setTo(this.world.centerX, 20);
             this.tons[0].position.setTo(this.wheelGroup.getChildAt(0).x, this.wheelGroup.getChildAt(0).y + this.wheel.height);
             this.tons[1].position.setTo(this.wheelGroup.getChildAt(1).x + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height);
             this.button.position.setTo(this.game.width - 82 - 100, this.game.height - this.tileHeight - this.button.height);
@@ -1553,7 +1554,7 @@ var SSMAT;
             this.grad.x = this.image.position.x - 14;
             this.wheelGroup.getChildAt(0).x = this.grad.x - this.wheel.width;
             this.wheelGroup.getChildAt(1).x = this.grad.x + this.grad.width;
-            console.log(this.spriteGroup.getChildAt(0).x);
+            this.timer.position.setTo(this.world.centerX, 20);
             this.tons[0].position.setTo(this.wheelGroup.getChildAt(0).x, this.wheelGroup.getChildAt(0).y + this.wheel.height);
             this.tons[1].position.setTo(this.wheelGroup.getChildAt(1).x + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height);
             this.button.position.setTo(this.game.width - 82 - 100, this.game.height - this.tileHeight - this.button.height);

@@ -267,8 +267,7 @@ module SSMAT {
             this.wheelGroup.getChildAt(0).x = this.grad.x - this.wheel.width;
             this.wheelGroup.getChildAt(1).x = this.grad.x + this.grad.width;
 
-            console.log(this.spriteGroup.getChildAt(0).x)
-
+            this.timer.position.setTo(this.world.centerX, 20);
             this.tons[0].position.setTo(this.wheelGroup.getChildAt(0).x, this.wheelGroup.getChildAt(0).y + this.wheel.height)
             this.tons[1].position.setTo(this.wheelGroup.getChildAt(1).x + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height);
            
