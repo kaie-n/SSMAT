@@ -20,7 +20,7 @@
             this.preloadBarFill.x = this.preloadBar.x;
             this.preloadBarFill.y = this.preloadBar.y;
             this.load.setPreloadSprite(this.preloadBarFill);
-
+            
             for (var i = 1; i < 6; i++) {
                 var pic = 'pic' + i; 
                 var images = 'assets/pictures/' + i + '.jpg';
@@ -40,6 +40,7 @@
             this.load.image('level0', 'assets/level0.gif');
             this.load.image('level1', 'assets/level1.gif');
             this.load.image('exit', 'assets/exit.gif');
+            this.load.image('close', 'assets/x.gif');
             this.load.spritesheet('preloadBar', 'assets/loader.gif', 64, 64);
             this.game.load.spritesheet('painter', 'assets/painter.gif', 50, 48, 4);
             this.game.load.spritesheet('help', 'assets/help.gif', 24, 19, 2);
@@ -49,12 +50,25 @@
             this.game.load.spritesheet('flag', 'assets/flag.gif', 40, 180, 8);
             this.game.load.spritesheet('ok-btn', 'assets/ok-btn.gif', 71, 30, 2);
             this.game.load.spritesheet('cancel-btn', 'assets/cancel-btn.gif', 71, 30, 2);
+            this.game.load.spritesheet('instruction', 'assets/instruction.gif', 600, 400, 6);
+            this.game.load.spritesheet('arrow', 'assets/arrow.gif', 40, 31, 2);
         }
-
+        setResize() {
+            this.logo.position.setTo(this.world.centerX, this.world.centerY - 1.5)
+            this.click.position.setTo(this.world.centerX, this.world.centerY + this.logo.height)
+            this.levels[0].position.setTo(this.world.centerX, this.world.centerY - this.levels[0].height);
+            this.levels[1].position.setTo(this.world.centerX, this.world.centerY + this.levels[0].height);
+        }
         create() {
+            
             this.levels = [];
             //this.tiler = this.game.add.tileSprite(0, this.world.height - this.tileHeight, this.game.width, this.game.height, 'tile');
-            
+            this.logo = this.add.sprite(Math.round(this.world.centerX), this.world.centerY - 1.5, 'logo');
+            this.logo.anchor.setTo(0.5, 0.5);
+            this.logo.alpha = 0;
+            this.click = this.add.sprite(this.world.centerX, this.world.centerY + this.logo.height, 'click');
+            this.click.anchor.setTo(0.5, 0.5);
+            this.click.alpha = 0;
             var tween = this.add.tween(this.preloadBar).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
             var tween2 = this.add.tween(this.preloadBarFill).to({ alpha: 0 }, 50, Phaser.Easing.Linear.None, true);
             tween.onComplete.add(this.startMainMenu, this);
@@ -67,16 +81,11 @@
 
         startMainMenu() {
 
-            this.logo = this.add.sprite(Math.round(this.world.centerX), this.world.centerY - 1.5, 'logo');
-            this.logo.anchor.setTo(0.5, 0.5);
-            this.logo.alpha = 0;
-            this.click = this.add.sprite(this.world.centerX, this.world.centerY + this.logo.height, 'click');
-            this.click.anchor.setTo(0.5, 0.5);
-            this.click.alpha = 0;
+           
             
             this.logo["start"] = this.add.tween(this.logo).to({ alpha: 1 }, 500, Phaser.Easing.Linear.None, true, 0);
             this.click["start"] = this.add.tween(this.click).to({ alpha: 1 }, 400, Phaser.Easing.Linear.None, true, 2000, -1, true);
-            
+            this.game.scale.setResizeCallback(this.setResize, this);
 
             this.input.onDown.addOnce(function () {
                 this.chooseLevel()

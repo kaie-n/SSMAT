@@ -23,6 +23,7 @@ module SSMAT {
         timer: Phaser.Text;
         painter: SSMAT.Painter;
         escape: SSMAT.Exit;
+        instruction: SSMAT.Instruction;
 
         // arrays
         tons: Array<SSMAT.Tons>;
@@ -170,7 +171,7 @@ module SSMAT {
             this.button.y -= this.button.height
             this.button.anchor.setTo(0.5, 0);
 
-            this.help = new SSMAT.ButtonLabel(this.game, this.button.x + this.button.width + 1, this.button.y, 'help', "TIPS", this.tips, this, 0, 0, 1, 0);
+            this.help = new SSMAT.ButtonLabel(this.game, this.button.x + this.button.width + 1, this.button.y, 'help', "HELP", this.tips, this, 0, 0, 1, 0);
             this.help.anchor.setTo(0.5, 0);
 
             this.resetbtn = new SSMAT.ButtonLabel(this.game, this.help.x + this.button.width + 1, this.button.y, 'reset', "RESET!", this.reset, this, 0, 0, 1, 0);
@@ -208,7 +209,9 @@ module SSMAT {
                     this.sprite[i][j].angleA = Math.round(Phaser.Math.radToDeg(this.sprite[i][j].angleA) * 100) / 100
                     this.sprite[i][j].angleB = Math.round(Phaser.Math.radToDeg(this.sprite[i][j].angleB) * 100) / 100
                     this.sprite[i][j].setAnswers(1);
-                    console.log(this.sprite[i][j].answerA, this.sprite[i][j].answerB);
+                    if (developer == true) {
+                        console.log(this.sprite[i][j].answerA, this.sprite[i][j].answerB);
+                    }
                 }
             }
 
@@ -236,6 +239,11 @@ module SSMAT {
             this.tons[1].dmass = this.tons[1].mass;
             this.createArrows();
             this.gameTimer = this.game.time.create(false);
+
+            // instruction window
+            this.instruction = new SSMAT.Instruction(this.game, this.world.centerX, this.world.centerY);
+           
+            // escape key
             var ESCAPE = this.game.input.keyboard.addKey(Phaser.Keyboard.ESC);
             this.escape = new SSMAT.Exit(this.game, this.world.centerX, this.world.centerY);
             this.escape.visible = false;
@@ -252,6 +260,8 @@ module SSMAT {
                 }
                 
             }, this);
+
+            
         }
         // finally finished on create() constructor. put all the other nonsense functions below
         setResize() {
@@ -299,7 +309,9 @@ module SSMAT {
                     this.sprite[i][j].angleA = Math.round(Phaser.Math.radToDeg(this.sprite[i][j].angleA) * 100) / 100
                     this.sprite[i][j].angleB = Math.round(Phaser.Math.radToDeg(this.sprite[i][j].angleB) * 100) / 100
                     this.sprite[i][j].setAnswers(1);
-                    console.log(this.sprite[i][j].answerA, this.sprite[i][j].answerB);
+                    if (developer == true) {
+                        console.log(this.sprite[i][j].answerA, this.sprite[i][j].answerB);
+                    }
                 }
                 distributeHeight += 126.5;
             }
@@ -522,7 +534,16 @@ module SSMAT {
             s[4] = "The pulley system is in equilibrium, so every time you add a weight at either side, it will move to the new equilibrium position!";
             s[5] = "Static equilibrium means the sum of the net forces must equal to 0, ring any bell?"
             var no = Math.floor(Math.random() * (5 - 0 + 1)) + 0;
-            alert(s[no]);
+
+            if (!this.instruction.visible) {
+                this.instruction.open();
+                return
+            }
+            if (this.instruction.visible) {
+                this.instruction.close();
+                return
+            }
+            //alert(s[no]);
 
         }
         // Green button function: resetting the shit out of everything
@@ -644,7 +665,6 @@ module SSMAT {
                     if (this.sprite[i][j].answerA == this.tons[0].mass && this.sprite[i][j].answerB == this.tons[1].mass) {
                         array[0] = true;
                         array[1] = this.sprite[i][j];
-                        console.log(array);
                         return array;
                         break;
                     }
@@ -660,7 +680,6 @@ module SSMAT {
             var array = this.checkAnswers();
             var point1 = new Phaser.Point((this.tons[1].x) - this.wheel.width, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2);
             var point2 = new Phaser.Point((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2);
-            console.log(this.tons[1].ton.length, "LENGTH TON")
             if (array[0]) {
 
                 this.tons[0].angleA = array[1].angleinRad[0];
@@ -829,33 +848,35 @@ module SSMAT {
 
         // debugging purposes
         testClick(p1) {
-            this.painter.x = p1.x + p1.width / 2;
-            this.painter.y = p1.y + p1.height / 2 - this.painter.height / 2;
-            this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, this.painter.y)
-            this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, this.painter.x, this.painter.y)
+            if (developer == true) {
+                this.painter.x = p1.x + p1.width / 2;
+                this.painter.y = p1.y + p1.height / 2 - this.painter.height / 2;
+                this.tons[1].angleA = Phaser.Math.angleBetween(this.painter.x, this.wheelGroup.getChildAt(1).y + this.wheel.height / 2, (this.tons[1].x) - this.wheel.width, this.painter.y)
+                this.tons[0].angleA = Phaser.Math.angleBetween((this.tons[0].x) + this.wheel.width, this.wheelGroup.getChildAt(0).y + this.wheel.height / 2, this.painter.x, this.painter.y)
 
-            this.tons[1].angleA = Math.round(this.tons[1].angleA * 100) / 100;
-            this.tons[0].angleA = Math.round(this.tons[0].angleA * 100) / 100;
+                this.tons[1].angleA = Math.round(this.tons[1].angleA * 100) / 100;
+                this.tons[0].angleA = Math.round(this.tons[0].angleA * 100) / 100;
 
-            this.tons[1].convertAngle();
-            this.tons[0].convertAngle();
-            var temp2 = (Math.cos(this.tons[0].angleA) / Math.cos(this.tons[1].angleA)) // Tons1 = Cos(Ton0.angle) / Cos(Ton1.Angle)
-            var temp = (temp2 * (Math.sin(this.tons[1].angleA)) + Math.sin(this.tons[0].angleA))
-            this.tons[0].force = Math.round((this.painter.force / temp) * 10) / 10
-            this.tons[1].force = Math.round((this.tons[0].force * temp2) * 10) / 10
-            this.tons[0].mass = Math.round((this.tons[0].force / this.gravity) * 10) / 10
-            this.tons[1].mass = Math.round((this.tons[1].force / this.gravity) * 10) / 10
-            this.sumFx = this.tons[1].calcFx() - this.tons[0].calcFx(); // formula to find Sum of X components
-            this.sumFy = (this.tons[1].calcFy() + this.tons[0].calcFy()) - this.painter.force  // formula to find Sum of Y components
+                this.tons[1].convertAngle();
+                this.tons[0].convertAngle();
+                var temp2 = (Math.cos(this.tons[0].angleA) / Math.cos(this.tons[1].angleA)) // Tons1 = Cos(Ton0.angle) / Cos(Ton1.Angle)
+                var temp = (temp2 * (Math.sin(this.tons[1].angleA)) + Math.sin(this.tons[0].angleA))
+                this.tons[0].force = Math.round((this.painter.force / temp) * 10) / 10
+                this.tons[1].force = Math.round((this.tons[0].force * temp2) * 10) / 10
+                this.tons[0].mass = Math.round((this.tons[0].force / this.gravity) * 10) / 10
+                this.tons[1].mass = Math.round((this.tons[1].force / this.gravity) * 10) / 10
+                this.sumFx = this.tons[1].calcFx() - this.tons[0].calcFx(); // formula to find Sum of X components
+                this.sumFy = (this.tons[1].calcFy() + this.tons[0].calcFy()) - this.painter.force  // formula to find Sum of Y components
             
-            this.sumR = (this.sumFx * 2) + (this.sumFy * 2);
-            if (this.sumR < 0) {
-                this.sumR = this.sumR * -1
+                this.sumR = (this.sumFx * 2) + (this.sumFy * 2);
+                if (this.sumR < 0) {
+                    this.sumR = this.sumR * -1
+                }
+                this.sumR = Math.sqrt(this.sumR);
+                this.sumR = Math.round(this.sumR * 10) / 10;
+                this.paintTheLines(this.tons[0], 0);
+                this.calcAll();
             }
-            this.sumR = Math.sqrt(this.sumR);
-            this.sumR = Math.round(this.sumR * 10) / 10;
-            this.paintTheLines(this.tons[0], 0);
-            this.calcAll();
         }
     }
 

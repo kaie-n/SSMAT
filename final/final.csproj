@@ -27,6 +27,7 @@
     <Content Include="assets\arrow-blue.gif" />
     <Content Include="assets\arrow-green.gif" />
     <Content Include="assets\arrow-red.gif" />
+    <Content Include="assets\arrow.gif" />
     <Content Include="assets\background-menu.gif" />
     <Content Include="assets\background.gif" />
     <Content Include="assets\background.jpg" />
@@ -41,11 +42,11 @@
     <Content Include="assets\cloud\3_0.png" />
     <Content Include="assets\cloud\4_0.png" />
     <Content Include="assets\cloud\5_0.png" />
-    <Content Include="assets\esplanade.gif" />
     <Content Include="assets\exit.gif" />
     <Content Include="assets\flag.gif" />
     <Content Include="assets\gradient.gif" />
     <Content Include="assets\help.gif" />
+    <Content Include="assets\instruction.gif" />
     <Content Include="assets\level0.gif" />
     <Content Include="assets\level1.gif" />
     <Content Include="assets\loader.gif" />
@@ -66,6 +67,7 @@
     <Content Include="assets\vector.gif" />
     <Content Include="assets\weight.gif" />
     <Content Include="assets\wheel.gif" />
+    <Content Include="assets\x.gif" />
     <Content Include="Boot.js" />
     <Content Include="ButtonLabel.js" />
     <Content Include="Game.js" />
@@ -91,6 +93,7 @@
     <TypeScriptCompile Include="Exit.ts" />
     <TypeScriptCompile Include="GameOver.ts" />
     <TypeScriptCompile Include="Grid.ts" />
+    <TypeScriptCompile Include="Instruction.ts" />
     <TypeScriptCompile Include="jquery.d.ts" />
     <TypeScriptCompile Include="login.ts" />
     <TypeScriptCompile Include="MainMenu.ts" />
