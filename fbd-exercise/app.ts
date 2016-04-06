@@ -9,12 +9,19 @@ declare var mcqAnswers: HTMLInputElement;
 declare var sheet;
 declare var vectorOffset: number;
 declare var inputBox;
+declare var vectorCoords;
+declare var canvasXnY;
 window.onload = () => {
-
+    vectorCoords = {
+        "x": 0,
+        "y": 0
+    };
     vectorOffset = 0;
     mcq = (<HTMLInputElement>document.getElementById("form-float"));
     mcqAnswers = (<HTMLInputElement>document.getElementById("form-answers"));
     divDetails = (<HTMLInputElement>document.getElementById("instructions"));
+    canvasXnY = (<HTMLInputElement>document.getElementById("cannyvas"));
+    
     global_style = { font: "14px 'Segoe UI', sans-serif", fill: "#000000", wordWrap: false, wordWrapWidth: this.width, align: "left" };
     var game = new fbd.Game();
 

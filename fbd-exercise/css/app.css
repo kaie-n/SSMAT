@@ -36,6 +36,8 @@ hr.style-one {
     left: 0;
     top: 0;
     z-index: -999;
+    background: url('../assets/background.jpg') repeat;
+
 }
 
 #content {
@@ -46,16 +48,23 @@ hr.style-one {
     width: 100%;
 }
 
+#instructions {
+    font-weight: bold;
+    padding-top: 10px;
+}
+
 #questions {
     vertical-align: middle;
     margin: 0 auto;
-    text-align: center;
+    text-align: justify;
     width: 50%;
     height: 100%;
 }
 
 #cannyvas {
+    background: white;
     padding: 30px 30px 30px 30px;
+    border: 1px black dashed;
 }
 
     #cannyvas canvas {

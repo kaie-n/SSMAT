@@ -12,7 +12,7 @@
     <script src="phaser.js"></script>
     <script src="Game.js"></script>
     <script>
-       
+
         function preventMore(e, t) {
             if (t.innerText.length > 2) {
                 e.preventDefault();
@@ -42,7 +42,7 @@
         function makeSub(e, t) {
             var charCode = (typeof e.which === "number") ? e.which : e.keyCode;
             if (charCode != '37' && charCode != '38' && charCode != '39' && charCode != '40' && charCode != '8') {
- 
+
                 if (t.innerText.length == 2) {
                     var subscript = t.innerText.charAt(1);
                     subscript = subscript.sub();
@@ -85,7 +85,10 @@
                     cordx = e.clientX;
                     cordy = e.clientY;
                 }
-                cordx = cordx - vectorOffset;
+
+                cordx = vectorCoords.x;
+                cordy = vectorCoords.y;
+
                 document.getElementById(target).style.left = String(cordx) + "px";
                 document.getElementById(target).style.top = String(cordy) + "px";
                 document.getElementById(target).style.display = ""
@@ -100,28 +103,34 @@
     <div id="wrapper">
         <div id="content">
             <div id="questions">
-                <h2>Free Body Diagram Exercise</h2>
+                <br />
+                <h2 class="text-center">Free Body Diagram Exercise</h2>
                 <hr class="style-one" />
                 <div id="cannyvas"></div>
-                <span id="instructions"></span>
+                <div id="instructions"></div>
                 <div class="form-float" id="form-float">
                     <form>
-                        <div class="col-md-1"></div>
-                        <div class="col-md-10" id="form-answers">
+
+                        <div class="col-md-12" id="form-answers">
                             <div class="row">
-                                <div class="col-md-6 text-right"><input type="radio" name="answer" value="cos"><span class="check"></span></div>
-                                <div class="col-md-6 text-left" id="option-0-0"><span class="force-label">N</span><sub class="force-label-sub"></sub><sub class="x-or-y">x</sub> = <span class="force-label">N</span><sub class="force-label-sub"></sub><span class="answer">cos</span><span class="angle">30</span></div>
-                            </div><br />
+                                <div class="col-md-12 text-left">
+                                    <input type="radio" name="answer" value="cos"><span class="check"></span>
+                                    <span class="force-label">N</span><!--<sub class="force-label-sub"></sub>--><sub class="x-or-y">x</sub> = <span class="force-label">N</span><sub class="force-label-sub"></sub><span class="answer">cos</span><span class="angle">30</span>
+                                </div>
+                            </div>
                             <div class="row">
-                                <div class="col-md-6 text-right"><input type="radio" name="answer" value="sin" ><span class="check"></span></div>
-                                <div class="col-md-6 text-left" id="option-0-1"><span class="force-label">N</span><sub class="force-label-sub"></sub><sub class="x-or-y">x</sub> = <span class="force-label">N</span><sub class="force-label-sub"></sub><span class="answer">sin</span><span class="angle">30</span></div>
-                            </div><br />
+                                <div class="col-md-12 text-left">
+                                    <input type="radio" name="answer" value="sin"><span class="check"></span>
+                                    <span class="force-label">N</span><!--<sub class="force-label-sub"></sub>--><sub class="x-or-y">x</sub> = <span class="force-label">N</span><sub class="force-label-sub"></sub><span class="answer">sin</span><span class="angle">30</span>
+                                </div>
+                            </div>
                             <div class="row">
-                                <div class="col-md-6 text-right"><input type="radio" name="answer" value="tan"><span class="check"></span></div>
-                                <div class="col-md-6 text-left" id="option-0-2"><span class="force-label">N</span><sub class="force-label-sub"></sub><sub class="x-or-y">x</sub> = <span class="force-label">N</span><sub class="force-label-sub"></sub><span class="answer">tan</span><span class="angle">30</span></div>
+                                <div class="col-md-12 text-left">
+                                    <input type="radio" name="answer" value="tan"><span class="check"></span>
+                                    <span class="force-label">N</span><!--<sub class="force-label-sub"></sub>--><sub class="x-or-y">x</sub> = <span class="force-label">N</span><sub class="force-label-sub"></sub><span class="answer">tan</span><span class="angle">30</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-1"></div>
                     </form>
                 </div>
             </div>

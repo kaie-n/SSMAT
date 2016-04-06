@@ -22,6 +22,8 @@
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="assets\background.jpg" />
+    <Content Include="assets\questions\1.png" />
     <Content Include="css\app.css" />
     <Content Include="assets\arrow-head.gif" />
     <Content Include="assets\btn.gif" />

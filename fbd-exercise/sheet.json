@@ -1,13 +1,15 @@
 ﻿{
+  "pic": "pic",
   "question": [
     {
+      "name": 1,
       "buttonLabel": [ "Submit", "Next" ],
       "limit": 3,
       "co": [ 139, 47 ],
       "acw": true,
       "part": [
         {
-          "instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Click on the SUBMIT button to check your answer.",
+          "instruction": "<p>Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram.</p><p>Click on the SUBMIT button to check your answer.</p>",
           "answer": [
             {
               "angle": [ -150, -125 ],
@@ -19,14 +21,14 @@
             },
             {
               "angle": [ -70, -40 ],
-              "forceLabels": "N"
+              "forceLabels": "FN"
             }
-           
+
           ],
           "correct": "Click on the NEXT button to proceed."
         },
         {
-          "instruction": "Drag the arrows into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
+          "instruction": "Click and drag the arrows <img src='/assets/arrow-head.gif'> into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
           "answer": [ 335, 30 ],
           "correct": "Click on the NEXT button to proceed to the next exercise."
         },
@@ -35,37 +37,38 @@
           "answer": "1",
           "correct": "Click on the NEXT button to proceed to the next exercise."
         }
-      ],
-      "pic": "pic1"
+      ]
+
     },
     {
+      "name": 2,
       "buttonLabel": [ "Submit", "Next" ],
       "limit": 3,
-      "co": [ 139, 47 ],
+      "co": [ 150, 115 ],
       "acw": true,
       "part": [
         {
-          "instruction": "Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram. Click on the SUBMIT button to check your answer.",
+          "instruction": "<p>Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram.</p><p>Click on the SUBMIT button to check your answer.</p>",
           "answer": [
             {
-              "angle": [ -150, -125 ],
-              "forceLabels": "FF"
+              "angle": [ 150, 175 ],
+              "forceLabels": "FT"
             },
             {
               "angle": 90,
               "forceLabels": "W"
             },
             {
-              "angle": [ -70, -40 ],
-              "forceLabels": "N"
+              "angle": [ -55, -10 ],
+              "forceLabels": "FWIND"
             }
-           
+
           ],
           "correct": "Click on the NEXT button to proceed."
         },
         {
-          "instruction": "Drag the arrows into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
-          "answer": [ 335, 30 ],
+          "instruction": "Click and drag the arrows <img src='/assets/arrow-head.gif'> into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
+          "answer": [ 325, -40 ],
           "correct": "Click on the NEXT button to proceed to the next exercise."
         },
         {
@@ -73,8 +76,87 @@
           "answer": "2",
           "correct": "Click on the NEXT button to proceed to the next exercise."
         }
-      ],
-      "pic": "pic1"
+      ]
+    },
+    {
+      "name": 3,
+      "buttonLabel": [ "Submit", "Next" ],
+      "limit": 4,
+      "co": [ 115, 105 ],
+      "acw": true,
+      "part": [
+        {
+          "instruction": "<p>Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram.</p><p>Click on the SUBMIT button to check your answer.</p>",
+          "answer": [
+            {
+              "angle": [ 10, 55 ],
+              "forceLabels": "W"
+            },
+            {
+              "angle": 90,
+              "forceLabels": "W"
+            },
+            {
+              "angle": [ -90 ],
+              "forceLabels": "N"
+            },
+            {
+              "angle": [ -180 ],
+              "forceLabels": "FW"
+            }
+
+          ],
+          "correct": "Click on the NEXT button to proceed."
+        },
+        {
+          "instruction": "Click and drag the arrows <img src='/assets/arrow-head.gif'> into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
+          "answer": [ 325, -40 ],
+          "correct": "Click on the NEXT button to proceed to the next exercise."
+        },
+        {
+          "instruction": "From the information given, which formula would you use to find the unknown (?). Select a formula and click on the SUBMIT button to check your answer.",
+          "answer": "2",
+          "correct": "Click on the NEXT button to proceed to the next exercise."
+        }
+      ]
+    },
+    {
+      "name": 4,
+      "buttonLabel": [ "Submit", "Next" ],
+      "limit": 3,
+      "co": [ 50, 135 ],
+      "acw": true,
+      "part": [
+        {
+          "instruction": "<p>Click on the given reference point ( ● ), and drag out arrows to represent the various forces acting on this box sliding down an inclined plane. That is, create a Free Body Diagram.</p><p>Click on the SUBMIT button to check your answer.</p>",
+          "answer": [
+            {
+              "angle": [ 150, 175 ],
+              "forceLabels": "FR"
+            },
+            {
+              "angle": 90,
+              "forceLabels": "W"
+            },
+            {
+              "angle": [ -55, -10 ],
+              "forceLabels": "FW"
+            }
+
+          ],
+          "correct": "Click on the NEXT button to proceed."
+        },
+        {
+          "instruction": "Click and drag the arrows <img src='/assets/arrow-head.gif'> into the box to resolve the Free Body Diagram . Click on the SUBMIT button to check your answer.",
+          "answer": [ 325, -40 ],
+          "correct": "Click on the NEXT button to proceed to the next exercise."
+        },
+        {
+          "instruction": "From the information given, which formula would you use to find the unknown (?). Select a formula and click on the SUBMIT button to check your answer.",
+          "answer": "2",
+          "correct": "Click on the NEXT button to proceed to the next exercise."
+        }
+      ]
     }
   ]
 }

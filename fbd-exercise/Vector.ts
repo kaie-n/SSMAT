@@ -11,6 +11,7 @@
         group: Phaser.Group;
         groupStick: Phaser.BitmapData
         relative: Phaser.Point;
+        points: Phaser.Point;
         unknown: Phaser.Text;
         angleRelative: Phaser.Text;
         label: Phaser.Text;
@@ -32,7 +33,7 @@
             this.bmdSprite.addChild(this);
             super(game, x, y, "arrow-head");
             game.add.existing(this);
-
+            this.points = new Phaser.Point(0, 0);
             this.bmd.ctx.strokeStyle = "black";
             this.startingPoint = new Phaser.Point(x, y);
 
@@ -255,11 +256,24 @@
         }
         // check if inputs are at the left side so can push it to the left
         checkLeft() {
-            if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
-                vectorOffset = 110;
+            if ((this.angle < 180 && this.angle > 90) || (this.angle >= -180 && this.angle < -90)) {
+                // left
+                vectorCoords.x = this.points.x - 80;
             }
             else {
-                vectorOffset = -10;
+                // right
+                vectorCoords.x = this.points.x + 40;
+            }
+        }
+        checkBottom() {
+            if ((this.angle < 180 && this.angle > 0)) {
+                // left
+                vectorCoords.y = this.points.y + 45;
+            }
+            else {
+                vectorCoords.y = this.points.y + 0;
+                // right
+                // default;
             }
         }
 
@@ -348,10 +362,13 @@
                     this.angle = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y))
                     document.getElementById(inputBox.input[inputBox.id].name).style.display = "none";
                     inputBox.input[inputBox.id].dragged = false;
+                    this.points.x = canvasXnY.getBoundingClientRect().left + this.x;
+                    this.points.y = canvasXnY.getBoundingClientRect().top + this.y;
                 }
                 this.checkLeft();
+                this.checkBottom();
                 //console.log("RELATIVE LENGTHS", this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
-
+                console.log(this.angle, this.name, "angle");
                 this.relative.setTo(this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
             }
         }

@@ -17,9 +17,9 @@
             
             //  Load our actual games assets
             //  Question diagrams
-            for (var i = 1; i < 2; i++) {
+            for (var i = 1; i < 5; i++) {
                 var pic = 'pic' + i;
-                var images = 'assets/questions/' + i + '.gif';
+                var images = 'assets/questions/' + i + '.png';
                 this.load.image(pic, images);
             }
             //  Buttons

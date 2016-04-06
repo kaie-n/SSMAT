@@ -1,9 +1,14 @@
 var _this = this;
 window.onload = function () {
+    vectorCoords = {
+        "x": 0,
+        "y": 0
+    };
     vectorOffset = 0;
     mcq = document.getElementById("form-float");
     mcqAnswers = document.getElementById("form-answers");
     divDetails = document.getElementById("instructions");
+    canvasXnY = document.getElementById("cannyvas");
     global_style = { font: "14px 'Segoe UI', sans-serif", fill: "#000000", wordWrap: false, wordWrapWidth: _this.width, align: "left" };
     var game = new fbd.Game();
 };
@@ -232,9 +237,9 @@ var fbd;
             this.load.setPreloadSprite(this.preloadBarFill);
             //  Load our actual games assets
             //  Question diagrams
-            for (var i = 1; i < 2; i++) {
+            for (var i = 1; i < 5; i++) {
                 var pic = 'pic' + i;
-                var images = 'assets/questions/' + i + '.gif';
+                var images = 'assets/questions/' + i + '.png';
                 this.load.image(pic, images);
             }
             //  Buttons
@@ -270,13 +275,16 @@ var fbd;
         Question.prototype.create = function () {
             //  getting data externally
             sheet = this.game.cache.getJSON('sheet');
+            this.pic = 0;
             this.initialize();
         };
         Question.prototype.initialize = function () {
+            this.pic++;
             question = sheet.question[_q]; //  short-named variable for referencing of which question and part
             part = sheet.question[_q].part[_p];
+            var pic = sheet.pic + this.pic.toString();
             //  diagram initializing
-            this.diagram = new fbd.Diagram(this.game, 0, 0, question.pic, question.co[0], question.co[1]);
+            this.diagram = new fbd.Diagram(this.game, 0, 0, pic, question.co[0], question.co[1]);
             this.diagram.limit = question.limit;
             divDetails.innerHTML = part.instruction;
             //  button initializing
@@ -315,11 +323,19 @@ var fbd;
                     break;
             }
         };
+        Question.prototype.clearTextBoxes = function () {
+            var string = "force";
+            for (var i = 0; i < this.diagram.vector.length; i++) {
+                string = "force" + i;
+                document.getElementById(string).style.display = "none";
+            }
+        };
         Question.prototype.submit = function () {
             if (this.btn.label.text == "Submit") {
                 if (this.checkAnswers()) {
                     this.diagram.squareBox.showAnswer(0, true);
                     this.btn.label.text = "Next";
+                    this.clearTextBoxes();
                     return;
                 }
                 else {
@@ -407,6 +423,7 @@ var fbd;
                 }
             }
             if (allCorrect == question.limit) {
+                this.clearTextBoxes();
                 return true;
             }
             if (allCorrect < question.limit) {
@@ -542,6 +559,7 @@ var fbd;
             this.bmdSprite.addChild(this);
             _super.call(this, game, x, y, "arrow-head");
             game.add.existing(this);
+            this.points = new Phaser.Point(0, 0);
             this.bmd.ctx.strokeStyle = "black";
             this.startingPoint = new Phaser.Point(x, y);
             // click region initialize
@@ -743,11 +761,22 @@ var fbd;
         };
         // check if inputs are at the left side so can push it to the left
         Vector.prototype.checkLeft = function () {
-            if ((this.angle < 180 && this.angle > 90) || (this.angle > -180 && this.angle < -90)) {
-                vectorOffset = 110;
+            if ((this.angle < 180 && this.angle > 90) || (this.angle >= -180 && this.angle < -90)) {
+                // left
+                vectorCoords.x = this.points.x - 80;
             }
             else {
-                vectorOffset = -10;
+                // right
+                vectorCoords.x = this.points.x + 40;
+            }
+        };
+        Vector.prototype.checkBottom = function () {
+            if ((this.angle < 180 && this.angle > 0)) {
+                // left
+                vectorCoords.y = this.points.y + 45;
+            }
+            else {
+                vectorCoords.y = this.points.y + 0;
             }
         };
         Vector.prototype.checkInputForce = function () {
@@ -832,9 +861,13 @@ var fbd;
                     this.angle = this.getAngle(this.startingPoint.x, this.startingPoint.y, this.rounder(this.x), this.rounder(this.y));
                     document.getElementById(inputBox.input[inputBox.id].name).style.display = "none";
                     inputBox.input[inputBox.id].dragged = false;
+                    this.points.x = canvasXnY.getBoundingClientRect().left + this.x;
+                    this.points.y = canvasXnY.getBoundingClientRect().top + this.y;
                 }
                 this.checkLeft();
+                this.checkBottom();
                 //console.log("RELATIVE LENGTHS", this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
+                console.log(this.angle, this.name, "angle");
                 this.relative.setTo(this.rounder(this.x) - this.startingPoint.x, this.rounder(this.y) - this.startingPoint.y);
             }
         };

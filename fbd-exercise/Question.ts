@@ -5,17 +5,21 @@
         diagram: fbd.Diagram
         btn: fbd.ButtonLabel;
         mcq: HTMLInputElement;
+        pic: number;
         create() {
             //  getting data externally
             sheet = this.game.cache.getJSON('sheet');
+            this.pic = 0;
             this.initialize();
+            
         }
         initialize() {
+            this.pic++;
             question = sheet.question[_q]; //  short-named variable for referencing of which question and part
             part = sheet.question[_q].part[_p];
-
+            var pic = sheet.pic + this.pic.toString(); 
             //  diagram initializing
-            this.diagram = new fbd.Diagram(this.game, 0, 0, question.pic, question.co[0], question.co[1]);
+            this.diagram = new fbd.Diagram(this.game, 0, 0, pic, question.co[0], question.co[1]);
             this.diagram.limit = question.limit;
             divDetails.innerHTML = part.instruction; 
 
@@ -58,11 +62,20 @@
                     break;
             }
         }
+        clearTextBoxes() {
+            var string = "force";
+            for (var i = 0; i < this.diagram.vector.length; i++) {
+                string = "force" + i;
+                (<HTMLInputElement>document.getElementById(string)).style.display = "none";
+            }
+        }
         submit() {
             if (this.btn.label.text == "Submit") {
                 if (this.checkAnswers()) {
                     this.diagram.squareBox.showAnswer(0, true);
                     this.btn.label.text = "Next";
+                    this.clearTextBoxes();
+
                     return;
                 }
                 else {
@@ -170,6 +183,7 @@
                 }
             }
             if (allCorrect == question.limit) {
+                this.clearTextBoxes();
                     return true;
             }
             if (allCorrect < question.limit) {
